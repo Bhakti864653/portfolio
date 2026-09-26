@@ -51,6 +51,9 @@ export function Contact() {
           <a href={SITE.github} className={pill}>
             GitHub ↗
           </a>
+          <a href={SITE.linkedin} className={pill}>
+            LinkedIn ↗
+          </a>
           {hasResume && (
             <a href="/resume.pdf" className={pill}>
               Résumé (PDF)

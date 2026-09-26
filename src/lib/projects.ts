@@ -416,6 +416,7 @@ export const SITE = {
   name: "Bhakti Ahir",
   email: "ahirbhakti11@gmail.com",
   github: "https://github.com/Bhakti864653",
+  linkedin: "https://www.linkedin.com/in/bhakti-ahir-756b9943a/",
   journeyRepo: "https://github.com/Bhakti864653/learning-journey",
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
   philosophy: "Technology should expand what people can do.",

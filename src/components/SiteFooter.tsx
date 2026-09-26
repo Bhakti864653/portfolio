@@ -9,6 +9,9 @@ export function SiteFooter() {
           <a href={SITE.github} className="hover:text-ink">
             GitHub
           </a>
+          <a href={SITE.linkedin} className="hover:text-ink">
+            LinkedIn
+          </a>
           <a href={`mailto:${SITE.email}`} className="hover:text-ink">
             Email
           </a>
