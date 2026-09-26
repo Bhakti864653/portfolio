@@ -16,7 +16,7 @@ export function Plate({
       <div className="relative">
         <div
           aria-hidden="true"
-          className="absolute inset-0 translate-x-2 translate-y-2 rounded-[4px] bg-a2 opacity-20 sm:translate-x-5 sm:translate-y-5"
+          className="absolute inset-0 translate-x-1.5 translate-y-1.5 rounded-[4px] bg-a2 opacity-15 sm:translate-x-3 sm:translate-y-3"
         />
         <div className="relative rounded-[4px] border border-line-strong bg-soft p-1.5 sm:p-2">
           <div
@@ -41,7 +41,7 @@ export function Plate({
           />
         </div>
       </div>
-      <figcaption className="annot mt-5">
+      <figcaption className="annot mt-4">
         Fig. {figure} · {project.name}, live app
       </figcaption>
     </figure>

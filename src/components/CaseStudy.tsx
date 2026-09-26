@@ -9,7 +9,7 @@ type Entry = { id: string; label: string; content: ReactNode };
 const Paragraphs = ({ items }: { items: string[] }) => (
   <div className="space-y-4">
     {items.map((t) => (
-      <p key={t} className="max-w-prose text-[1.06rem] leading-relaxed">
+      <p key={t} className="body-copy max-w-[68ch]">
         {inline(t)}
       </p>
     ))}
@@ -17,11 +17,11 @@ const Paragraphs = ({ items }: { items: string[] }) => (
 );
 
 const Bullets = ({ items }: { items: string[] }) => (
-  <ul className="max-w-prose">
+  <ul className="max-w-[68ch]">
     {items.map((t) => (
       <li
         key={t}
-        className="grid grid-cols-[1.25rem_1fr] border-b border-line py-3 leading-relaxed last:border-0"
+        className="body-copy grid grid-cols-[1.5rem_1fr] border-b border-line py-4 first:pt-0 last:border-0 last:pb-0"
       >
         <span
           aria-hidden="true"
@@ -64,7 +64,7 @@ export function CaseStudy({ project: p }: { project: Project }) {
       label: "The important system",
       content: (
         <>
-          <p className="mb-4 font-display text-3xl leading-tight text-a1">
+          <p className="mb-5 text-xl font-semibold leading-snug">
             {cs.system.heading}
           </p>
           <Paragraphs items={cs.system.body} />
@@ -86,7 +86,7 @@ export function CaseStudy({ project: p }: { project: Project }) {
       label: "The hardest challenge",
       content: (
         <div className="border-l-2 border-a1 pl-5">
-          <p className="mb-4 font-display text-3xl leading-tight">
+          <p className="mb-5 text-xl font-semibold leading-snug">
             {cs.challenge.heading}
           </p>
           <Paragraphs items={cs.challenge.body} />
@@ -116,7 +116,7 @@ export function CaseStudy({ project: p }: { project: Project }) {
           {p.stack.map((s) => (
             <li
               key={s}
-              className="annot rounded-full border border-line-strong px-3 py-1.5 normal-case tracking-normal text-ink"
+              className="rounded-full border border-line-strong px-3 py-1.5 text-sm text-ink"
             >
               {s}
             </li>
@@ -126,92 +126,114 @@ export function CaseStudy({ project: p }: { project: Project }) {
     },
   ];
 
+  const toc = (
+    <ol className="space-y-0.5">
+      {entries.map((e, i) => (
+        <li key={e.id}>
+          <a
+            href={`#${e.id}`}
+            className="flex min-h-10 items-center gap-3 text-[0.95rem] text-muted hover:text-ink"
+          >
+            <span className="annot w-6 text-faint">
+              {String(i + 1).padStart(2, "0")}
+            </span>
+            {e.label}
+          </a>
+        </li>
+      ))}
+    </ol>
+  );
+
   return (
     <article className={`accent-${p.slug}`} aria-labelledby="case-title">
-      <header className="mx-auto max-w-[1440px] px-4 pb-16 pt-8 sm:px-8 sm:pt-10">
-        <div className="annot flex flex-wrap justify-between gap-2 border-b border-line pb-3">
-          <Link href={`/#${p.slug}`} className="text-ink hover:underline">
-            ← All work
-          </Link>
-          <span>
-            Chapter {p.chapter} · {p.verb}
-          </span>
-        </div>
-
-        <div className="mt-10 grid gap-12 lg:grid-cols-12 lg:gap-10">
-          <div className="lg:col-span-5">
-            <p
-              aria-hidden="true"
-              className="font-display text-[clamp(4.4rem,13vw,9rem)] italic capitalize leading-[0.82] text-a1"
-            >
-              {p.verb}.
-            </p>
-            <h1
-              id="case-title"
-              className="mt-6 font-display text-[clamp(2.6rem,6vw,4.2rem)] leading-[0.95]"
-            >
-              {p.name}
-            </h1>
-            <p className="mt-3 font-display text-2xl italic text-muted">
-              {p.tagline}
-            </p>
-            <p className="mt-6 max-w-prose leading-relaxed">{p.intro}</p>
-
-            <div className="mt-8 flex flex-wrap gap-3">
-              <a
-                href={p.live}
-                className="annot inline-flex h-11 items-center rounded-full bg-a1 px-6 text-paper hover:opacity-90"
-              >
-                Open the live app ↗
-              </a>
-              <a
-                href={p.repo}
-                className="annot inline-flex h-11 items-center rounded-full border border-line-strong px-5 text-ink hover:bg-soft"
-              >
-                GitHub repository ↗
-              </a>
-            </div>
-            <p className="mt-4 max-w-prose text-sm text-muted">{p.liveNote}</p>
+      {/* Masthead: text only, on a faint grid */}
+      <header className="grid-field-subtle border-b border-line">
+        <div className="shell pb-14 pt-6 sm:pb-20">
+          <div className="annot flex flex-wrap justify-between gap-2 border-b border-line pb-3">
+            <Link href={`/#${p.slug}`} className="text-ink hover:underline">
+              ← All work
+            </Link>
+            <span>
+              <span className="text-a1">Chapter {p.chapter}</span> · {p.verb}
+            </span>
           </div>
-          <div className="lg:col-span-7 lg:pt-10">
-            <Plate project={p} figure={`${p.chapter}.1`} priority />
+
+          <div className="grid-12 mt-12 gap-y-8 sm:mt-16">
+            <div className="lg:col-span-7">
+              <h1
+                id="case-title"
+                className="font-display text-[clamp(3rem,7vw,5.5rem)] leading-[0.95]"
+              >
+                {p.name}
+              </h1>
+              <p className="mt-4 text-xl leading-snug text-ink">{p.tagline}</p>
+            </div>
+            <div className="lg:col-span-4 lg:col-start-9 lg:self-end">
+              <p className="body-copy text-muted">{p.intro}</p>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <a
+                  href={p.live}
+                  className="inline-flex h-12 items-center rounded-full bg-ink px-6 text-sm font-semibold text-paper hover:opacity-90"
+                >
+                  Open the live app ↗
+                </a>
+                <a
+                  href={p.repo}
+                  className="inline-flex h-12 items-center rounded-full border border-line-strong px-5 text-sm font-semibold text-ink hover:bg-soft"
+                >
+                  Repository ↗
+                </a>
+              </div>
+              <p className="mt-4 text-sm leading-relaxed text-muted">
+                {p.liveNote}
+              </p>
+            </div>
           </div>
         </div>
       </header>
 
+      {/* The screenshot, large and on its own */}
+      <div className="shell py-12 sm:py-16">
+        <div className="mx-auto max-w-[1120px]">
+          <Plate project={p} figure={`${p.chapter}.1`} priority />
+        </div>
+      </div>
+
+      {/* Reading: contents on the left, one comfortable column on the right */}
       <div className="border-t border-line">
-        <div className="mx-auto grid max-w-[1440px] gap-10 px-4 py-16 sm:px-8 lg:grid-cols-12">
-          <nav
-            aria-label="On this page"
-            className="hidden lg:col-span-3 lg:block"
-          >
-            <ol className="sticky top-24 space-y-1.5">
-              {entries.map((e, i) => (
-                <li key={e.id}>
-                  <a
-                    href={`#${e.id}`}
-                    className="annot flex gap-3 py-0.5 hover:text-ink"
-                  >
-                    <span className="w-5 text-faint">
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    {e.label}
-                  </a>
-                </li>
-              ))}
-            </ol>
+        <div className="shell grid-12 py-12 sm:py-16">
+          <nav aria-label="On this page" className="lg:col-span-3">
+            <details className="rounded-[6px] border border-line lg:hidden">
+              <summary className="group flex min-h-12 cursor-pointer list-none items-center justify-between px-4 text-sm font-semibold">
+                On this page
+                <span
+                  aria-hidden="true"
+                  className="text-lg leading-none transition-transform group-open:rotate-45"
+                >
+                  +
+                </span>
+              </summary>
+              <div className="border-t border-line px-4 py-2">{toc}</div>
+            </details>
+            <div className="sticky top-24 hidden lg:block">
+              <p className="annot mb-3 text-ink">On this page</p>
+              {toc}
+            </div>
           </nav>
 
-          <div className="lg:col-span-8 lg:col-start-5">
+          <div className="mt-10 lg:col-span-8 lg:col-start-5 lg:mt-0">
             {entries.map((e, i) => (
               <section
                 key={e.id}
                 id={e.id}
                 aria-labelledby={`${e.id}-h`}
-                className="scroll-mt-24 border-b border-line py-10 first:pt-0"
+                className="scroll-mt-24 border-t border-line py-12 first:border-t-0 first:pt-0"
               >
-                <h2 id={`${e.id}-h`} className="annot mb-5 flex gap-3">
-                  <span className="text-a1">
+                <h2
+                  id={`${e.id}-h`}
+                  className="mb-6 flex items-baseline gap-4 font-display text-[2rem] leading-tight"
+                >
+                  <span className="annot text-a1">
                     {String(i + 1).padStart(2, "0")}
                   </span>
                   {e.label}
@@ -225,12 +247,13 @@ export function CaseStudy({ project: p }: { project: Project }) {
 
       <Link
         href={`/work/${next.slug}`}
-        className={`accent-${next.slug} group block border-t border-line`}
+        className={`accent-${next.slug} group block border-t-2 border-a1`}
       >
-        <div className="mx-auto flex max-w-[1440px] flex-col gap-2 px-4 py-16 sm:px-8 sm:py-24">
+        <div className="shell flex flex-col gap-3 py-16 sm:py-20">
           <span className="annot">Next chapter · {next.chapter}</span>
-          <span className="font-display text-[clamp(3rem,9vw,7rem)] italic capitalize leading-none text-a1 group-hover:underline group-hover:decoration-1 group-hover:underline-offset-8">
-            {next.verb} → {next.name}
+          <span className="font-display text-[clamp(2.5rem,6vw,4.5rem)] leading-none group-hover:underline group-hover:decoration-1 group-hover:underline-offset-8">
+            <span className="capitalize text-a1">{next.verb}</span> →{" "}
+            {next.name}
           </span>
         </div>
       </Link>

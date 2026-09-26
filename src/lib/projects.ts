@@ -13,6 +13,8 @@ export type Project = {
   name: string;
   chapter: string;
   tagline: string;
+  /** One sentence for the homepage; the case study holds the detail. */
+  summary: string;
   intro: string;
   hardestProblem: string;
   repo: string;
@@ -42,6 +44,8 @@ export const PROJECTS: Project[] = [
     name: "Portico",
     chapter: "01",
     tagline: "A command center for college applications.",
+    summary:
+      "Tracks every deadline, essay, recommendation, and document, and suggests what to work on next.",
     intro:
       "Portico tracks every deadline, essay, recommendation letter, and document, gives each school a readiness score, and suggests what to work on next.",
     hardestProblem:
@@ -127,101 +131,13 @@ export const PROJECTS: Project[] = [
     },
   },
   {
-    slug: "concord",
-    verb: "connect",
-    name: "Concord",
-    chapter: "02",
-    tagline: "Mentorship matching that is fair by construction.",
-    intro:
-      "Mentees and mentors rank each other, and Concord pairs them with the Gale-Shapley stable matching algorithm, so no two people would both rather be with each other than with their match.",
-    hardestProblem:
-      "Mentors can take more than one mentee, which the textbook algorithm doesn't handle. I used the variant built for that case and ran it in rounds that only match people still waiting, never reshuffling existing pairs.",
-    repo: "https://github.com/Bhakti864653/concord",
-    live: "https://concord-liard.vercel.app/",
-    liveNote:
-      "The API sleeps on a free tier and can take about 30 seconds to wake. “Try the demo” opens a ready-made match.",
-    screenshot: {
-      src: "/work/concord.png",
-      alt: "Concord landing page: the headline “Find the mentor who already walked your path”, a sample match between a mentee and a mentor with the reason they were paired, and the five steps of how it works",
-    },
-    stack: [
-      "Next.js 16",
-      "React 19",
-      "Tailwind CSS v4",
-      "FastAPI",
-      "Supabase Postgres",
-      "Row Level Security",
-      "Realtime",
-      "pytest",
-    ],
-    caseStudy: {
-      problem: [
-        "Mentorship programs often match people by hand or by one similarity number. Both are hard to explain, and a match that looks fine to the organizer can leave two people who would each rather be with someone else.",
-      ],
-      why: [
-        "Good guidance often depends on who you already know. I wanted to build something that connects people with mentors more fairly, especially people who don't have those connections yet.",
-        "I also wanted a project built on a real algorithm, one where I could prove the matches are stable instead of trusting a score.",
-      ],
-      users: [
-        "Mentees looking for guidance on a career, field, or path, and mentors who have already walked it. There is also one operator who runs the matching rounds.",
-      ],
-      features: [
-        "Separate profile shapes for mentees and mentors, with optional shared-experience tags (first-generation, career switcher, immigrant background, under-resourced school)",
-        "Explainable suggestions: a score from word overlap (70%) and tag overlap (30%), broken down into the actual shared words and tags",
-        "Rank your own list, lock it, and get matched by Gale-Shapley in admin-run rounds",
-        "A “How it works” page with an interactive sandbox that steps through the algorithm",
-        "Live chat, shared goals, a session log, private check-ins, and private notes once matched",
-        "Notifications created by database triggers",
-        "Rematch requests, blocking, reporting, and community guidelines",
-      ],
-      system: {
-        heading: "Gale-Shapley with capacity, run in rounds",
-        body: [
-          "The matcher is a pure function with no database or network access. It takes ranked ID lists and each mentor's capacity, and runs mentee-proposing deferred acceptance, the “hospitals and residents” version that lets one mentor accept several mentees.",
-          "Around it is a round state machine: preferences open → locked → matching → results → a new round. Each run only considers people who are still unmatched, and reduces each mentor's capacity by their current matches, so existing pairs are never touched.",
-        ],
-      },
-      design: [
-        "The score is a simple formula, not an AI or embedding call, so every suggestion can be explained in plain words: “you both mentioned X, and you share tag Y.”",
-        "Two database clients with different powers. Chat, notes, goals, and browsing go straight from the browser under Row Level Security. Only writes that must cross users, like matching and reports, go through the backend's service-role key.",
-        "The irreversible round buttons explain exactly what they will do, after an unlabeled button once locked a real round by accident.",
-      ],
-      safety: [
-        "Row Level Security is on every table. Chat, notes, availability, and goals are readable only by the two people in the match. Rankings, reports, and check-ins are private to their owner.",
-        "When importing the monorepo into Vercel, the platform suggested adding the backend's service-role key (which bypasses every security policy) to the frontend project. I caught it and removed it before it was ever set.",
-        "A security pass found that none of the authenticated endpoints were rate-limited, so I added per-user limits.",
-      ],
-      challenge: {
-        heading: "When capacity can reach zero",
-        body: [
-          "Moving from “wipe and recompute everyone” to incremental rounds created a state the original code had never seen: a mentor whose remaining capacity is already zero.",
-          "When a proposal arrived for such a mentor, the algorithm tried to bump a tentative match to make room, found none, and crashed on an empty `max()`. The fix rejects the proposal outright in that case. It has a dedicated test, and the same fix went into the browser sandbox on the “How it works” page.",
-        ],
-      },
-      changes: [
-        "It was scaffolded under the name “Wayfind” and renamed Concord.",
-        "The single wipe-and-recompute matching run became an incremental round state machine.",
-        "An AI-written match explanation was built and then removed completely. The key on the host was wrong, and then the account had no credits. The deterministic explanation became the permanent one.",
-        "Leftover demo accounts are cleaned up by a scheduled job every 6 hours.",
-      ],
-      limitations: [
-        "Suggestions score every profile on the other side one by one, with no pagination. That's fine at this scale, but it wouldn't be for many users.",
-        "The rate limiter lives in memory, so it resets when the free-tier server restarts.",
-        "Rounds are advanced manually by one admin account.",
-      ],
-      learned: [
-        "Implementing an algorithm from its formal description, and testing the property that defines it (stability), not just its output.",
-        "A successful build log doesn't mean a working deployment. When signals disagree, check the real setting.",
-        "Changing a design from “recompute everything” to incremental introduces new states, even when the core algorithm doesn't change.",
-      ],
-    },
-  },
-  {
     slug: "synaptiq",
     verb: "learn",
     name: "Synaptiq",
-    chapter: "03",
+    chapter: "02",
     tagline: "A study partner built from your own notes.",
+    summary:
+      "Finds the concepts you’re weakest on, then builds practice, a guided study plan, and a tutor grounded in your own notes.",
     intro:
       "Upload your notes and take a diagnostic quiz. Synaptiq finds the concepts you're weakest on, then builds practice, a step-by-step study guide, a tutor that answers only from your material, and spaced-repetition flashcards.",
     hardestProblem:
@@ -309,12 +225,106 @@ export const PROJECTS: Project[] = [
     },
   },
   {
+    slug: "concord",
+    verb: "connect",
+    name: "Concord",
+    chapter: "03",
+    tagline: "Mentorship matching that is fair by construction.",
+    summary:
+      "Mentees and mentors rank each other, and the Gale-Shapley algorithm pairs them so no two people would both rather be together.",
+    intro:
+      "Mentees and mentors rank each other, and Concord pairs them with the Gale-Shapley stable matching algorithm, so no two people would both rather be with each other than with their match.",
+    hardestProblem:
+      "Mentors can take more than one mentee, which the textbook algorithm doesn't handle. I used the variant built for that case and ran it in rounds that only match people still waiting, never reshuffling existing pairs.",
+    repo: "https://github.com/Bhakti864653/concord",
+    live: "https://concord-liard.vercel.app/",
+    liveNote:
+      "The API sleeps on a free tier and can take about 30 seconds to wake. “Try the demo” opens a ready-made match.",
+    screenshot: {
+      src: "/work/concord.png",
+      alt: "Concord landing page: the headline “Find the mentor who already walked your path”, a sample match between a mentee and a mentor with the reason they were paired, and the five steps of how it works",
+    },
+    stack: [
+      "Next.js 16",
+      "React 19",
+      "Tailwind CSS v4",
+      "FastAPI",
+      "Supabase Postgres",
+      "Row Level Security",
+      "Realtime",
+      "pytest",
+    ],
+    caseStudy: {
+      problem: [
+        "Mentorship programs often match people by hand or by one similarity number. Both are hard to explain, and a match that looks fine to the organizer can leave two people who would each rather be with someone else.",
+      ],
+      why: [
+        "Good guidance often depends on who you already know. I wanted to build something that connects people with mentors more fairly, especially people who don't have those connections yet.",
+        "I also wanted a project built on a real algorithm, one where I could prove the matches are stable instead of trusting a score.",
+      ],
+      users: [
+        "Mentees looking for guidance on a career, field, or path, and mentors who have already walked it. There is also one operator who runs the matching rounds.",
+      ],
+      features: [
+        "Separate profile shapes for mentees and mentors, with optional shared-experience tags (first-generation, career switcher, immigrant background, under-resourced school)",
+        "Explainable suggestions: a score from word overlap (70%) and tag overlap (30%), broken down into the actual shared words and tags",
+        "Rank your own list, lock it, and get matched by Gale-Shapley in admin-run rounds",
+        "A “How it works” page with an interactive sandbox that steps through the algorithm",
+        "Live chat, shared goals, a session log, private check-ins, and private notes once matched",
+        "Notifications created by database triggers",
+        "Rematch requests, blocking, reporting, and community guidelines",
+      ],
+      system: {
+        heading: "Gale-Shapley with capacity, run in rounds",
+        body: [
+          "The matcher is a pure function with no database or network access. It takes ranked ID lists and each mentor's capacity, and runs mentee-proposing deferred acceptance, the “hospitals and residents” version that lets one mentor accept several mentees.",
+          "Around it is a round state machine: preferences open → locked → matching → results → a new round. Each run only considers people who are still unmatched, and reduces each mentor's capacity by their current matches, so existing pairs are never touched.",
+        ],
+      },
+      design: [
+        "The score is a simple formula, not an AI or embedding call, so every suggestion can be explained in plain words: “you both mentioned X, and you share tag Y.”",
+        "Two database clients with different powers. Chat, notes, goals, and browsing go straight from the browser under Row Level Security. Only writes that must cross users, like matching and reports, go through the backend's service-role key.",
+        "The irreversible round buttons explain exactly what they will do, after an unlabeled button once locked a real round by accident.",
+      ],
+      safety: [
+        "Row Level Security is on every table. Chat, notes, availability, and goals are readable only by the two people in the match. Rankings, reports, and check-ins are private to their owner.",
+        "When importing the monorepo into Vercel, the platform suggested adding the backend's service-role key (which bypasses every security policy) to the frontend project. I caught it and removed it before it was ever set.",
+        "A security pass found that none of the authenticated endpoints were rate-limited, so I added per-user limits.",
+      ],
+      challenge: {
+        heading: "When capacity can reach zero",
+        body: [
+          "Moving from “wipe and recompute everyone” to incremental rounds created a state the original code had never seen: a mentor whose remaining capacity is already zero.",
+          "When a proposal arrived for such a mentor, the algorithm tried to bump a tentative match to make room, found none, and crashed on an empty `max()`. The fix rejects the proposal outright in that case. It has a dedicated test, and the same fix went into the browser sandbox on the “How it works” page.",
+        ],
+      },
+      changes: [
+        "It was scaffolded under the name “Wayfind” and renamed Concord.",
+        "The single wipe-and-recompute matching run became an incremental round state machine.",
+        "An AI-written match explanation was built and then removed completely. The key on the host was wrong, and then the account had no credits. The deterministic explanation became the permanent one.",
+        "Leftover demo accounts are cleaned up by a scheduled job every 6 hours.",
+      ],
+      limitations: [
+        "Suggestions score every profile on the other side one by one, with no pagination. That's fine at this scale, but it wouldn't be for many users.",
+        "The rate limiter lives in memory, so it resets when the free-tier server restarts.",
+        "Rounds are advanced manually by one admin account.",
+      ],
+      learned: [
+        "Implementing an algorithm from its formal description, and testing the property that defines it (stability), not just its output.",
+        "A successful build log doesn't mean a working deployment. When signals disagree, check the real setting.",
+        "Changing a design from “recompute everything” to incremental introduces new states, even when the core algorithm doesn't change.",
+      ],
+    },
+  },
+  {
     slug: "commonground",
     verb: "act",
     name: "CommonGround",
     chapter: "04",
     tagline:
       "Turning scattered local problems into trackable collective action.",
+    summary:
+      "Residents report local problems anonymously, every case gets a public number and history, and the AI Guide never acts without confirmation.",
     intro:
       "A civic platform piloted for Santiago de Veraguas, Panama. Residents report problems or propose fixes anonymously, and every case gets a public number and status history. The AI Guide helps, but never acts without a person's confirmation.",
     hardestProblem:
@@ -355,7 +365,7 @@ export const PROJECTS: Project[] = [
         "Verified contacts and sources, each showing when it was last checked",
         "Moderation: status, verification, duplicates, removal with a public reason",
         "Seven interface languages, with a test that fails if any string is missing",
-        "Adding any place starts a clearly labeled, unreviewed starter community",
+        "Visitors can save a place preference, while unsupported locations are clearly identified as not set up yet. Moderators can configure additional communities through the prototype administration flow.",
       ],
       system: {
         heading: "A multi-agent Guide that can only suggest",
@@ -402,7 +412,7 @@ export const PROJECTS: Project[] = [
   },
 ];
 
-export const VERB_ORDER: Verb[] = ["decide", "connect", "learn", "act"];
+export const VERB_ORDER: Verb[] = ["decide", "learn", "connect", "act"];
 
 export function projectByVerb(verb: Verb): Project {
   return PROJECTS.find((p) => p.verb === verb)!;

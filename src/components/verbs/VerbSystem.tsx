@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { Component, useState, type ReactNode } from "react";
-import { PROJECTS, projectByVerb, VERB_ORDER, type Verb } from "@/lib/projects";
+import { projectByVerb, VERB_ORDER, type Verb } from "@/lib/projects";
 import { useMediaQuery, useMotion, useWebGLSupport } from "@/lib/prefs";
 import { VerbFigure2D } from "./VerbFigure2D";
 
@@ -29,12 +29,12 @@ class SceneBoundary extends Component<
   }
 }
 
-/** Where each label sits on wide screens: at the outer end of its path. */
+/** Where each label sits from 768px up: at the outer end of its path (see PATH_BEARINGS). */
 const LABEL_POSITION: Record<Verb, string> = {
-  decide: "md:left-1/2 md:top-0 md:-translate-x-1/2",
-  connect: "md:right-0 md:top-1/2 md:-translate-y-1/2",
-  learn: "md:bottom-0 md:left-1/2 md:-translate-x-1/2",
-  act: "md:left-0 md:top-1/2 md:-translate-y-1/2",
+  decide: "md:left-1/2 md:top-3 md:-translate-x-1/2",
+  learn: "md:right-3 md:top-1/2 md:-translate-y-1/2",
+  connect: "md:bottom-3 md:left-1/2 md:-translate-x-1/2",
+  act: "md:left-3 md:top-1/2 md:-translate-y-1/2",
 };
 
 export function VerbSystem() {
@@ -50,10 +50,18 @@ export function VerbSystem() {
   const project = active ? projectByVerb(active) : null;
 
   return (
-    <div className={project ? `accent-${project.slug}` : undefined}>
-      <div className="relative mx-auto w-full max-w-[640px] md:px-16 md:py-14">
-        {/* The figure */}
-        <div className="relative aspect-square w-full">
+    <figure
+      aria-label="Four paths, one fixed point"
+      className={`rounded-[6px] border border-line-strong bg-paper/70 ${project ? `accent-${project.slug}` : ""}`}
+    >
+      <div className="annot flex justify-between gap-4 border-b border-line px-4 py-3 sm:px-5">
+        <span>Fig. 0 · Four paths, one fixed point</span>
+        <span className="text-ink">Select a path</span>
+      </div>
+
+      {/* The figure field: the diagram, with all four labels kept inside the frame */}
+      <div className="relative px-4 pt-5 sm:px-5 md:px-24 md:py-16">
+        <div className="relative mx-auto aspect-square w-full max-w-[30rem] md:max-w-[26rem]">
           <div
             className="absolute inset-0"
             style={{ opacity: show3D ? 0 : 1, transition: "opacity 600ms" }}
@@ -73,14 +81,14 @@ export function VerbSystem() {
               </div>
             </SceneBoundary>
           )}
-          <p className="annot pointer-events-none absolute left-1/2 top-[calc(50%+26px)] -translate-x-1/2 whitespace-nowrap text-ink">
+          <p className="annot pointer-events-none absolute left-1/2 top-[calc(50%+28px)] -translate-x-1/2 whitespace-nowrap rounded-sm bg-paper/85 px-1.5 text-ink">
             Human judgment
           </p>
         </div>
 
-        {/* The four verbs: a 2×2 grid on phones, placed on their paths from 768px up */}
+        {/* The four abilities: a 2×2 grid on phones, on their paths from 768px up */}
         <ul
-          className="mt-6 grid grid-cols-2 gap-2 md:pointer-events-none md:absolute md:inset-0 md:m-0 md:block"
+          className="mt-5 grid grid-cols-2 gap-2 pb-4 md:pointer-events-none md:absolute md:inset-0 md:m-0 md:block md:pb-0"
           aria-label="Four abilities"
         >
           {VERB_ORDER.map((verb) => {
@@ -98,17 +106,17 @@ export function VerbSystem() {
                   onMouseEnter={() => setActive(verb)}
                   onFocus={() => setActive(verb)}
                   onClick={() => setActive(verb)}
-                  className={`accent-${p.slug} group flex w-full flex-col items-start rounded-[6px] border px-3 py-2 text-left transition-colors md:w-auto md:items-center md:text-center ${
+                  className={`accent-${p.slug} flex min-h-12 w-full flex-col items-start rounded-[6px] px-3 py-2 text-left transition-colors md:w-44 md:items-center md:text-center ${
                     on
-                      ? "border-a1 bg-soft"
-                      : "border-line bg-paper/80 hover:border-line-strong"
+                      ? "border-2 border-a1 bg-soft shadow-[inset_0_-3px_0_var(--a1)]"
+                      : "border border-line-strong bg-paper hover:border-ink"
                   }`}
                 >
-                  <span className="annot">
+                  <span className="annot whitespace-nowrap tracking-[0.03em]">
                     {p.chapter} · {p.name}
                   </span>
                   <span
-                    className={`font-display text-3xl capitalize leading-tight ${on ? "text-a1" : "text-ink"}`}
+                    className={`font-display text-[1.75rem] capitalize leading-tight ${on ? "text-a1" : "text-ink"}`}
                   >
                     {verb}
                   </span>
@@ -119,52 +127,38 @@ export function VerbSystem() {
         </ul>
       </div>
 
-      {/* What the chosen path leads to */}
+      {/* A stable information area: fixed height, so the layout never moves on selection */}
       <div
         id="verb-panel"
         aria-live="polite"
-        className="mx-auto mt-6 min-h-[13rem] max-w-[640px] border-t border-line pt-5"
+        className="flex min-h-[13rem] flex-col justify-between border-t border-line px-4 py-5 sm:min-h-[12rem] sm:px-5"
       >
         {project ? (
-          <div>
-            <p className="annot">
-              Chapter {project.chapter} ·{" "}
-              <span className="capitalize">{project.verb}</span> →{" "}
-              {project.name}
-            </p>
-            <p className="mt-2 font-display text-3xl leading-tight text-a1">
-              {project.tagline}
-            </p>
-            <p className="mt-3 max-w-prose text-[0.98rem] leading-relaxed text-muted">
-              {project.intro}
-            </p>
-            <p className="mt-4 flex flex-wrap gap-x-6 gap-y-2">
-              <a
-                href={`#${project.slug}`}
-                className="annot text-ink underline underline-offset-4"
-              >
-                Read the chapter ↓
-              </a>
-              <Link
-                href={`/work/${project.slug}`}
-                className="annot text-ink underline underline-offset-4"
-              >
-                Full case study →
-              </Link>
-            </p>
-          </div>
+          <>
+            <div>
+              <p className="annot">
+                <span className="text-a1">Chapter {project.chapter}</span> ·{" "}
+                {project.verb}
+              </p>
+              <p className="mt-1.5 font-display text-[1.9rem] leading-tight">
+                {project.name}
+              </p>
+              <p className="body-copy mt-1 text-muted">{project.tagline}</p>
+            </div>
+            <Link
+              href={`/work/${project.slug}`}
+              className="mt-3 self-start text-sm font-semibold text-ink underline decoration-a1 decoration-2 underline-offset-4"
+            >
+              Read the {project.name} case study →
+            </Link>
+          </>
         ) : (
-          <div>
-            <p className="annot">Fig. 0 · Four paths, one fixed point</p>
-            <p className="mt-2 max-w-prose text-[0.98rem] leading-relaxed text-muted">
-              Each path is one thing people do, and one project I built to help
-              them do it. They all run through the same center. Choose a verb to
-              follow its path.
-            </p>
-            <p className="annot mt-4">{PROJECTS.length} live projects</p>
-          </div>
+          <p className="body-copy max-w-[34rem] text-muted">
+            Each path is one thing people do, and one project I built to help
+            them do it. Every path runs through the same center.
+          </p>
         )}
       </div>
-    </div>
+    </figure>
   );
 }

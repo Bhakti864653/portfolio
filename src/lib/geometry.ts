@@ -6,9 +6,10 @@ import type { Verb } from "./projects";
  * the 3D scene both draw from these same numbers, so they always show the same idea.
  */
 export const PATH_BEARINGS: Record<Verb, number> = {
+  // Clockwise in reading order: decide, learn, connect, act.
   decide: -90, // north
-  connect: 0, // east
-  learn: 90, // south
+  learn: 0, // east
+  connect: 90, // south
   act: 180, // west
 };
 

@@ -68,7 +68,7 @@ export function SiteHeader() {
       >
         Skip to content
       </a>
-      <div className="mx-auto flex h-16 max-w-[1440px] items-center justify-between gap-4 px-4 sm:px-8">
+      <div className="shell flex h-16 items-center justify-between gap-4">
         <Link
           href="/"
           className="group flex items-center gap-3"

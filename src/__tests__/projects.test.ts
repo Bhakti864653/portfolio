@@ -55,6 +55,17 @@ describe("project data", () => {
     }
   });
 
+  it("keeps the project order Portico → Synaptiq → Concord → CommonGround", () => {
+    expect(PROJECTS.map((p) => p.slug)).toEqual([
+      "portico",
+      "synaptiq",
+      "concord",
+      "commonground",
+    ]);
+    expect(PROJECTS.map((p) => p.chapter)).toEqual(["01", "02", "03", "04"]);
+    expect(STAGES.map((s) => s.id)).toEqual(PROJECTS.map((p) => p.slug));
+  });
+
   it("looks projects up by slug", () => {
     expect(projectBySlug("concord")?.name).toBe("Concord");
     expect(projectBySlug("nope")).toBeUndefined();

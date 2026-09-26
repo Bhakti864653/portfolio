@@ -11,13 +11,11 @@ describe("VerbSystem", () => {
     const buttons = screen.getAllByRole("button");
     expect(buttons.map((b) => b.textContent)).toEqual([
       "01 · Porticodecide",
-      "02 · Concordconnect",
-      "03 · Synaptiqlearn",
+      "02 · Synaptiqlearn",
+      "03 · Concordconnect",
       "04 · CommonGroundact",
     ]);
-    expect(
-      screen.getByText(/Choose a verb to follow its path/),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Select a path")).toBeInTheDocument();
 
     await userEvent.tab();
     expect(buttons[0]).toHaveFocus();
@@ -30,8 +28,8 @@ describe("VerbSystem", () => {
     expect(buttons[1]).toHaveAttribute("aria-pressed", "true");
     expect(buttons[0]).toHaveAttribute("aria-pressed", "false");
     expect(
-      screen.getByRole("link", { name: "Full case study →" }),
-    ).toHaveAttribute("href", "/work/concord");
+      screen.getByRole("link", { name: "Read the Synaptiq case study →" }),
+    ).toHaveAttribute("href", "/work/synaptiq");
   });
 
   it("falls back to the 2D figure when WebGL is not available (jsdom)", () => {

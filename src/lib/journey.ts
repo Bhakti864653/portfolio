@@ -1,49 +1,62 @@
 import type { Project } from "./projects";
 
-/** Stages in the order they began (by each repo's first commit). */
+/** The four projects in the order they began (by each repo's first commit). */
 export type Stage = {
-  id: "start" | Project["slug"];
+  id: Project["slug"];
   label: string;
   /** What was new at this stage. */
-  firsts: string[];
+  introduced: string[];
+  /** The pieces the system was made of, as a measure of how complexity grew. */
+  system: string[];
+  /** The lesson this stage handed to the next one. */
+  carried: string;
 };
 
 export const STAGES: Stage[] = [
   {
-    id: "start",
-    label: "Day one",
-    firsts: [
-      "Installed Python, Git, and VS Code",
-      "First script: variables and printing",
-    ],
-  },
-  {
     id: "portico",
     label: "Portico",
-    firsts: [
+    introduced: [
       "A web server and SQL",
       "Real accounts",
-      "First production-only bug",
+      "A production-only bug",
     ],
+    system: ["Flask app", "SQLite / Turso", "Email API"],
+    carried:
+      "Every query scoped to its owner, so one account can never see another’s data.",
   },
   {
     id: "synaptiq",
     label: "Synaptiq",
-    firsts: [
+    introduced: [
       "A separate frontend and API",
       "Structured AI output",
       "Row Level Security",
     ],
+    system: ["Next.js", "FastAPI", "Supabase", "Groq LLM"],
+    carried:
+      "An unlimited public demo endpoint taught me to audit rate limits on every endpoint.",
   },
   {
     id: "concord",
     label: "Concord",
-    firsts: ["A formal algorithm", "Realtime chat", "Database triggers"],
+    introduced: ["A formal algorithm", "Realtime chat", "Database triggers"],
+    system: ["Next.js", "FastAPI", "Postgres + RLS", "Realtime", "Triggers"],
+    carried:
+      "Explainable decisions: a score you can read became a reasoning trace for every AI agent.",
   },
   {
     id: "commonground",
     label: "CommonGround",
-    firsts: ["Multi-agent AI", "Seven languages", "A real place"],
+    introduced: ["Multi-agent AI", "Seven languages", "A real place"],
+    system: [
+      "Next.js",
+      "Zod schemas",
+      "Multi-agent Guide",
+      "Map tiles",
+      "7 languages",
+    ],
+    carried: "Next: a real database, documented as the next step.",
   },
 ];
 

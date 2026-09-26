@@ -71,12 +71,12 @@ export function VerbFigure2D({
             key={verb}
             className={`accent-${slugFor(verb)}`}
             style={{ transition: "opacity 400ms" }}
-            opacity={dim ? 0.28 : 1}
+            opacity={dim ? 0.5 : 1}
           >
             <path
               d={d}
               stroke={on ? "var(--a1)" : "var(--ink)"}
-              strokeWidth={on ? 3.2 : 1.4}
+              strokeWidth={on ? 2.6 : 1.4}
               style={{ transition: "stroke 400ms, stroke-width 400ms" }}
             />
             {on && (

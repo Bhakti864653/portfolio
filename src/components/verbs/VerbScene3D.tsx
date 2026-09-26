@@ -68,6 +68,8 @@ function Figure({
           verb,
           curve,
           geometry: new THREE.TubeGeometry(curve, 200, 0.009, 8, false),
+          // The selected path is drawn slightly heavier.
+          heavy: new THREE.TubeGeometry(curve, 200, 0.014, 8, false),
         };
       }),
     [],
@@ -93,7 +95,14 @@ function Figure({
     [palette],
   );
 
-  useEffect(() => () => paths.forEach((p) => p.geometry.dispose()), [paths]);
+  useEffect(
+    () => () =>
+      paths.forEach((p) => {
+        p.geometry.dispose();
+        p.heavy.dispose();
+      }),
+    [paths],
+  );
   useEffect(
     () => () =>
       rings.forEach((ring) => {
@@ -141,7 +150,7 @@ function Figure({
       );
       mat.opacity = THREE.MathUtils.damp(
         mat.opacity,
-        active === null ? 0.9 : on ? 1 : 0.22,
+        active === null ? 0.9 : on ? 1 : 0.45,
         6,
         dt,
       );
@@ -171,8 +180,12 @@ function Figure({
       {rings.map((ring, i) => (
         <primitive key={i} object={ring} />
       ))}
-      {paths.map(({ verb, geometry }) => (
-        <mesh key={verb} geometry={geometry} userData={{ verb }}>
+      {paths.map(({ verb, geometry, heavy }) => (
+        <mesh
+          key={verb}
+          geometry={verb === active ? heavy : geometry}
+          userData={{ verb }}
+        >
           <meshBasicMaterial color={palette.ink} transparent opacity={0.9} />
         </mesh>
       ))}

@@ -3,7 +3,7 @@ import { Monogram } from "@/components/Monogram";
 
 export default function NotFound() {
   return (
-    <section className="mx-auto flex max-w-[1440px] flex-col items-start px-4 py-28 sm:px-8">
+    <section className="shell flex flex-col items-start py-28">
       <Monogram title={null} className="h-16 w-16 text-ink" />
       <p className="annot mt-8">404 · Off the map</p>
       <h1 className="mt-3 font-display text-[clamp(2.8rem,8vw,6rem)] leading-none">

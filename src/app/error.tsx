@@ -9,7 +9,7 @@ export default function Error({
   reset: () => void;
 }) {
   return (
-    <section className="mx-auto max-w-[1440px] px-4 py-28 sm:px-8">
+    <section className="shell py-28">
       <p className="annot">Something went wrong</p>
       <h1 className="mt-3 font-display text-[clamp(2.6rem,7vw,5rem)] leading-none">
         This page didn’t load properly.

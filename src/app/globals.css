@@ -13,6 +13,7 @@
   --line: rgb(17 21 21 / 0.14);
   --line-strong: rgb(17 21 21 / 0.32);
   --grid: rgb(17 21 21 / 0.045);
+  --grid-subtle: rgb(17 21 21 / 0.028);
   --focus: #111515;
 
   /* Project accent worlds: [primary, secondary]. */
@@ -41,6 +42,7 @@
   --line: rgb(237 231 219 / 0.13);
   --line-strong: rgb(237 231 219 / 0.3);
   --grid: rgb(237 231 219 / 0.04);
+  --grid-subtle: rgb(237 231 219 / 0.025);
   --focus: #ede7db;
 
   --portico-1: #e07a88;
@@ -78,11 +80,6 @@
 
   body {
     background-color: var(--paper);
-    /* The atlas grid: fine enough to read as paper, not as a UI. */
-    background-image:
-      linear-gradient(var(--grid) 1px, transparent 1px),
-      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
-    background-size: 48px 48px;
     font-family: var(--font-sans);
     overflow-x: hidden;
   }
@@ -126,16 +123,52 @@
   --a2: var(--commonground-2);
 }
 
+/* Metadata, numbering, and technical annotations only. */
 @utility annot {
   font-family: var(--font-mono);
-  font-size: 0.68rem;
-  letter-spacing: 0.08em;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--muted);
 }
 
-@utility rule-line {
-  border-color: var(--line);
+/* The one page container every section shares: 1320px max, the same gutters everywhere. */
+@utility shell {
+  width: 100%;
+  max-width: 1320px;
+  margin-inline: auto;
+  padding-inline: clamp(1rem, 4vw, 3rem);
+}
+
+/* The twelve-column grid (a single column below 1024px). */
+@utility grid-12 {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  column-gap: 2.5rem;
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+}
+
+/* The atlas grid texture: full strength in the hero only, faint in project mastheads. */
+@utility grid-field {
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+@utility grid-field-subtle {
+  background-image:
+    linear-gradient(var(--grid-subtle) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-subtle) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+/* Readable body copy. */
+@utility body-copy {
+  font-size: 1.0625rem;
+  line-height: 1.7;
 }
 
 /* Scroll-reveal: content is visible by default (no-JS, reduced motion); JS opts sections in. */
