@@ -69,7 +69,8 @@ export const PROJECTS: Project[] = [
         "Applying to university means keeping track of many schools at once, and each has its own deadline, essays, recommenders, and documents. When all of that lives in scattered notes, it is hard to see what is ready and what needs attention first.",
       ],
       why: [
-        "It was my first real project after I started learning to code, and I was about to go through the application process myself. It began as a simple checklist and grew into a full multi-user product.",
+        "I'm in my last year of school, so university applications were right in front of me. Every school had its own deadlines, essays, recommenders, and documents, and I wanted one place that showed what was done and what to do next.",
+        "It was also the right first project: a problem I understood well, small enough to start as a checklist, with plenty of room to grow as I learned.",
       ],
       users: [
         "Students applying to several universities who want one place to see what's done, what's due, and what to do next.",
@@ -158,7 +159,8 @@ export const PROJECTS: Project[] = [
         "Mentorship programs often match people by hand or by one similarity number. Both are hard to explain, and a match that looks fine to the organizer can leave two people who would each rather be with someone else.",
       ],
       why: [
-        "After a CRUD app and an AI study tool, I wanted a project built around a real algorithm, one where I could prove the result has a property (stability), not just that it produces an output.",
+        "Good guidance often depends on who you already know. I wanted to build something that connects people with mentors more fairly, especially people who don't have those connections yet.",
+        "I also wanted a project built on a real algorithm, one where I could prove the matches are stable instead of trusting a score.",
       ],
       users: [
         "Mentees looking for guidance on a career, field, or path, and mentors who have already walked it. There is also one operator who runs the matching rounds.",
@@ -248,7 +250,8 @@ export const PROJECTS: Project[] = [
         "Rereading notes feels like studying but doesn't show what you don't know. Generic AI chat can answer questions, but it isn't tied to your material, and it happily uses facts your course never taught.",
       ],
       why: [
-        "I wanted to understand how to build with AI responsibly: grounded in the student's own material, honest when the material doesn't cover something, and never trusted blindly.",
+        "It's easy to reread your notes, feel ready, and still not know what you actually understand. I wanted a tool that finds those gaps and helps you close them.",
+        "I also wanted to learn how to use AI responsibly: working only from your own material, honest when it doesn't know, and helping you think instead of thinking for you.",
       ],
       users: [
         "Students preparing for an exam from their own notes, slides, or readings.",
@@ -338,7 +341,8 @@ export const PROJECTS: Project[] = [
         "Problems like flooding, uncollected garbage, or a broken streetlight get noticed by many neighbors but reported in scattered ways, if at all. Nobody can see whether someone else already raised it or what happened next.",
       ],
       why: [
-        "I wanted to build for a real place in Panama, in the language people there actually use, and to test what a responsible AI assistant looks like when the stakes are civic, not personal.",
+        "I live in Panama, and I wanted to build something for a real place here, in Spanish first. Problems in a neighborhood are often noticed by everyone but reported by no one, and nobody can see what happens next.",
+        "I wanted to see whether technology could help a community act together, while people, not the AI, stay in charge of every decision.",
       ],
       users: [
         "Residents of the pilot community, Santiago de Veraguas (Spanish first). Also volunteer moderators who review, verify, and update cases.",
