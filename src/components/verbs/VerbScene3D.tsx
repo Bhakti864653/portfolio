@@ -48,6 +48,7 @@ function Figure({
   const group = useRef<THREE.Group>(null);
   const bead = useRef<THREE.Mesh>(null);
   const progress = useRef(0);
+  const traced = useRef<Verb | null>(null);
 
   const paths = useMemo(
     () =>
@@ -115,20 +116,9 @@ function Figure({
   useFrame((state, dt) => {
     const g = group.current;
     if (!g) return;
-    const t = state.clock.elapsedTime;
-    // A slow breath of tilt so the depth reads, small enough that labels stay on their paths.
-    g.rotation.x = THREE.MathUtils.damp(
-      g.rotation.x,
-      -0.16 + Math.sin(t * 0.3) * 0.04,
-      3,
-      dt,
-    );
-    g.rotation.y = THREE.MathUtils.damp(
-      g.rotation.y,
-      Math.sin(t * 0.22) * 0.07,
-      3,
-      dt,
-    );
+    // A fixed, slight tilt so the depth reads; small enough that labels stay on their paths.
+    g.rotation.x = THREE.MathUtils.damp(g.rotation.x, -0.16, 3, dt);
+    g.rotation.y = THREE.MathUtils.damp(g.rotation.y, 0.05, 3, dt);
 
     g.children.forEach((child) => {
       const verb = child.userData.verb as Verb | undefined;
@@ -159,7 +149,12 @@ function Figure({
     if (bead.current) {
       bead.current.visible = active !== null;
       if (active) {
-        progress.current = (progress.current + dt * 0.28) % 1;
+        // Each new choice sends the marker once from the outer end into the center, then it rests.
+        if (traced.current !== active) {
+          traced.current = active;
+          progress.current = 0;
+        }
+        progress.current = Math.min(1, progress.current + dt * 1.1);
         const path = paths.find((p) => p.verb === active)!;
         const point = path.curve.getPointAt(progress.current);
         const owner = g.children.find((c) => c.userData.verb === active)!;

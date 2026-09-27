@@ -22,8 +22,8 @@ export default function Image() {
     >
       <svg
         width="120"
-        height="112"
-        viewBox="0 0 68 64"
+        height="101"
+        viewBox="0 0 76 64"
         fill="none"
         stroke="#111515"
         strokeWidth="3.4"
@@ -33,7 +33,7 @@ export default function Image() {
         {MONOGRAM_ORDER.map((v) => (
           <path key={v} d={MONOGRAM_PATHS[v]} />
         ))}
-        <circle cx="32" cy="32" r="3.2" fill="#f3efe7" strokeWidth="2" />
+        <circle cx="43" cy="32" r="3.2" fill="#f3efe7" strokeWidth="2" />
       </svg>
       <div style={{ display: "flex", flexDirection: "column" }}>
         <div style={{ fontSize: 112, letterSpacing: -3, lineHeight: 1 }}>
@@ -43,7 +43,7 @@ export default function Image() {
           {SITE.philosophy}
         </div>
         <div style={{ fontSize: 24, marginTop: 36, letterSpacing: 4 }}>
-          DECIDE · CONNECT · LEARN · ACT
+          DECIDE · LEARN · CONNECT · ACT
         </div>
       </div>
     </div>,

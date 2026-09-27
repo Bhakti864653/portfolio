@@ -1,36 +1,52 @@
+import type { CSSProperties } from "react";
 import type { Verb } from "@/lib/projects";
 
 /**
- * The BA monogram: four strokes that all meet at one point (32, 32).
- * - decide: B's spine and upper bowl, closing into the point
- * - learn: B's lower bowl, rising into the point
- * - connect: the crossbar, reaching from the point across to A's leg
- * - act: A itself, standing on the ground
+ * The BA monogram. One horizontal stroke is shared by both letters: it is the B's waist and,
+ * continuing right, the A's crossbar. Where it crosses the A's left leg sits the junction
+ * (43, 32), the same "human judgment" point the four paths run through.
+ *
+ * - decide: B's upper spine and bowl
+ * - learn: B's lower spine and bowl
+ * - connect: the shared stroke
+ * - act: the A
  */
 export const MONOGRAM_PATHS: Record<Verb, string> = {
-  decide: "M12 32V10h9.5c6.5 0 10 3.6 10 9 0 5.6-3.6 9.6.5 13",
-  learn: "M12 32v22h10.5c6.9 0 10.5-4 10.5-9.6 0-6.4-4.6-9.6-1-12.4",
-  connect: "M32 32h19",
-  act: "M34.5 54 45.5 10 56.5 54",
+  decide: "M12 32V8h8a12 12 0 0 1 0 24",
+  learn: "M12 32v24h9a12 12 0 0 0 0-24",
+  connect: "M12 32h45",
+  act: "M36 56 50 8l14 48",
 };
 
 export const MONOGRAM_ORDER: Verb[] = ["decide", "learn", "connect", "act"];
+export const MONOGRAM_JUNCTION = { x: 43, y: 32 };
+
+/** Approximate path lengths, for the draw-in animation. */
+const LENGTHS: Record<Verb, number> = {
+  decide: 72,
+  learn: 88,
+  connect: 45,
+  act: 102,
+};
 
 export function Monogram({
   className,
   title = "Bhakti Ahir",
   active,
-  strokeWidth = 3.4,
+  strokeWidth = 3.6,
+  draw = false,
 }: {
   className?: string;
   title?: string | null;
   /** Highlights one stroke in the current accent color. */
   active?: Verb | null;
   strokeWidth?: number;
+  /** Draws the strokes in one after another (disabled under reduced motion by CSS). */
+  draw?: boolean;
 }) {
   return (
     <svg
-      viewBox="0 0 68 64"
+      viewBox="0 0 76 64"
       className={className}
       role={title ? "img" : undefined}
       aria-label={title ?? undefined}
@@ -39,23 +55,34 @@ export function Monogram({
       strokeLinecap="round"
       strokeLinejoin="round"
     >
-      {MONOGRAM_ORDER.map((verb) => (
+      {MONOGRAM_ORDER.map((verb, i) => (
         <path
           key={verb}
           d={MONOGRAM_PATHS[verb]}
           stroke={active === verb ? "var(--a1)" : "currentColor"}
           strokeWidth={strokeWidth}
           opacity={active && active !== verb ? 0.35 : 1}
-          style={{ transition: "opacity 300ms, stroke 300ms" }}
+          className={draw ? "enter-draw" : undefined}
+          style={
+            {
+              transition: "opacity 300ms, stroke 300ms",
+              ...(draw && {
+                "--len": LENGTHS[verb],
+                "--delay": `${i * 180}ms`,
+              }),
+            } as CSSProperties
+          }
         />
       ))}
       <circle
-        cx="32"
-        cy="32"
-        r={strokeWidth * 0.95}
+        cx={MONOGRAM_JUNCTION.x}
+        cy={MONOGRAM_JUNCTION.y}
+        r={strokeWidth * 0.9}
         fill="var(--paper)"
         stroke="currentColor"
         strokeWidth={strokeWidth * 0.6}
+        className={draw ? "enter-fade" : undefined}
+        style={draw ? ({ "--delay": "760ms" } as CSSProperties) : undefined}
       />
     </svg>
   );

@@ -1,7 +1,7 @@
 import { inline } from "@/lib/format";
 import { STAGES, THREADS } from "@/lib/journey";
 import { SITE } from "@/lib/projects";
-import { ChapterOpening } from "../ChapterOpening";
+import { ChapterClose, ChapterOpening } from "../ChapterOpening";
 import { Reveal } from "../Reveal";
 
 const label = (id: string) => STAGES.find((s) => s.id === id)!.label;
@@ -11,12 +11,12 @@ export function Journey() {
     <section
       id="journey"
       aria-labelledby="journey-title"
-      className="scroll-mt-16 border-y border-line bg-soft py-24 sm:py-32"
+      className="tone-cool scroll-mt-16 bg-paper py-24 sm:py-32"
     >
       <div className="shell">
         <ChapterOpening
-          part="II"
-          label="Development journey"
+          number="02"
+          title="Journey"
           id="journey-title"
           heading={
             <>
@@ -34,55 +34,86 @@ export function Journey() {
           </p>
           <a
             href={SITE.journeyRepo}
-            className="mt-4 inline-block text-sm font-semibold text-ink underline underline-offset-4"
+            className="link-draw mt-4 inline-block text-sm font-semibold text-ink"
           >
             The learning-journey repo ↗
           </a>
         </ChapterOpening>
 
-        {/* The progression: horizontal from 1024px, vertical below */}
+        {/* The route: one continuous line through all four projects, each segment in its
+            project's color. Horizontal from 1024px, vertical below. */}
         <Reveal className="mt-16 sm:mt-20">
-          <ol className="relative grid gap-12 border-l border-line-strong pl-7 lg:grid-cols-4 lg:gap-0 lg:border-l-0 lg:border-t lg:pl-0">
+          <ol className="grid lg:grid-cols-4">
             {STAGES.map((stage, i) => (
               <li
                 key={stage.id}
-                className={`accent-${stage.id} relative lg:border-l lg:border-line lg:px-6 lg:pt-8 lg:first:border-l-0 lg:first:pl-0`}
+                className={`accent-${stage.id} relative border-l-2 border-a1 pb-12 pl-7 lg:flex lg:flex-col lg:border-l-0 lg:border-t-2 lg:pb-0 lg:pl-0 lg:pr-8 lg:pt-9`}
               >
                 <span
                   aria-hidden="true"
-                  className="absolute -left-[calc(1.75rem+5px)] top-1.5 h-[9px] w-[9px] rounded-full bg-a1 lg:-top-[5px] lg:left-auto"
+                  className="absolute -left-[7px] top-0 h-3 w-3 rounded-full border-2 border-a1 bg-paper lg:-top-[7px] lg:left-0"
                 />
-                <p className="annot text-a1">0{i + 1}</p>
-                <h3 className="mt-2 font-display text-3xl leading-none">
+                {i === STAGES.length - 1 && (
+                  <span
+                    aria-hidden="true"
+                    className="absolute -bottom-2 -left-[7px] text-a1 lg:-top-[0.72rem] lg:bottom-auto lg:left-auto lg:right-0"
+                  >
+                    <span className="lg:hidden">↓</span>
+                    <span className="hidden lg:inline">→</span>
+                  </span>
+                )}
+                <p className="annot text-a1">
+                  0{i + 1}
+                  <span className="text-muted"> / 0{STAGES.length}</span>
+                </p>
+                <h3 className="mt-2 font-display text-[2.2rem] leading-none">
                   {stage.label}
                 </h3>
 
-                <p className="annot mt-6">Introduced</p>
+                <p className="annot mt-7 text-ink">Introduced</p>
                 <ul className="mt-2 space-y-1.5 text-[0.98rem] leading-snug">
                   {stage.introduced.map((item) => (
-                    <li key={item}>{item}</li>
+                    <li key={item} className="flex gap-2">
+                      <span aria-hidden="true" className="text-a1">
+                        +
+                      </span>
+                      {item}
+                    </li>
                   ))}
                 </ul>
 
-                <p className="annot mt-6">
+                <p className="annot mt-7 text-ink">
                   System · {stage.system.length} parts
                 </p>
-                <ul className="mt-2 flex flex-wrap gap-1.5">
+                <div aria-hidden="true" className="mt-2 flex gap-1">
+                  {Array.from(
+                    { length: Math.max(...STAGES.map((s) => s.system.length)) },
+                    (_, k) => (
+                      <span
+                        key={k}
+                        className={`h-1.5 w-6 rounded-full ${k < stage.system.length ? "bg-a1" : "bg-line"}`}
+                      />
+                    ),
+                  )}
+                </div>
+                <ul className="mb-7 mt-3 flex flex-wrap gap-1.5">
                   {stage.system.map((part) => (
                     <li
                       key={part}
-                      className="rounded-full border border-line-strong px-2.5 py-1 text-[0.8rem] leading-none"
+                      className="rounded-full border border-line-strong bg-soft px-2.5 py-1 text-[0.8rem] leading-none"
                     >
                       {part}
                     </li>
                   ))}
                 </ul>
 
-                <div className="mt-6 border-t border-line pt-4">
-                  <p className="annot">
-                    {i < STAGES.length - 1 ? "Carried forward →" : "Still open"}
+                <div className="border-l-2 border-a1 bg-soft py-3 pl-4 pr-3 lg:mt-auto">
+                  <p className="annot text-ink">
+                    {i < STAGES.length - 1
+                      ? `Carried forward → ${STAGES[i + 1].label}`
+                      : "Still open"}
                   </p>
-                  <p className="mt-2 text-[0.98rem] leading-relaxed text-muted">
+                  <p className="mt-1.5 text-[0.98rem] leading-relaxed text-muted">
                     {stage.carried}
                   </p>
                 </div>
@@ -119,6 +150,11 @@ export function Journey() {
             </ul>
           </div>
         </Reveal>
+
+        <ChapterClose
+          number="02"
+          next={{ href: "#about", label: "03 About" }}
+        />
       </div>
     </section>
   );

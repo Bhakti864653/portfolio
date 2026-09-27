@@ -106,7 +106,7 @@ export function VerbSystem() {
                   onMouseEnter={() => setActive(verb)}
                   onFocus={() => setActive(verb)}
                   onClick={() => setActive(verb)}
-                  className={`accent-${p.slug} flex min-h-12 w-full flex-col items-start rounded-[6px] px-3 py-2 text-left transition-colors md:w-44 md:items-center md:text-center ${
+                  className={`accent-${p.slug} press flex min-h-12 w-full flex-col items-start rounded-[6px] px-3 py-2 text-left transition-colors md:w-44 md:items-center md:text-center ${
                     on
                       ? "border-2 border-a1 bg-soft shadow-[inset_0_-3px_0_var(--a1)]"
                       : "border border-line-strong bg-paper hover:border-ink"
@@ -131,26 +131,33 @@ export function VerbSystem() {
       <div
         id="verb-panel"
         aria-live="polite"
-        className="flex min-h-[13rem] flex-col justify-between border-t border-line px-4 py-5 sm:min-h-[12rem] sm:px-5"
+        className="flex min-h-[17rem] flex-col justify-between border-t border-line px-4 py-5 sm:min-h-[14rem] sm:px-5"
       >
         {project ? (
           <>
             <div>
               <p className="annot">
-                <span className="text-a1">Chapter {project.chapter}</span> ·{" "}
+                <span className="text-a1">Project {project.chapter}</span> ·{" "}
                 {project.verb}
               </p>
               <p className="mt-1.5 font-display text-[1.9rem] leading-tight">
                 {project.name}
               </p>
-              <p className="body-copy mt-1 text-muted">{project.tagline}</p>
+              <p className="body-copy mt-1 max-w-[36rem] text-muted">
+                {project.summary}
+              </p>
             </div>
-            <Link
-              href={`/work/${project.slug}`}
-              className="mt-3 self-start text-sm font-semibold text-ink underline decoration-a1 decoration-2 underline-offset-4"
-            >
-              Read the {project.name} case study →
-            </Link>
+            <p className="mt-3 flex flex-wrap gap-x-6 gap-y-2 text-sm font-semibold">
+              <a href={`#${project.slug}`} className="link-draw text-ink">
+                Go to the project ↓
+              </a>
+              <Link
+                href={`/work/${project.slug}`}
+                className="link-draw text-ink"
+              >
+                Read the {project.name} case study →
+              </Link>
+            </p>
           </>
         ) : (
           <p className="body-copy max-w-[34rem] text-muted">

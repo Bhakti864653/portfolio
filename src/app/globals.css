@@ -187,7 +187,9 @@
 :root[data-motion="reduce"] *::after {
   animation-duration: 0.01ms !important;
   animation-iteration-count: 1 !important;
+  animation-delay: 0s !important;
   transition-duration: 0.01ms !important;
+  transition-delay: 0s !important;
   scroll-behavior: auto !important;
 }
 :root[data-motion="reduce"] [data-reveal="pending"] {
@@ -203,8 +205,177 @@
     stroke-dashoffset: 0;
   }
 }
-@keyframes flow {
-  to {
-    stroke-dashoffset: -40;
+
+/* ------------------------------------------------------------------------------------------
+   Chapter tones. Each chapter redefines the same tokens locally, so every component inside it
+   adapts without knowing which chapter it is in. One system, four moods.
+   ------------------------------------------------------------------------------------------ */
+.tone-ivory {
+  --paper: #faf7f0;
+  --soft: #fffdf8;
+}
+.tone-cool {
+  --paper: #e9ecea;
+  --soft: #f3f5f3;
+  --line: rgb(22 34 38 / 0.14);
+  --line-strong: rgb(22 34 38 / 0.3);
+}
+.tone-warm {
+  --paper: #f4eadb;
+  --soft: #fbf4e8;
+}
+/* About: a deliberate break into deep ink, in both themes. */
+.tone-night {
+  --paper: #111515;
+  --soft: #181d1c;
+  --ink: #ede7db;
+  --muted: #a9aca3;
+  --faint: #767b74;
+  --line: rgb(237 231 219 / 0.14);
+  --line-strong: rgb(237 231 219 / 0.32);
+  --grid: rgb(237 231 219 / 0.04);
+  --focus: #ede7db;
+  --portico-1: #e07a88;
+  --synaptiq-1: #7b9dff;
+  --concord-1: #b6a5f2;
+  --commonground-1: #52c4b3;
+  color-scheme: dark;
+}
+:root[data-theme="dark"] .tone-ivory {
+  --paper: #151a18;
+  --soft: #1b211f;
+}
+:root[data-theme="dark"] .tone-cool {
+  --paper: #121819;
+  --soft: #182022;
+  --line: rgb(220 232 235 / 0.13);
+  --line-strong: rgb(220 232 235 / 0.3);
+}
+:root[data-theme="dark"] .tone-warm {
+  --paper: #1a1813;
+  --soft: #211e18;
+}
+:root[data-theme="dark"] .tone-night {
+  --paper: #080a0a;
+  --soft: #101413;
+}
+
+/* Paper grain: a static, tiled noise texture, faint enough to feel rather than see. */
+/* Positioning is left to the element (relative for sections, fixed for the phone menu). */
+.grain {
+  isolation: isolate;
+}
+.grain::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.35;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.07 0 0 0 0 0.08 0 0 0 0 0.08 0 0 0 0.09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+:root[data-theme="dark"] .grain::before,
+.tone-night.grain::before {
+  /* The same noise in a light tone: no blend modes or filters, which are costly to paint. */
+  opacity: 0.5;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.93 0 0 0 0 0.91 0 0 0 0 0.86 0 0 0 0.07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ------------------------------------------------------------------------------------------
+   Motion. Everything below is off under reduced motion (see the data-motion rule above).
+   ------------------------------------------------------------------------------------------ */
+
+/* Intro entrance: under three seconds, never blocks scrolling or input. */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
   }
+}
+@keyframes reveal-up {
+  from {
+    clip-path: inset(0 0 100% 0);
+    transform: translateY(0.18em);
+  }
+}
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+.enter-draw {
+  stroke-dasharray: var(--len, 200);
+  animation: draw 1100ms cubic-bezier(0.6, 0, 0.2, 1) both;
+  animation-delay: var(--delay, 0ms);
+}
+.enter-rise {
+  animation: rise 800ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-delay: var(--delay, 0ms);
+}
+.enter-reveal {
+  animation: reveal-up 900ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-delay: var(--delay, 0ms);
+}
+.enter-fade {
+  animation: fade 900ms ease-out both;
+  animation-delay: var(--delay, 0ms);
+}
+@keyframes cue {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(5px);
+  }
+}
+.scroll-cue {
+  animation: cue 2.4s ease-in-out 3s 3;
+}
+
+/* Project images open like a plate being uncovered as they enter the viewport. */
+[data-reveal] .reveal-image {
+  transition: clip-path 1100ms cubic-bezier(0.2, 0.7, 0.2, 1) 120ms;
+}
+[data-reveal="pending"] .reveal-image {
+  clip-path: inset(0 0 100% 0);
+}
+
+/* Links: an underline that draws in from the left. */
+@utility link-draw {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  transition: background-size 280ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  &:hover,
+  &:focus-visible,
+  &[aria-current="true"] {
+    background-size: 100% 1px;
+  }
+}
+
+/* Buttons: a small, quick press. */
+@utility press {
+  transition:
+    transform 120ms ease-out,
+    opacity 160ms,
+    background-color 160ms,
+    border-color 160ms;
+  &:active {
+    transform: scale(0.97);
+  }
+}
+
+/* The four-path figure: a chosen path is traced once, outer end to center. */
+@keyframes trace {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+.trace {
+  animation: trace 700ms cubic-bezier(0.5, 0, 0.2, 1) both;
 }

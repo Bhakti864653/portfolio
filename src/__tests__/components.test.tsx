@@ -21,7 +21,7 @@ describe("VerbSystem", () => {
     expect(buttons[0]).toHaveFocus();
     expect(buttons[0]).toHaveAttribute("aria-pressed", "true");
     expect(
-      screen.getByText("A command center for college applications."),
+      screen.getByText(/Tracks every deadline, essay, recommendation/),
     ).toBeInTheDocument();
 
     await userEvent.tab();
@@ -70,5 +70,45 @@ describe("inline", () => {
       "WHERE user_id = ?",
     );
     expect(container.textContent).toBe("scope with WHERE user_id = ? always");
+  });
+});
+
+vi.mock("next/navigation", () => ({ usePathname: () => "/" }));
+
+describe("SiteHeader phone menu", () => {
+  it("opens a chapter index, keeps focus inside, and closes on Escape", async () => {
+    const { SiteHeader } = await import("@/components/SiteHeader");
+    vi.stubGlobal(
+      "IntersectionObserver",
+      class {
+        observe() {}
+        disconnect() {}
+      },
+    );
+    render(<SiteHeader />);
+    const toggle = screen.getByRole("button", { name: "Menu" });
+
+    await userEvent.click(toggle);
+    const dialog = screen.getByRole("dialog", { name: "Chapters" });
+    expect(dialog).toBeInTheDocument();
+    for (const label of ["Index", "Work", "Journey", "About", "Contact"]) {
+      expect(
+        screen.getAllByRole("link", { name: new RegExp(label) }).length,
+      ).toBeGreaterThan(0);
+    }
+    expect(screen.getByRole("link", { name: "LinkedIn ↗" })).toHaveAttribute(
+      "href",
+      "https://www.linkedin.com/in/bhakti-ahir-756b9943a/",
+    );
+    expect(dialog.contains(document.activeElement)).toBe(true);
+
+    // Shift+Tab from the first item wraps to the last one, still inside the dialog.
+    await userEvent.tab({ shift: true });
+    expect(dialog.contains(document.activeElement)).toBe(true);
+
+    await userEvent.keyboard("{Escape}");
+    expect(screen.queryByRole("dialog")).toBeNull();
+    expect(toggle).toHaveFocus();
+    vi.unstubAllGlobals();
   });
 });

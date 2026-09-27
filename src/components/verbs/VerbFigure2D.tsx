@@ -80,17 +80,16 @@ export function VerbFigure2D({
               style={{ transition: "stroke 400ms, stroke-width 400ms" }}
             />
             {on && (
+              // Traced once from the outer end into the center each time a path is chosen.
               <path
+                key={`trace-${verb}`}
                 d={d}
-                stroke="var(--a2)"
-                strokeWidth={3.2}
-                strokeDasharray="4 36"
+                pathLength={1}
+                stroke="var(--a1)"
+                strokeWidth={3.4}
                 strokeLinecap="round"
-                style={
-                  animate
-                    ? { animation: "flow 1.4s linear infinite" }
-                    : undefined
-                }
+                strokeDasharray="1"
+                className={animate ? "trace" : undefined}
               />
             )}
             <circle

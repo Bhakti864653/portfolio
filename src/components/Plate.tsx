@@ -13,7 +13,7 @@ export function Plate({
 }) {
   return (
     <figure className={`accent-${project.slug}`}>
-      <div className="relative">
+      <div className="reveal-image relative">
         <div
           aria-hidden="true"
           className="absolute inset-0 translate-x-1.5 translate-y-1.5 rounded-[4px] bg-a2 opacity-15 sm:translate-x-3 sm:translate-y-3"
@@ -35,7 +35,7 @@ export function Plate({
             alt={project.screenshot.alt}
             width={1440}
             height={900}
-            sizes="(min-width: 1024px) 56vw, 100vw"
+            sizes="(min-width: 1024px) 60vw, 100vw"
             priority={priority}
             className="block h-auto w-full rounded-[2px] border border-line"
           />

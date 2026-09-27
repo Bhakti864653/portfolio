@@ -1,4 +1,4 @@
-import { ChapterOpening } from "../ChapterOpening";
+import { ChapterClose, ChapterOpening } from "../ChapterOpening";
 import { Reveal } from "../Reveal";
 
 const BELIEFS = [
@@ -35,12 +35,12 @@ export function About() {
     <section
       id="about"
       aria-labelledby="about-title"
-      className="scroll-mt-16 py-24 sm:py-32"
+      className="tone-night grain relative scroll-mt-16 bg-paper py-28 text-ink sm:py-40"
     >
       <div className="shell">
         <ChapterOpening
-          part="III"
-          label="Point of view"
+          number="03"
+          title="About"
           id="about-title"
           heading="What I believe about building."
         >
@@ -51,26 +51,30 @@ export function About() {
           </p>
         </ChapterOpening>
 
-        {/* The principles: one ordered row of three, numbered like the rest of the site */}
-        <Reveal className="mt-16 sm:mt-20">
-          <ol className="grid gap-y-10 border-t border-ink lg:grid-cols-3">
+        {/* The principles: stacked and given room, so the page slows down here */}
+        <Reveal className="mt-20 sm:mt-28">
+          <ol>
             {BELIEFS.map((b, i) => (
               <li
                 key={b.title}
-                className="pt-6 lg:border-l lg:border-line lg:px-8 lg:first:border-l-0 lg:first:pl-0 lg:last:pr-0"
+                className="grid-12 gap-y-4 border-t border-line py-10 sm:py-14"
               >
-                <p className="annot text-ink">0{i + 1}</p>
-                <p className="mt-4 font-display text-[1.9rem] leading-[1.1]">
+                <p className="font-display text-5xl leading-none text-muted lg:col-span-2">
+                  0{i + 1}
+                </p>
+                <p className="font-display text-[clamp(2rem,4vw,3.25rem)] leading-[1.06] lg:col-span-6">
                   {b.title}
                 </p>
-                <p className="body-copy mt-4 text-muted">{b.body}</p>
+                <p className="body-copy max-w-[30rem] text-muted lg:col-span-4 lg:pt-2">
+                  {b.body}
+                </p>
               </li>
             ))}
           </ol>
         </Reveal>
 
         {/* Secondary: supports the story without competing with the work */}
-        <Reveal className="mt-24 sm:mt-28">
+        <Reveal className="mt-16 sm:mt-20">
           <div className="grid-12 gap-y-4 border-t border-line pt-6">
             <h3 className="annot text-ink lg:col-span-4">Beyond the screen</h3>
             <dl className="grid gap-x-10 sm:grid-cols-2 lg:col-span-8">
@@ -85,6 +89,11 @@ export function About() {
             </dl>
           </div>
         </Reveal>
+
+        <ChapterClose
+          number="03"
+          next={{ href: "#contact", label: "04 Contact" }}
+        />
       </div>
     </section>
   );

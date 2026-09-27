@@ -1,23 +1,23 @@
 import Link from "next/link";
 import { PROJECTS } from "@/lib/projects";
-import { ChapterOpening } from "../ChapterOpening";
+import { ChapterClose, ChapterOpening } from "../ChapterOpening";
 import { Plate } from "../Plate";
 import { Reveal } from "../Reveal";
 
 const secondary =
-  "inline-flex h-12 items-center rounded-full border border-line-strong px-5 text-sm font-semibold text-ink hover:bg-soft";
+  "press inline-flex h-12 items-center rounded-full border border-line-strong px-5 text-sm font-semibold text-ink hover:bg-soft";
 
 export function Chapters() {
   return (
     <section
       id="work"
       aria-labelledby="work-title"
-      className="scroll-mt-16 py-24 sm:py-32"
+      className="tone-ivory scroll-mt-16 bg-paper py-24 sm:py-32"
     >
       <div className="shell">
         <ChapterOpening
-          part="I"
-          label="The work"
+          number="01"
+          title="Work"
           id="work-title"
           heading="Four systems, one principle."
         >
@@ -28,7 +28,7 @@ export function Chapters() {
         </ChapterOpening>
 
         <ol className="mt-16 sm:mt-20">
-          {PROJECTS.map((p) => (
+          {PROJECTS.map((p, i) => (
             <li
               key={p.slug}
               id={p.slug}
@@ -39,12 +39,17 @@ export function Chapters() {
                   aria-labelledby={`${p.slug}-title`}
                   className="grid-12 gap-y-10"
                 >
-                  <div className="lg:col-span-5">
+                  <div
+                    className={`lg:col-span-5 ${i % 2 ? "lg:order-2 lg:col-start-8 lg:row-start-1" : ""}`}
+                  >
                     <p className="annot flex items-baseline gap-3">
                       <span className="font-display text-5xl normal-case leading-none tracking-normal text-a1">
                         {p.chapter}
                       </span>
-                      <span className="capitalize">{p.verb}</span>
+                      <span>
+                        / 0{PROJECTS.length} ·{" "}
+                        <span className="capitalize text-ink">{p.verb}</span>
+                      </span>
                     </p>
                     <h3
                       id={`${p.slug}-title`}
@@ -74,9 +79,15 @@ export function Chapters() {
                     <div className="mt-8 flex flex-wrap gap-3">
                       <Link
                         href={`/work/${p.slug}`}
-                        className="inline-flex h-12 items-center rounded-full bg-ink px-6 text-sm font-semibold text-paper hover:opacity-90"
+                        className="press group/cs inline-flex h-12 items-center gap-2 rounded-full bg-ink px-6 text-sm font-semibold text-paper hover:bg-a1"
                       >
-                        Read the case study →
+                        Read the case study{" "}
+                        <span
+                          aria-hidden="true"
+                          className="transition-transform group-hover/cs:translate-x-1"
+                        >
+                          →
+                        </span>
                       </Link>
                       <a href={p.live} className={secondary}>
                         Live app ↗
@@ -87,7 +98,9 @@ export function Chapters() {
                     </div>
                   </div>
 
-                  <div className="lg:col-span-7 lg:pt-2">
+                  <div
+                    className={`lg:col-span-7 lg:pt-2 ${i % 2 ? "lg:order-1 lg:col-start-1 lg:row-start-1" : ""}`}
+                  >
                     <Plate project={p} figure={p.chapter} />
                   </div>
                 </article>
@@ -95,6 +108,11 @@ export function Chapters() {
             </li>
           ))}
         </ol>
+
+        <ChapterClose
+          number="01"
+          next={{ href: "#journey", label: "02 Journey" }}
+        />
       </div>
     </section>
   );
