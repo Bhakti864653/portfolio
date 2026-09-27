@@ -95,6 +95,11 @@
     border-radius: 2px;
   }
 
+  /* Headings receive focus only programmatically, after a route change (RouteFocus). */
+  h1[tabindex="-1"]:focus {
+    outline: none;
+  }
+
   code {
     font-family: var(--font-mono);
     font-size: 0.86em;
@@ -350,7 +355,7 @@
   transition: background-size 280ms cubic-bezier(0.2, 0.7, 0.2, 1);
   &:hover,
   &:focus-visible,
-  &[aria-current="true"] {
+  &[aria-current="page"] {
     background-size: 100% 1px;
   }
 }
@@ -378,4 +383,93 @@
 }
 .trace {
   animation: trace 700ms cubic-bezier(0.5, 0, 0.2, 1) both;
+}
+
+/* ------------------------------------------------------------------------------------------
+   Route transitions. The new page is already rendered; these only ease it in, so navigation
+   is never delayed and nothing is ever blank (the page starts at 40% opacity, not 0).
+   ------------------------------------------------------------------------------------------ */
+@keyframes route-in {
+  from {
+    opacity: 0.4;
+    transform: translateY(8px);
+  }
+}
+.route-enter {
+  animation: route-in 320ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+@keyframes route-sweep {
+  0% {
+    transform: scaleX(0);
+    opacity: 1;
+  }
+  70% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scaleX(1);
+    opacity: 0;
+  }
+}
+.route-line {
+  transform: scaleX(0);
+  animation: route-sweep 650ms cubic-bezier(0.6, 0, 0.2, 1) both;
+}
+:root[data-motion="reduce"] .route-line {
+  display: none;
+}
+
+/* ------------------------------------------------------------------------------------------
+   Homepage portals. Hovering or focusing one tints the whole room in that project's color and
+   lights its line back to Human Judgment. Pure CSS (:has), so it costs no JavaScript.
+   ------------------------------------------------------------------------------------------ */
+.portals {
+  --atmos: transparent;
+  background-color: color-mix(in srgb, var(--atmos) 7%, var(--paper));
+  transition: background-color 500ms ease;
+}
+.portals:has(.portal-portico:is(:hover, :focus-visible)) {
+  --atmos: var(--portico-1);
+}
+.portals:has(.portal-synaptiq:is(:hover, :focus-visible)) {
+  --atmos: var(--synaptiq-1);
+}
+.portals:has(.portal-concord:is(:hover, :focus-visible)) {
+  --atmos: var(--concord-1);
+}
+.portals:has(.portal-commonground:is(:hover, :focus-visible)) {
+  --atmos: var(--commonground-1);
+}
+.portal-line {
+  stroke: var(--line-strong);
+  stroke-width: 1;
+  transition:
+    stroke 400ms,
+    stroke-width 400ms;
+}
+.portals:has(.portal-portico:is(:hover, :focus-visible)) .portal-line-portico,
+.portals:has(.portal-synaptiq:is(:hover, :focus-visible)) .portal-line-synaptiq,
+.portals:has(.portal-concord:is(:hover, :focus-visible)) .portal-line-concord,
+.portals:has(.portal-commonground:is(:hover, :focus-visible))
+  .portal-line-commonground {
+  stroke: var(--a1);
+  stroke-width: 2.4;
+}
+/* Touch screens have no hover, so the product shows in full there; it wakes on hover elsewhere. */
+@media (hover: hover) {
+  .portal-image {
+    opacity: 0.5;
+    filter: grayscale(0.85);
+    transform: scale(1);
+    transition:
+      opacity 500ms,
+      filter 500ms,
+      transform 700ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .portal:is(:hover, :focus-visible) .portal-image {
+    opacity: 1;
+    filter: none;
+    transform: scale(1.03);
+  }
 }

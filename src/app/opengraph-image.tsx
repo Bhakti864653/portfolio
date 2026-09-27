@@ -1,5 +1,10 @@
 import { ImageResponse } from "next/og";
-import { MONOGRAM_ORDER, MONOGRAM_PATHS } from "@/components/Monogram";
+import {
+  MONOGRAM_JUNCTION,
+  MONOGRAM_ORDER,
+  MONOGRAM_PATHS,
+  MONOGRAM_VIEWBOX,
+} from "@/components/Monogram";
 import { SITE } from "@/lib/projects";
 
 export const alt = "Bhakti Ahir — Technology should expand what people can do.";
@@ -23,7 +28,7 @@ export default function Image() {
       <svg
         width="120"
         height="101"
-        viewBox="0 0 76 64"
+        viewBox={MONOGRAM_VIEWBOX}
         fill="none"
         stroke="#111515"
         strokeWidth="3.4"
@@ -33,7 +38,13 @@ export default function Image() {
         {MONOGRAM_ORDER.map((v) => (
           <path key={v} d={MONOGRAM_PATHS[v]} />
         ))}
-        <circle cx="43" cy="32" r="3.2" fill="#f3efe7" strokeWidth="2" />
+        <circle
+          cx={MONOGRAM_JUNCTION.x}
+          cy={MONOGRAM_JUNCTION.y}
+          r="3.2"
+          fill="#f3efe7"
+          strokeWidth="2"
+        />
       </svg>
       <div style={{ display: "flex", flexDirection: "column" }}>
         <div style={{ fontSize: 112, letterSpacing: -3, lineHeight: 1 }}>

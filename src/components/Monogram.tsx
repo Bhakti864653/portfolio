@@ -2,9 +2,11 @@ import type { CSSProperties } from "react";
 import type { Verb } from "@/lib/projects";
 
 /**
- * The BA monogram. One horizontal stroke is shared by both letters: it is the B's waist and,
- * continuing right, the A's crossbar. Where it crosses the A's left leg sits the junction
- * (43, 32), the same "human judgment" point the four paths run through.
+ * The BA monogram. The B's waist doesn't stop at the B: it runs on across the gap and becomes the
+ * A's crossbar, so the two letters are joined by one path. Where that path meets the A's left leg
+ * sits the junction (47.8, 31), the same "human judgment" point the four project paths run
+ * through. The bowls stop short of the A, so no strokes overlap and the silhouette stays clean
+ * down to 16px.
  *
  * - decide: B's upper spine and bowl
  * - learn: B's lower spine and bowl
@@ -12,21 +14,22 @@ import type { Verb } from "@/lib/projects";
  * - act: the A
  */
 export const MONOGRAM_PATHS: Record<Verb, string> = {
-  decide: "M12 32V8h8a12 12 0 0 1 0 24",
-  learn: "M12 32v24h9a12 12 0 0 0 0-24",
-  connect: "M12 32h45",
-  act: "M36 56 50 8l14 48",
+  decide: "M10 31V8h9a11.5 11.5 0 0 1 0 23",
+  learn: "M10 31v25h10a12.5 12.5 0 0 0 0-25",
+  connect: "M10 31h50.2",
+  act: "M41 56 54 8l13 48",
 };
 
 export const MONOGRAM_ORDER: Verb[] = ["decide", "learn", "connect", "act"];
-export const MONOGRAM_JUNCTION = { x: 43, y: 32 };
+export const MONOGRAM_JUNCTION = { x: 47.8, y: 31 };
+export const MONOGRAM_VIEWBOX = "0 0 76 64";
 
 /** Approximate path lengths, for the draw-in animation. */
 const LENGTHS: Record<Verb, number> = {
-  decide: 72,
-  learn: 88,
-  connect: 45,
-  act: 102,
+  decide: 68,
+  learn: 74,
+  connect: 51,
+  act: 100,
 };
 
 export function Monogram({
@@ -35,6 +38,7 @@ export function Monogram({
   active,
   strokeWidth = 3.6,
   draw = false,
+  junction = true,
 }: {
   className?: string;
   title?: string | null;
@@ -43,10 +47,12 @@ export function Monogram({
   strokeWidth?: number;
   /** Draws the strokes in one after another (disabled under reduced motion by CSS). */
   draw?: boolean;
+  /** The junction dot; dropped at favicon-like sizes where it would fill in. */
+  junction?: boolean;
 }) {
   return (
     <svg
-      viewBox="0 0 76 64"
+      viewBox={MONOGRAM_VIEWBOX}
       className={className}
       role={title ? "img" : undefined}
       aria-label={title ?? undefined}
@@ -74,16 +80,18 @@ export function Monogram({
           }
         />
       ))}
-      <circle
-        cx={MONOGRAM_JUNCTION.x}
-        cy={MONOGRAM_JUNCTION.y}
-        r={strokeWidth * 0.9}
-        fill="var(--paper)"
-        stroke="currentColor"
-        strokeWidth={strokeWidth * 0.6}
-        className={draw ? "enter-fade" : undefined}
-        style={draw ? ({ "--delay": "760ms" } as CSSProperties) : undefined}
-      />
+      {junction && (
+        <circle
+          cx={MONOGRAM_JUNCTION.x}
+          cy={MONOGRAM_JUNCTION.y}
+          r={strokeWidth * 0.9}
+          fill="var(--paper)"
+          stroke="currentColor"
+          strokeWidth={strokeWidth * 0.6}
+          className={draw ? "enter-fade" : undefined}
+          style={draw ? ({ "--delay": "760ms" } as CSSProperties) : undefined}
+        />
+      )}
     </svg>
   );
 }

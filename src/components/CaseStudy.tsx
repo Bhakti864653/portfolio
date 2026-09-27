@@ -37,6 +37,7 @@ export function CaseStudy({ project: p }: { project: Project }) {
   const cs = p.caseStudy;
   const index = PROJECTS.indexOf(p);
   const next = PROJECTS[(index + 1) % PROJECTS.length];
+  const previous = PROJECTS[(index + PROJECTS.length - 1) % PROJECTS.length];
 
   const entries: Entry[] = [
     {
@@ -73,7 +74,7 @@ export function CaseStudy({ project: p }: { project: Project }) {
     },
     {
       id: "design",
-      label: "Design decisions",
+      label: "Product decisions",
       content: <Bullets items={cs.design} />,
     },
     {
@@ -83,7 +84,7 @@ export function CaseStudy({ project: p }: { project: Project }) {
     },
     {
       id: "challenge",
-      label: "The hardest challenge",
+      label: "Engineering challenge",
       content: (
         <div className="border-l-2 border-a1 pl-5">
           <p className="mb-5 text-xl font-semibold leading-snug">
@@ -150,11 +151,13 @@ export function CaseStudy({ project: p }: { project: Project }) {
       <header className="grid-field-subtle border-b border-line">
         <div className="shell pb-14 pt-6 sm:pb-20">
           <div className="annot flex flex-wrap justify-between gap-2 border-b border-line pb-3">
-            <Link href={`/#${p.slug}`} className="text-ink hover:underline">
+            <Link href="/work" className="text-ink hover:underline">
               ← All work
             </Link>
             <span>
-              <span className="text-a1">Chapter {p.chapter}</span> · {p.verb}
+              <span className="text-a1">Project {p.chapter}</span>
+              {` / 0${PROJECTS.length} · `}
+              <span className="text-ink">{p.verb}</span>
             </span>
           </div>
 
@@ -245,18 +248,33 @@ export function CaseStudy({ project: p }: { project: Project }) {
         </div>
       </div>
 
-      <Link
-        href={`/work/${next.slug}`}
-        className={`accent-${next.slug} group block border-t-2 border-a1`}
+      {/* Previous and next project */}
+      <nav
+        aria-label="More projects"
+        className="grid border-t border-line sm:grid-cols-2"
       >
-        <div className="shell flex flex-col gap-3 py-16 sm:py-20">
-          <span className="annot">Next chapter · {next.chapter}</span>
-          <span className="font-display text-[clamp(2.5rem,6vw,4.5rem)] leading-none group-hover:underline group-hover:decoration-1 group-hover:underline-offset-8">
-            <span className="capitalize text-a1">{next.verb}</span> →{" "}
-            {next.name}
-          </span>
-        </div>
-      </Link>
+        {[
+          { p: previous, label: "Previous", arrow: "←" },
+          { p: next, label: "Next", arrow: "→" },
+        ].map(({ p: q, label, arrow }, i) => (
+          <Link
+            key={label}
+            href={`/work/${q.slug}`}
+            className={`accent-${q.slug} group block border-t-2 border-a1 ${i === 1 ? "sm:border-l sm:border-l-line sm:text-right" : ""}`}
+          >
+            <div className="flex flex-col gap-3 px-[clamp(1rem,4vw,3rem)] py-12 sm:py-16">
+              <span className="annot">
+                {label} · {q.chapter}
+              </span>
+              <span className="font-display text-[clamp(2.2rem,4.5vw,3.75rem)] leading-none group-hover:underline group-hover:decoration-1 group-hover:underline-offset-8">
+                {i === 0 && <span aria-hidden="true">{arrow} </span>}
+                <span className="capitalize text-a1">{q.verb}</span> {q.name}
+                {i === 1 && <span aria-hidden="true"> {arrow}</span>}
+              </span>
+            </div>
+          </Link>
+        ))}
+      </nav>
     </article>
   );
 }

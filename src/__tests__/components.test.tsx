@@ -1,39 +1,39 @@
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { CopyEmail } from "@/components/CopyEmail";
-import { VerbSystem } from "@/components/verbs/VerbSystem";
+import { JudgmentFigure } from "@/components/verbs/JudgmentFigure";
 import { inline } from "@/lib/format";
 
-describe("VerbSystem", () => {
-  it("reveals each project when its verb gets keyboard focus", async () => {
-    render(<VerbSystem />);
-    const buttons = screen.getAllByRole("button");
-    expect(buttons.map((b) => b.textContent)).toEqual([
-      "01 · Porticodecide",
-      "02 · Synaptiqlearn",
-      "03 · Concordconnect",
-      "04 · CommonGroundact",
+describe("JudgmentFigure", () => {
+  it("links every ability to its project and names it on focus", async () => {
+    render(<JudgmentFigure />);
+    const links = screen.getAllByRole("link");
+    expect(links.map((l) => l.getAttribute("href"))).toEqual([
+      "/work/portico",
+      "/work/synaptiq",
+      "/work/concord",
+      "/work/commonground",
     ]);
-    expect(screen.getByText("Select a path")).toBeInTheDocument();
+    expect(links.map((l) => l.textContent)).toEqual([
+      "decide01 · Portico",
+      "learn02 · Synaptiq",
+      "connect03 · Concord",
+      "act04 · CommonGround",
+    ]);
 
     await userEvent.tab();
-    expect(buttons[0]).toHaveFocus();
-    expect(buttons[0]).toHaveAttribute("aria-pressed", "true");
-    expect(
-      screen.getByText(/Tracks every deadline, essay, recommendation/),
-    ).toBeInTheDocument();
-
+    expect(links[0]).toHaveFocus();
+    expect(screen.getByText("→ Portico")).toBeInTheDocument();
     await userEvent.tab();
-    expect(buttons[1]).toHaveAttribute("aria-pressed", "true");
-    expect(buttons[0]).toHaveAttribute("aria-pressed", "false");
-    expect(
-      screen.getByRole("link", { name: "Read the Synaptiq case study →" }),
-    ).toHaveAttribute("href", "/work/synaptiq");
+    expect(screen.getByText("→ Synaptiq")).toBeInTheDocument();
   });
 
-  it("falls back to the 2D figure when WebGL is not available (jsdom)", () => {
-    const { container } = render(<VerbSystem />);
+  it("has a text alternative and falls back to 2D without WebGL (jsdom)", () => {
+    const { container } = render(<JudgmentFigure />);
+    expect(
+      screen.getByRole("figure", { name: /all meeting at one center/ }),
+    ).toBeInTheDocument();
     expect(container.querySelector("canvas")).toBeNull();
     expect(container.querySelector("svg")).not.toBeNull();
   });
@@ -73,33 +73,54 @@ describe("inline", () => {
   });
 });
 
-vi.mock("next/navigation", () => ({ usePathname: () => "/" }));
+vi.mock("next/navigation", () => ({ usePathname: () => "/work/concord" }));
 
-describe("SiteHeader phone menu", () => {
-  it("opens a chapter index, keeps focus inside, and closes on Escape", async () => {
+describe("SiteHeader", () => {
+  it("links to real routes and marks Work as current on a case study", async () => {
+    const { SiteHeader, routeFor } = await import("@/components/SiteHeader");
+    render(<SiteHeader />);
+    const nav = screen.getByRole("navigation", { name: "Main" });
+    const links = Array.from(nav.querySelectorAll("a"));
+    expect(links.map((l) => l.getAttribute("href"))).toEqual([
+      "/work",
+      "/journey",
+      "/about",
+      "/contact",
+    ]);
+    expect(links[0]).toHaveAttribute("aria-current", "page");
+    expect(links[1]).not.toHaveAttribute("aria-current");
+
+    expect(routeFor("/")?.id).toBe("index");
+    expect(routeFor("/about")?.id).toBe("about");
+    expect(routeFor("/workshop")).toBeNull();
+  });
+
+  it("opens a full-screen menu, keeps focus inside, and closes on Escape", async () => {
     const { SiteHeader } = await import("@/components/SiteHeader");
-    vi.stubGlobal(
-      "IntersectionObserver",
-      class {
-        observe() {}
-        disconnect() {}
-      },
-    );
     render(<SiteHeader />);
     const toggle = screen.getByRole("button", { name: "Menu" });
 
     await userEvent.click(toggle);
-    const dialog = screen.getByRole("dialog", { name: "Chapters" });
-    expect(dialog).toBeInTheDocument();
-    for (const label of ["Index", "Work", "Journey", "About", "Contact"]) {
-      expect(
-        screen.getAllByRole("link", { name: new RegExp(label) }).length,
-      ).toBeGreaterThan(0);
+    const dialog = screen.getByRole("dialog", { name: "Menu" });
+    for (const [label, href] of [
+      ["Index", "/"],
+      ["Work", "/work"],
+      ["Journey", "/journey"],
+      ["About", "/about"],
+      ["Contact", "/contact"],
+    ]) {
+      const link = Array.from(dialog.querySelectorAll("a")).find((a) =>
+        a.textContent?.includes(label),
+      );
+      expect(link, label).toHaveAttribute("href", href);
     }
     expect(screen.getByRole("link", { name: "LinkedIn ↗" })).toHaveAttribute(
       "href",
       "https://www.linkedin.com/in/bhakti-ahir-756b9943a/",
     );
+    expect(
+      within(dialog).getByRole("button", { name: /^Theme:/ }),
+    ).toBeInTheDocument();
     expect(dialog.contains(document.activeElement)).toBe(true);
 
     // Shift+Tab from the first item wraps to the last one, still inside the dialog.
@@ -109,6 +130,5 @@ describe("SiteHeader phone menu", () => {
     await userEvent.keyboard("{Escape}");
     expect(screen.queryByRole("dialog")).toBeNull();
     expect(toggle).toHaveFocus();
-    vi.unstubAllGlobals();
   });
 });

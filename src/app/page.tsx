@@ -1,17 +1,13 @@
-import { About } from "@/components/home/About";
-import { Chapters } from "@/components/home/Chapters";
-import { Contact } from "@/components/home/Contact";
-import { Hero } from "@/components/home/Hero";
-import { Journey } from "@/components/home/Journey";
+import { Arrival } from "@/components/home/Arrival";
+import { Closing } from "@/components/home/Closing";
+import { Portals } from "@/components/home/Portals";
 
 export default function Home() {
   return (
     <>
-      <Hero />
-      <Chapters />
-      <Journey />
-      <About />
-      <Contact />
+      <Arrival />
+      <Portals />
+      <Closing />
     </>
   );
 }

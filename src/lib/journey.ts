@@ -4,6 +4,8 @@ import type { Project } from "./projects";
 export type Stage = {
   id: Project["slug"];
   label: string;
+  /** The problem that started it, in one line (from the case study's "The real problem"). */
+  started: string;
   /** What was new at this stage. */
   introduced: string[];
   /** The pieces the system was made of, as a measure of how complexity grew. */
@@ -16,6 +18,8 @@ export const STAGES: Stage[] = [
   {
     id: "portico",
     label: "Portico",
+    started:
+      "Every university had its own deadlines, essays, and documents, scattered across notes.",
     introduced: [
       "A web server and SQL",
       "Real accounts",
@@ -28,6 +32,8 @@ export const STAGES: Stage[] = [
   {
     id: "synaptiq",
     label: "Synaptiq",
+    started:
+      "Rereading notes feels like studying, but it doesn’t show what you don’t know.",
     introduced: [
       "A separate frontend and API",
       "Structured AI output",
@@ -40,6 +46,8 @@ export const STAGES: Stage[] = [
   {
     id: "concord",
     label: "Concord",
+    started:
+      "Mentorship matches made by hand, or by one similarity number, are hard to explain.",
     introduced: ["A formal algorithm", "Realtime chat", "Database triggers"],
     system: ["Next.js", "FastAPI", "Postgres + RLS", "Realtime", "Triggers"],
     carried:
@@ -48,6 +56,8 @@ export const STAGES: Stage[] = [
   {
     id: "commonground",
     label: "CommonGround",
+    started:
+      "Neighbors notice the same local problems but report them in scattered ways, if at all.",
     introduced: ["Multi-agent AI", "Seven languages", "A real place"],
     system: [
       "Next.js",

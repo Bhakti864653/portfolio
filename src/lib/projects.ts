@@ -431,5 +431,8 @@ export const SITE = {
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
   philosophy: "Technology should expand what people can do.",
   statement:
-    "I build systems that help people decide, learn, connect, and act—without removing the human judgment that gives those actions meaning.",
+    "I build systems that help people decide, learn, connect, and act—while keeping human judgment at the center.",
+  tagline:
+    "Student developer building human-centered tools for learning, opportunity, and community.",
+  identity: "12th-grade student developer at The Oxford School, Panama.",
 };

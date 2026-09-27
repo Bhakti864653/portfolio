@@ -7,72 +7,37 @@ import { setMotion, setTheme, useMotion, useTheme } from "@/lib/prefs";
 import { SITE } from "@/lib/projects";
 import { Monogram } from "./Monogram";
 
-const CHAPTERS = [
-  { id: "index", number: "00", label: "Index" },
-  { id: "work", number: "01", label: "Work" },
-  { id: "journey", number: "02", label: "Journey" },
-  { id: "about", number: "03", label: "About" },
-  { id: "contact", number: "04", label: "Contact" },
-];
+export const ROUTES = [
+  { id: "index", href: "/", number: "00", label: "Index" },
+  { id: "work", href: "/work", number: "01", label: "Work" },
+  { id: "journey", href: "/journey", number: "02", label: "Journey" },
+  { id: "about", href: "/about", number: "03", label: "About" },
+  { id: "contact", href: "/contact", number: "04", label: "Contact" },
+] as const;
 
-/** Which homepage chapter is under the reading line. Case-study pages belong to Work. */
-function useActiveChapter(pathname: string) {
-  const [active, setActive] = useState<string | null>(null);
-  useEffect(() => {
-    if (pathname !== "/") return;
-    const sections = CHAPTERS.map((c) => document.getElementById(c.id)).filter(
-      (el): el is HTMLElement => el !== null,
-    );
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) setActive(entry.target.id);
-        }
-      },
-      { rootMargin: "-35% 0px -60% 0px" },
-    );
-    sections.forEach((s) => observer.observe(s));
-    return () => observer.disconnect();
-  }, [pathname]);
-  return pathname.startsWith("/work/") ? "work" : active;
+/** The route a path belongs to: case studies live under Work. */
+export function routeFor(pathname: string) {
+  return (
+    ROUTES.slice(1).find(
+      (r) => pathname === r.href || pathname.startsWith(`${r.href}/`),
+    ) ?? (pathname === "/" ? ROUTES[0] : null)
+  );
 }
 
-/** A thin line under the header, filling in the four project colors as you read. */
-function ReadingProgress() {
-  const bar = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    let frame = 0;
-    const update = () => {
-      frame = 0;
-      const max = document.documentElement.scrollHeight - window.innerHeight;
-      const p = max > 0 ? Math.min(1, window.scrollY / max) : 0;
-      if (bar.current) bar.current.style.transform = `scaleX(${p})`;
-    };
-    const onScroll = () => {
-      if (!frame) frame = requestAnimationFrame(update);
-    };
-    update();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
-    return () => {
-      cancelAnimationFrame(frame);
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-    };
-  }, []);
+/**
+ * The route transition: on every navigation a line crosses under the header, in the project's
+ * color on a case study and in ink elsewhere. Purely decorative; it never delays the new page.
+ */
+function RouteLine({ pathname }: { pathname: string }) {
+  const slug = pathname.startsWith("/work/") ? pathname.slice(6) : null;
   return (
     <div
       aria-hidden="true"
-      className="absolute inset-x-0 bottom-[-1px] h-[2px]"
+      className="absolute inset-x-0 bottom-[-1px] h-[2px] overflow-hidden"
     >
       <div
-        ref={bar}
-        className="h-full origin-left"
-        style={{
-          transform: "scaleX(0)",
-          background:
-            "linear-gradient(90deg, var(--portico-1) 0 25%, var(--synaptiq-1) 25% 50%, var(--concord-1) 50% 75%, var(--commonground-1) 75%)",
-        }}
+        key={pathname}
+        className={`route-line h-full origin-left ${slug ? `accent-${slug} bg-a1` : "bg-ink"}`}
       />
     </div>
   );
@@ -88,32 +53,32 @@ function Preferences() {
       <button
         type="button"
         className={button}
-        aria-pressed={theme === "dark"}
+        aria-label={`Theme: ${theme}. Switch to ${theme === "dark" ? "light" : "dark"}.`}
         onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
       >
         <span
           aria-hidden="true"
           className={`h-2.5 w-2.5 rounded-full border border-ink ${theme === "dark" ? "bg-ink" : ""}`}
         />
-        Dark
+        Theme
       </button>
       <button
         type="button"
         className={button}
-        aria-pressed={motion === "reduce"}
+        aria-label={`Motion: ${motion === "reduce" ? "reduced" : "full"}. Switch to ${motion === "reduce" ? "full" : "reduced"}.`}
         onClick={() => setMotion(motion === "reduce" ? "full" : "reduce")}
       >
         <span
           aria-hidden="true"
-          className={`h-2.5 w-2.5 rounded-[2px] border border-ink ${motion === "reduce" ? "bg-ink" : ""}`}
+          className={`h-2.5 w-2.5 rounded-[2px] border border-ink ${motion === "reduce" ? "" : "bg-ink"}`}
         />
-        Reduce motion
+        Motion
       </button>
     </div>
   );
 }
 
-/** The phone menu: a full-screen chapter index. Focus stays inside; Escape closes it. */
+/** The phone menu: a full-screen index of the pages. Focus stays inside; Escape closes it. */
 function ChapterMenu({
   id,
   active,
@@ -168,7 +133,7 @@ function ChapterMenu({
       ref={panel}
       role="dialog"
       aria-modal="true"
-      aria-label="Chapters"
+      aria-label="Menu"
       className="grain fixed inset-0 z-50 flex flex-col overflow-y-auto bg-paper lg:hidden"
     >
       <div className="shell flex h-16 shrink-0 items-center justify-between border-b border-line">
@@ -190,14 +155,14 @@ function ChapterMenu({
         </button>
       </div>
 
-      <nav aria-label="Chapters" className="shell flex-1 py-6">
+      <nav aria-label="Pages" className="shell flex-1 py-6">
         <ol>
-          {CHAPTERS.map((c) => (
+          {ROUTES.map((c) => (
             <li key={c.id} className="border-b border-line">
               <Link
-                href={`/#${c.id}`}
+                href={c.href}
                 onClick={onClose}
-                aria-current={active === c.id ? "true" : undefined}
+                aria-current={active === c.id ? "page" : undefined}
                 className="group flex min-h-16 items-baseline gap-5 py-3"
               >
                 <span className="annot w-7 text-faint">{c.number}</span>
@@ -244,7 +209,7 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const menuId = useId();
   const pathname = usePathname();
-  const active = useActiveChapter(pathname);
+  const active = routeFor(pathname)?.id ?? null;
   const toggle = useRef<HTMLButtonElement>(null);
 
   const close = useCallback(() => {
@@ -266,8 +231,10 @@ export function SiteHeader() {
             href="/"
             className="flex items-center gap-3"
             aria-label="Bhakti Ahir, home"
+            aria-current={active === "index" ? "page" : undefined}
           >
-            <Monogram className="h-8 w-auto text-ink" title={null} />
+            <Monogram className="h-7 w-auto text-ink" title={null} />
+            <span aria-hidden="true" className="h-5 w-px bg-line-strong" />
             <span className="font-display text-xl leading-none tracking-tight">
               Bhakti Ahir
             </span>
@@ -275,14 +242,18 @@ export function SiteHeader() {
 
           <nav aria-label="Main" className="hidden lg:block">
             <ol className="flex items-center gap-8">
-              {CHAPTERS.slice(1).map((c) => (
+              {ROUTES.slice(1).map((c) => (
                 <li key={c.id}>
                   <Link
-                    href={`/#${c.id}`}
-                    aria-current={active === c.id ? "true" : undefined}
+                    href={c.href}
+                    aria-current={active === c.id ? "page" : undefined}
                     className={`link-draw annot flex items-baseline gap-2 pb-0.5 transition-colors ${active === c.id ? "text-ink" : "hover:text-ink"}`}
                   >
-                    <span className="text-faint">{c.number}</span>
+                    <span
+                      className={active === c.id ? "text-ink" : "text-faint"}
+                    >
+                      {c.number}
+                    </span>
                     {c.label}
                   </Link>
                 </li>
@@ -305,7 +276,7 @@ export function SiteHeader() {
             Menu
           </button>
         </div>
-        <ReadingProgress />
+        <RouteLine pathname={pathname} />
       </header>
       {/* Outside the header: its backdrop blur would otherwise contain this fixed panel. */}
       {open && <ChapterMenu id={menuId} active={active} onClose={close} />}

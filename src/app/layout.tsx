@@ -5,6 +5,7 @@ import {
   JetBrains_Mono,
 } from "next/font/google";
 import { SiteFooter } from "@/components/SiteFooter";
+import { RouteFocus } from "@/components/RouteFocus";
 import { SiteHeader } from "@/components/SiteHeader";
 import { PREFS_BOOT_SCRIPT } from "@/lib/prefs";
 import { SITE } from "@/lib/projects";
@@ -26,7 +27,7 @@ const mono = JetBrains_Mono({
 });
 
 const description =
-  "Bhakti Ahir: a student developer in Panama building human-centered tools for learning, opportunity, and community. Four live projects: Portico, Concord, Synaptiq, and CommonGround.";
+  "Bhakti Ahir: a student developer in Panama building human-centered tools for learning, opportunity, and community. Four live projects: Portico, Synaptiq, Concord, and CommonGround.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
@@ -69,6 +70,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           {children}
         </main>
         <SiteFooter />
+        <RouteFocus />
       </body>
     </html>
   );
