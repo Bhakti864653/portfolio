@@ -365,7 +365,7 @@ export const PROJECTS: Project[] = [
         "Verified contacts and sources, each showing when it was last checked",
         "Moderation: status, verification, duplicates, removal with a public reason",
         "Seven interface languages, with a test that fails if any string is missing",
-        "Visitors can save a place preference, while unsupported locations are clearly identified as not set up yet. Moderators can configure additional communities through the prototype administration flow.",
+        'Adding a place opens its community, or starts a starter community marked "not reviewed yet" until a moderator reviews it',
       ],
       system: {
         heading: "A multi-agent Guide that can only suggest",
