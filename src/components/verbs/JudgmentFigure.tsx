@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, useState, type FocusEvent, type PointerEvent } from "react";
+import { useRef, type FocusEvent, type PointerEvent } from "react";
 import { projectByVerb, VERB_ORDER, type Verb } from "@/lib/projects";
 import { useMotion } from "@/lib/prefs";
+import { useAbility } from "./ability";
 import { VerbFigure2D } from "./VerbFigure2D";
 
 /** Where each label sits from 768px up: at the outer end of its path (see PATH_BEARINGS). */
@@ -27,7 +28,7 @@ const LABEL_ALIGN: Record<Verb, string> = {
  * SVG renders on the server: nothing waits on JavaScript.
  */
 export function JudgmentFigure() {
-  const [active, setActive] = useState<Verb | null>(null);
+  const { active, setActive } = useAbility();
   const motion = useMotion();
   const field = useRef<HTMLDivElement>(null);
   const project = active ? projectByVerb(active) : null;
@@ -72,10 +73,10 @@ export function JudgmentFigure() {
         ref={field}
         onPointerMove={lean}
         onPointerLeave={settle}
-        className="relative md:mx-auto md:max-w-[36rem] md:px-20 md:py-12"
+        className="relative md:mx-auto md:max-w-[36rem] md:px-20 md:py-12 lg:max-w-[40rem]"
       >
         <div
-          className="relative mx-auto aspect-square w-full max-w-[19rem] sm:max-w-[24rem] md:max-w-[26rem]"
+          className="relative mx-auto aspect-square w-full max-w-[19rem] sm:max-w-[24rem] md:max-w-[26rem] lg:max-w-[30rem]"
           style={{
             transform:
               "translate3d(calc(var(--px, 0) * 7px), calc(var(--py, 0) * 7px), 0)",
@@ -96,10 +97,10 @@ export function JudgmentFigure() {
           </p>
         </div>
 
-        {/* A 2×2 list on phones; on its path's outer end from 768px up */}
+        {/* On its path's outer end from 768px up; on phones the words above the figure do this job */}
         <ul
-          aria-label="Four abilities"
-          className="mt-6 grid grid-cols-2 gap-2 md:pointer-events-none md:absolute md:inset-0 md:m-0 md:block"
+          aria-label="Paths to each project"
+          className="hidden md:pointer-events-none md:absolute md:inset-0 md:block"
         >
           {VERB_ORDER.map((verb) => {
             const p = projectByVerb(verb);

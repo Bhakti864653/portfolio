@@ -5,7 +5,7 @@ import { CopyEmail } from "@/components/CopyEmail";
 import { Arrival } from "@/components/home/Arrival";
 import { Portals } from "@/components/home/Portals";
 import { JudgmentFigure } from "@/components/verbs/JudgmentFigure";
-import { PROJECTS } from "@/lib/projects";
+import { PROJECTS, SITE, projectBySlug } from "@/lib/projects";
 import { inline } from "@/lib/format";
 
 describe("JudgmentFigure", () => {
@@ -51,6 +51,28 @@ describe("Arrival", () => {
     expect(
       screen.getByText(/I build systems that help people/).className,
     ).not.toMatch(/enter-/);
+  });
+});
+
+describe("Opening abilities", () => {
+  it("links each ability to its project and lights the figure from the text", async () => {
+    render(<Arrival />);
+    const row = screen.getByRole("list", { name: "Four abilities" });
+    const words = within(row).getAllByRole("link");
+    expect(words.map((l) => l.getAttribute("href"))).toEqual(
+      PROJECTS.map((p) => `/work/${p.slug}`),
+    );
+    expect(screen.getByText(SITE.philosophy)).toBeInTheDocument();
+
+    await userEvent.hover(words[1]);
+    expect(screen.getByText("→ Synaptiq")).toBeInTheDocument();
+    expect(
+      screen.getByText(projectBySlug("synaptiq")!.tagline),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(SITE.philosophy)).toBeNull();
+
+    await userEvent.unhover(row);
+    expect(screen.getByText(SITE.philosophy)).toBeInTheDocument();
   });
 });
 

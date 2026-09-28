@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import { PATH_BEARINGS, svgPath } from "@/lib/geometry";
 import { projectByVerb, VERB_ORDER, type Verb } from "@/lib/projects";
 
@@ -62,7 +63,7 @@ export function VerbFigure2D({
         stroke="var(--line)"
       />
 
-      {VERB_ORDER.map((verb) => {
+      {VERB_ORDER.map((verb, i) => {
         const on = active === verb;
         const dim = active !== null && !on;
         const d = svgPath(verb, C, C, R);
@@ -73,11 +74,21 @@ export function VerbFigure2D({
             style={{ transition: "opacity 400ms" }}
             opacity={dim ? 0.5 : 1}
           >
+            {/* Drawn once on arrival, from its outer end in to the center (instant under
+                reduced motion, via the global data-motion rule) */}
             <path
               d={d}
+              pathLength={1}
               stroke={on ? "var(--a1)" : "var(--ink)"}
               strokeWidth={on ? 2.6 : 1.4}
-              style={{ transition: "stroke 400ms, stroke-width 400ms" }}
+              className="enter-draw"
+              style={
+                {
+                  "--len": 1,
+                  "--delay": `${150 + i * 140}ms`,
+                  transition: "stroke 400ms, stroke-width 400ms",
+                } as CSSProperties
+              }
             />
             {on && (
               // Traced once from the outer end into the center each time a path is chosen.
