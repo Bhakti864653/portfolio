@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useRef, type FocusEvent, type PointerEvent } from "react";
 import { projectByVerb, VERB_ORDER, type Verb } from "@/lib/projects";
 import { useMotion } from "@/lib/prefs";
@@ -12,24 +13,27 @@ const LABEL_POSITION: Record<Verb, string> = {
   decide: "md:left-1/2 md:top-0 md:-translate-x-1/2",
   learn: "md:right-0 md:top-1/2 md:-translate-y-1/2",
   connect: "md:bottom-0 md:left-1/2 md:-translate-x-1/2",
-  act: "md:left-0 md:top-1/2 md:-translate-y-1/2",
+  // Anchored by its right edge beside the disc, so a long project name grows outward, never over it.
+  act: "md:right-[calc(100%-7rem)] md:top-1/2 md:-translate-y-1/2",
 };
 const LABEL_ALIGN: Record<Verb, string> = {
   decide: "md:items-center md:text-center",
   learn: "md:items-end md:text-right",
   connect: "md:items-center md:text-center",
-  act: "md:items-start",
+  act: "md:items-end md:text-right",
 };
 
 /**
- * The homepage's one visual system: four paths, one per ability, all running into a fixed
- * center called Human Judgment. Choosing an ability traces its path in the project's color and
- * names the project. Every label is a real link, so the figure is never the only way in, and the
+ * The homepage's one visual system: four paths, one per ability and each in its project's color,
+ * all running into a fixed center called Human Judgment. Pointing at a path, its label, or the
+ * ability in the text makes that path bold, quiets the others, and sends a point from the project
+ * in to the center. Every label is a real link (the paths are a pointer shortcut only), and the
  * SVG renders on the server: nothing waits on JavaScript.
  */
 export function JudgmentFigure() {
   const { active, setActive } = useAbility();
   const motion = useMotion();
+  const router = useRouter();
   const field = useRef<HTMLDivElement>(null);
   const project = active ? projectByVerb(active) : null;
 
@@ -73,20 +77,25 @@ export function JudgmentFigure() {
         ref={field}
         onPointerMove={lean}
         onPointerLeave={settle}
-        className="relative md:mx-auto md:max-w-[36rem] md:px-20 md:py-12 lg:max-w-[40rem]"
+        className="relative md:mx-auto md:max-w-[40rem] md:px-28 md:py-14 lg:max-w-[42rem]"
       >
         <div
-          className="relative mx-auto aspect-square w-full max-w-[19rem] sm:max-w-[24rem] md:max-w-[26rem] lg:max-w-[30rem]"
+          className="relative mx-auto aspect-square w-full max-w-[20rem] sm:max-w-[24rem] md:max-w-[26rem] lg:max-w-[30rem]"
           style={{
             transform:
               "translate3d(calc(var(--px, 0) * 7px), calc(var(--py, 0) * 7px), 0)",
             transition: "transform 700ms cubic-bezier(0.2, 0.7, 0.2, 1)",
           }}
         >
-          <VerbFigure2D active={active} animate={motion === "full"} />
+          <VerbFigure2D
+            active={active}
+            animate={motion === "full"}
+            onHover={setActive}
+            onPick={(verb) => router.push(`/work/${projectByVerb(verb).slug}`)}
+          />
           <p
             aria-hidden="true"
-            className="annot pointer-events-none absolute left-1/2 top-[calc(50%+26px)] -translate-x-1/2 whitespace-nowrap rounded-sm bg-paper/85 px-1.5 text-center text-ink"
+            className="annot pointer-events-none absolute left-1/2 top-[58%] -translate-x-1/2 whitespace-nowrap rounded-sm bg-soft/90 px-1.5 text-center text-ink"
           >
             Human judgment
             <span
@@ -114,16 +123,14 @@ export function JudgmentFigure() {
                   href={`/work/${p.slug}`}
                   onMouseEnter={() => setActive(verb)}
                   onFocus={() => setActive(verb)}
-                  className={`accent-${p.slug} press group flex min-h-12 flex-col rounded-[4px] border px-3 py-2 transition-colors md:border-transparent md:px-2 md:py-1 ${on ? "border-a1" : "border-line-strong"} ${LABEL_ALIGN[verb]}`}
+                  className={`accent-${p.slug} press group flex min-h-12 flex-col px-2 py-1 transition-opacity duration-300 ${active && !on ? "opacity-45" : ""} ${LABEL_ALIGN[verb]}`}
                 >
                   <span
-                    className={`font-display text-[1.7rem] capitalize leading-tight transition-colors ${on ? "text-a1" : "text-ink"}`}
+                    className={`font-display text-[1.9rem] capitalize leading-none transition-colors ${on ? "text-a1" : "text-ink"}`}
                   >
                     {verb}
                   </span>
-                  <span
-                    className={`annot whitespace-nowrap tracking-[0.03em] transition-opacity duration-300 ${on ? "text-a1 md:opacity-100" : "md:opacity-0"}`}
-                  >
+                  <span className="annot mt-1.5 whitespace-nowrap tracking-[0.03em] text-a1">
                     {p.chapter} · {p.name}
                   </span>
                 </Link>

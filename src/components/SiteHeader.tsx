@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { setMotion, setTheme, useMotion, useTheme } from "@/lib/prefs";
 import { SITE } from "@/lib/projects";
+import { Monogram } from "./Monogram";
 
 export const ROUTES = [
   { id: "index", href: "/", number: "00", label: "Index" },
@@ -142,6 +143,7 @@ function ChapterMenu({
           className="flex items-center gap-3"
           aria-label="Bhakti Ahir, home"
         >
+          <Monogram title={null} className="h-8 w-auto text-ink" />
           <span className="font-display text-2xl leading-none">
             Bhakti Ahir
           </span>
@@ -233,6 +235,7 @@ export function SiteHeader() {
             aria-label="Bhakti Ahir, home"
             aria-current={active === "index" ? "page" : undefined}
           >
+            <Monogram title={null} className="h-8 w-auto text-ink" />
             <span className="font-display text-2xl leading-none tracking-tight">
               Bhakti Ahir
             </span>

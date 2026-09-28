@@ -32,6 +32,16 @@ describe("JudgmentFigure", () => {
     expect(screen.getByText("→ Synaptiq")).toBeInTheDocument();
   });
 
+  it("opens a project when its path is clicked, and lights it on hover", async () => {
+    const { container } = render(<JudgmentFigure />);
+    const targets = container.querySelectorAll('path[pointer-events="stroke"]');
+    expect(targets).toHaveLength(4);
+    await userEvent.hover(targets[2]);
+    expect(screen.getByText("→ Concord")).toBeInTheDocument();
+    await userEvent.click(targets[2]);
+    expect(push).toHaveBeenCalledWith("/work/concord");
+  });
+
   it("has a text alternative and draws as plain SVG", () => {
     const { container } = render(<JudgmentFigure />);
     expect(
@@ -124,7 +134,11 @@ describe("inline", () => {
   });
 });
 
-vi.mock("next/navigation", () => ({ usePathname: () => "/work/concord" }));
+const push = vi.fn();
+vi.mock("next/navigation", () => ({
+  usePathname: () => "/work/concord",
+  useRouter: () => ({ push }),
+}));
 
 describe("SiteHeader", () => {
   it("links to real routes and marks Work as current on a case study", async () => {
