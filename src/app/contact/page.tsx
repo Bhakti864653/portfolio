@@ -2,7 +2,7 @@ import { existsSync } from "node:fs";
 import path from "node:path";
 import type { Metadata } from "next";
 import { CopyEmail } from "@/components/CopyEmail";
-import { ThreadLayer } from "@/components/thread/ThreadLayer";
+import { PageMasthead } from "@/components/PageMasthead";
 import { SITE } from "@/lib/projects";
 
 export const metadata: Metadata = {
@@ -56,44 +56,27 @@ export default function ContactPage() {
   ];
 
   return (
-    <div className="atmosphere grain relative overflow-hidden">
-      {/* The ending: the four strands from the homepage come back together here and become one
-          line under the principle. */}
-      <section
-        aria-labelledby="contact-title"
-        className="relative pb-16 pt-24 sm:pb-24 sm:pt-32"
-      >
-        <ThreadLayer variant="contact" />
-        <div className="shell relative">
-          <p className="annot flex gap-4 border-t border-ink pt-4">
-            <span className="text-ink">04</span>
-            <span>Contact</span>
-          </p>
-          <div className="grid-12 mt-12 gap-y-10 lg:items-end">
-            <h1
-              id="contact-title"
-              className="font-display text-[clamp(2.8rem,6.6vw,5.6rem)] leading-[0.98] lg:col-span-9"
-            >
-              Let’s build technology that leaves people{" "}
-              <span className="italic text-muted">
-                more capable than it found them.
-              </span>
-            </h1>
-            <p className="font-display text-[clamp(2.2rem,4vw,3.4rem)] italic leading-none lg:col-span-3 lg:justify-self-end">
-              Bhakti Ahir
-            </p>
-          </div>
-          <p className="mt-20 font-display text-[clamp(1.6rem,3vw,2.4rem)] italic sm:mt-28">
-            <span data-thread="principle" className="inline-block">
-              {SITE.philosophy}
+    <div className="tone-warm grain relative bg-paper">
+      <PageMasthead
+        number="04"
+        label="Contact"
+        title={
+          <>
+            Let’s build technology that leaves people{" "}
+            <span className="italic text-muted">
+              more capable than it found them.
             </span>
-          </p>
-        </div>
-      </section>
+          </>
+        }
+      >
+        <p className="font-display text-xl italic text-ink">
+          {SITE.philosophy}
+        </p>
+      </PageMasthead>
 
       <section
         aria-label="Ways to reach me"
-        className="shell grid-12 relative gap-y-12 pb-24 sm:pb-32"
+        className="shell grid-12 gap-y-12 pb-24 pt-6 sm:pb-32 lg:items-start"
       >
         <div className="lg:col-span-6">
           <p className="annot">Email is the best way to reach me</p>

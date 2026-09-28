@@ -13,7 +13,7 @@ export function Plate({
 }) {
   return (
     <figure className={`accent-${project.slug}`}>
-      <div className="reveal-image relative">
+      <div className="relative">
         <div
           aria-hidden="true"
           className="absolute inset-0 translate-x-1.5 translate-y-1.5 rounded-[4px] bg-a2 opacity-15 sm:translate-x-3 sm:translate-y-3"

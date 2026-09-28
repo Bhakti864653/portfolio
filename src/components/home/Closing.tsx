@@ -8,7 +8,7 @@ export function Closing() {
   return (
     <section
       aria-labelledby="closing-title"
-      className="tone-ivory bg-paper py-24 sm:py-36"
+      className="tone-ivory bg-paper py-20 sm:py-28"
     >
       <div className="shell grid-12 gap-y-10">
         <p className="annot text-ink lg:col-span-2">The principle</p>

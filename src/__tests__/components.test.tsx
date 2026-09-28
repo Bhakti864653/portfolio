@@ -2,14 +2,15 @@ import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { CopyEmail } from "@/components/CopyEmail";
-import { Questions } from "@/components/home/Questions";
-import { buildThread } from "@/components/thread/ThreadLayer";
+import { Arrival } from "@/components/home/Arrival";
+import { Portals } from "@/components/home/Portals";
+import { JudgmentFigure } from "@/components/verbs/JudgmentFigure";
 import { PROJECTS } from "@/lib/projects";
 import { inline } from "@/lib/format";
 
-describe("Questions", () => {
-  it("links each human question to its case study, in project order", () => {
-    render(<Questions />);
+describe("JudgmentFigure", () => {
+  it("links every ability to its project and names it on focus", async () => {
+    render(<JudgmentFigure />);
     const links = screen.getAllByRole("link");
     expect(links.map((l) => l.getAttribute("href"))).toEqual([
       "/work/portico",
@@ -17,53 +18,53 @@ describe("Questions", () => {
       "/work/concord",
       "/work/commonground",
     ]);
+    expect(links.map((l) => l.textContent)).toEqual([
+      "decide01 · Portico",
+      "learn02 · Synaptiq",
+      "connect03 · Concord",
+      "act04 · CommonGround",
+    ]);
+
+    await userEvent.tab();
+    expect(links[0]).toHaveFocus();
+    expect(screen.getByText("→ Portico")).toBeInTheDocument();
+    await userEvent.tab();
+    expect(screen.getByText("→ Synaptiq")).toBeInTheDocument();
+  });
+
+  it("has a text alternative and draws as plain SVG", () => {
+    const { container } = render(<JudgmentFigure />);
     expect(
-      screen.getAllByRole("heading", { level: 3 }).map((h) => h.textContent),
-    ).toEqual(PROJECTS.map((p) => p.question));
-    // Name and action are visible text, not hover-only.
-    expect(links[2]).toHaveTextContent("Concord");
-    expect(links[2]).toHaveTextContent("Read the case study");
+      screen.getByRole("figure", { name: /all meeting at one center/ }),
+    ).toBeInTheDocument();
+    expect(container.querySelector("canvas")).toBeNull();
+    expect(container.querySelector("svg")).not.toBeNull();
   });
 });
 
-describe("thread", () => {
-  const box = (x: number, y: number, w = 10, h = 10) => ({ x, y, w, h });
-
-  it("runs from the end of the name and splits into the four project strands", () => {
-    const strands = buildThread(
-      "hero",
-      { exit: box(200, 100, 1, 1), headline: box(100, 150, 600, 200) },
-      1440,
-      900,
-    );
-    expect(strands).toHaveLength(5);
-    expect(strands[0].slug).toBeUndefined();
-    expect(strands[0].d.startsWith("M200.5 100.5")).toBe(true);
-    expect(strands.slice(1).map((s) => s.slug)).toEqual([
-      "portico",
-      "synaptiq",
-      "concord",
-      "commonground",
-    ]);
+describe("Arrival", () => {
+  it("shows the headline and introduction without waiting on an animation", () => {
+    render(<Arrival />);
+    const h1 = screen.getByRole("heading", { level: 1 });
+    expect(h1).toHaveTextContent("I build ways forward.");
+    expect(h1.className).not.toMatch(/enter-/);
+    expect(
+      screen.getByText(/I build systems that help people/).className,
+    ).not.toMatch(/enter-/);
   });
+});
 
-  it("draws nothing until its anchors exist", () => {
-    expect(buildThread("hero", {}, 1440, 900)).toEqual([]);
-    expect(buildThread("contact", {}, 1440, 900)).toEqual([]);
-  });
-
-  it("connects the sequence in order, one colored stretch per project", () => {
-    const anchors = Object.fromEntries(
-      PROJECTS.map((p, i) => [`n-${p.slug}`, box(100 + i * 50, 200 + i * 400)]),
+describe("Portals", () => {
+  it("links each project to its case study, in project order, with full-color screenshots", () => {
+    const { container } = render(<Portals />);
+    const links = screen.getAllByRole("link");
+    expect(links.map((l) => l.getAttribute("href"))).toEqual(
+      PROJECTS.map((p) => `/work/${p.slug}`),
     );
-    const strands = buildThread("sequence", anchors, 1440, 2000);
-    expect(strands.map((s) => s.slug)).toEqual([
-      "portico",
-      "portico",
-      "synaptiq",
-      "concord",
-      "commonground",
-    ]);
+    for (const p of PROJECTS)
+      expect(screen.getByText(p.name)).toBeInTheDocument();
+    for (const img of container.querySelectorAll("img"))
+      expect(img.getAttribute("style") ?? "").not.toMatch(/opacity|filter/);
   });
 });
 

@@ -26,7 +26,7 @@ export function PageMasthead({
         <span>{label}</span>
       </p>
       <div className="grid-12 mt-10 gap-y-6 sm:mt-14">
-        <h1 className="font-display text-[clamp(3rem,8vw,6.5rem)] leading-[0.95] lg:col-span-8">
+        <h1 className="font-display text-[clamp(2.6rem,6.4vw,5.4rem)] leading-[0.98] lg:col-span-8">
           {title}
         </h1>
         <div className="lg:col-span-4 lg:flex lg:flex-col lg:justify-between">

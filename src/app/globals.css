@@ -16,8 +16,7 @@
   --grid-subtle: rgb(17 21 21 / 0.028);
   --focus: #111515;
 
-  /* Project accent worlds: [primary, secondary]. */
-  /* Project accents: [text-safe accent (4.5:1+ on paper), soft field color for atmosphere]. */
+  /* Project accents: [text-safe accent (4.5:1+ on paper), soft secondary for plates and tints]. */
   --portico-1: #ad4a36;
   --portico-2: #eea08c;
   --synaptiq-1: #2f5bd6;
@@ -339,14 +338,6 @@
   animation: cue 2.4s ease-in-out 3s 3;
 }
 
-/* Project images open like a plate being uncovered as they enter the viewport. */
-[data-reveal] .reveal-image {
-  transition: clip-path 1100ms cubic-bezier(0.2, 0.7, 0.2, 1) 120ms;
-}
-[data-reveal="pending"] .reveal-image {
-  clip-path: inset(0 0 100% 0);
-}
-
 /* Links: an underline that draws in from the left. */
 @utility link-draw {
   background-image: linear-gradient(currentColor, currentColor);
@@ -422,191 +413,47 @@
 }
 
 /* ------------------------------------------------------------------------------------------
-   The thread. One line that starts at the end of Bhakti's name and runs through every page.
-   Paths use pathLength=1, so every draw is the same 0 → 1, whatever the real length.
+   Homepage portals. Hovering or focusing one tints the whole room in that project's color and
+   lights its line back to Human Judgment. Pure CSS (:has), so it costs no JavaScript. The
+   screenshots are always shown in full color; only a slight lift answers the pointer.
    ------------------------------------------------------------------------------------------ */
-.thread {
-  fill: none;
-  stroke: var(--a1);
-  stroke-width: 1.6;
-  stroke-linecap: round;
-  transition:
-    opacity 400ms,
-    stroke-width 400ms;
-}
-.thread-ink {
-  stroke: var(--ink);
-}
-/* Drawn once, on arrival */
-.thread-draw {
-  stroke-dasharray: 1;
-  animation: trace 1400ms cubic-bezier(0.55, 0, 0.2, 1) both;
-  animation-delay: var(--delay, 0ms);
-}
-/* Drawn as the visitor reads down the page, where the browser supports scroll timelines;
-   elsewhere it is simply drawn. No JavaScript, no scroll listeners. */
-@supports (animation-timeline: view()) {
-  .thread-scroll {
-    stroke-dasharray: 1;
-    animation: trace linear both;
-    animation-timeline: view();
-    animation-range: entry 10% cover 55%;
-  }
-}
-:root[data-motion="reduce"] .thread-draw,
-:root[data-motion="reduce"] .thread-scroll {
-  animation: none;
-  stroke-dashoffset: 0;
-}
-
-/* Atmosphere: soft fields of the four project colors behind the introduction. Static. */
-.atmosphere {
-  background:
-    radial-gradient(
-      40% 45% at 88% 18%,
-      color-mix(in srgb, var(--portico-2) 34%, transparent),
-      transparent 70%
-    ),
-    radial-gradient(
-      35% 40% at 70% 78%,
-      color-mix(in srgb, var(--synaptiq-2) 26%, transparent),
-      transparent 70%
-    ),
-    radial-gradient(
-      30% 35% at 12% 92%,
-      color-mix(in srgb, var(--concord-2) 30%, transparent),
-      transparent 70%
-    ),
-    radial-gradient(
-      30% 30% at 48% 8%,
-      color-mix(in srgb, var(--commonground-2) 20%, transparent),
-      transparent 70%
-    );
-}
-/* Dark: the same fields, fainter. (Never opacity on the section itself: that dims its text.) */
-:root[data-theme="dark"] .atmosphere {
-  background:
-    radial-gradient(
-      40% 45% at 88% 18%,
-      color-mix(in srgb, var(--portico-1) 12%, transparent),
-      transparent 70%
-    ),
-    radial-gradient(
-      35% 40% at 70% 78%,
-      color-mix(in srgb, var(--synaptiq-1) 10%, transparent),
-      transparent 70%
-    ),
-    radial-gradient(
-      30% 35% at 12% 92%,
-      color-mix(in srgb, var(--concord-1) 10%, transparent),
-      transparent 70%
-    ),
-    radial-gradient(
-      30% 30% at 48% 8%,
-      color-mix(in srgb, var(--commonground-1) 8%, transparent),
-      transparent 70%
-    );
-}
-/* Light screenshots glow on a dark page; keep the introduction's glimpses quiet there. */
-:root[data-theme="dark"] .hero-fragment {
-  opacity: 0.38;
-}
-
-/* Screenshot fragments: a crop of the real interface, dissolving at its edges. */
-.fragment {
-  -webkit-mask-image: radial-gradient(
-    closest-side,
-    black 55%,
-    transparent 100%
-  );
-  mask-image: radial-gradient(closest-side, black 55%, transparent 100%);
-}
-.fragment-v {
-  -webkit-mask-image: linear-gradient(
-    to bottom,
-    transparent,
-    black 18%,
-    black 78%,
-    transparent
-  );
-  mask-image: linear-gradient(
-    to bottom,
-    transparent,
-    black 18%,
-    black 78%,
-    transparent
-  );
-}
-.fragment-h {
-  -webkit-mask-image: linear-gradient(to right, black 60%, transparent);
-  mask-image: linear-gradient(to right, black 60%, transparent);
-}
-
-/* Depth: fragments drift slightly slower than the type as the page scrolls (scroll timeline
-   only; nothing moves under reduced motion or in browsers without support). */
-@keyframes drift {
-  from {
-    transform: translateY(var(--drift, 24px));
-  }
-  to {
-    transform: translateY(calc(var(--drift, 24px) * -1));
-  }
-}
-@supports (animation-timeline: view()) {
-  .drift {
-    animation: drift linear both;
-    animation-timeline: view();
-  }
-}
-:root[data-motion="reduce"] .drift {
-  animation: none;
-}
-
-/* ------------------------------------------------------------------------------------------
-   The four questions. Hover, focus, or tap one and the other paths quiet down, its screenshot
-   comes into focus, and the room takes on its color. CSS only (:has).
-   ------------------------------------------------------------------------------------------ */
-.questions {
+.portals {
   --atmos: transparent;
   background-color: color-mix(in srgb, var(--atmos) 6%, var(--paper));
   transition: background-color 500ms ease;
 }
-.questions:has(.q-portico:is(:hover, :focus-visible)) {
+.portals:has(.portal-portico:is(:hover, :focus-visible)) {
   --atmos: var(--portico-1);
 }
-.questions:has(.q-synaptiq:is(:hover, :focus-visible)) {
+.portals:has(.portal-synaptiq:is(:hover, :focus-visible)) {
   --atmos: var(--synaptiq-1);
 }
-.questions:has(.q-concord:is(:hover, :focus-visible)) {
+.portals:has(.portal-concord:is(:hover, :focus-visible)) {
   --atmos: var(--concord-1);
 }
-.questions:has(.q-commonground:is(:hover, :focus-visible)) {
+.portals:has(.portal-commonground:is(:hover, :focus-visible)) {
   --atmos: var(--commonground-1);
 }
-.questions:has(.q:is(:hover, :focus-visible)) .thread {
-  opacity: 0.22;
+.portal-line {
+  stroke: var(--line-strong);
+  stroke-width: 1;
+  transition:
+    stroke 400ms,
+    stroke-width 400ms;
 }
-.questions:has(.q-portico:is(:hover, :focus-visible)) .strand-portico,
-.questions:has(.q-synaptiq:is(:hover, :focus-visible)) .strand-synaptiq,
-.questions:has(.q-concord:is(:hover, :focus-visible)) .strand-concord,
-.questions:has(.q-commonground:is(:hover, :focus-visible))
-  .strand-commonground {
-  opacity: 1;
-  stroke-width: 2.6;
+.portals:has(.portal-portico:is(:hover, :focus-visible)) .portal-line-portico,
+.portals:has(.portal-synaptiq:is(:hover, :focus-visible)) .portal-line-synaptiq,
+.portals:has(.portal-concord:is(:hover, :focus-visible)) .portal-line-concord,
+.portals:has(.portal-commonground:is(:hover, :focus-visible))
+  .portal-line-commonground {
+  stroke: var(--a1);
+  stroke-width: 2.4;
 }
 @media (hover: hover) {
-  .q-image {
-    opacity: 0.55;
-    filter: saturate(0.35);
-    transform: scale(1);
-    transition:
-      opacity 500ms,
-      filter 500ms,
-      transform 800ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  .portal-image {
+    transition: transform 700ms cubic-bezier(0.2, 0.7, 0.2, 1);
   }
-  .q:is(:hover, :focus-visible) .q-image {
-    opacity: 1;
-    filter: none;
+  .portal:is(:hover, :focus-visible) .portal-image {
     transform: scale(1.03);
   }
 }
