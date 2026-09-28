@@ -66,6 +66,10 @@ describe("project data", () => {
     expect(STAGES.map((s) => s.id)).toEqual(PROJECTS.map((p) => p.slug));
   });
 
+  it("gives every project its human question", () => {
+    for (const p of PROJECTS) expect(p.question).toMatch(/^How can .+\?$/);
+  });
+
   it("looks projects up by slug", () => {
     expect(projectBySlug("concord")?.name).toBe("Concord");
     expect(projectBySlug("nope")).toBeUndefined();

@@ -5,10 +5,10 @@
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
 :root {
-  --paper: #f3efe7;
-  --soft: #fcfaf5;
+  --paper: #f6f2ea;
+  --soft: #fdfbf6;
   --ink: #111515;
-  --muted: #595f5b;
+  --muted: #5b615d;
   --faint: #8a8f89;
   --line: rgb(17 21 21 / 0.14);
   --line-strong: rgb(17 21 21 / 0.32);
@@ -17,14 +17,15 @@
   --focus: #111515;
 
   /* Project accent worlds: [primary, secondary]. */
-  --portico-1: #7b1e2e;
-  --portico-2: #a8842f;
-  --concord-1: #7a66b8;
-  --concord-2: #d9684b;
-  --synaptiq-1: #1f4ed0;
-  --synaptiq-2: #7a2ff0;
-  --commonground-1: #0d7568;
-  --commonground-2: #c9951c;
+  /* Project accents: [text-safe accent (4.5:1+ on paper), soft field color for atmosphere]. */
+  --portico-1: #ad4a36;
+  --portico-2: #eea08c;
+  --synaptiq-1: #2f5bd6;
+  --synaptiq-2: #8fadf7;
+  --concord-1: #6a55a8;
+  --concord-2: #c3b4ec;
+  --commonground-1: #0a7566;
+  --commonground-2: #7fd6c3;
 
   /* The accent in play for the current chapter; components set these locally. */
   --a1: var(--ink);
@@ -45,14 +46,14 @@
   --grid-subtle: rgb(237 231 219 / 0.025);
   --focus: #ede7db;
 
-  --portico-1: #e07a88;
-  --portico-2: #d9b765;
-  --concord-1: #b6a5f2;
-  --concord-2: #f29a80;
-  --synaptiq-1: #7b9dff;
-  --synaptiq-2: #b58aff;
-  --commonground-1: #52c4b3;
-  --commonground-2: #edc75a;
+  --portico-1: #f0937d;
+  --portico-2: #8a3d2e;
+  --synaptiq-1: #86a8ff;
+  --synaptiq-2: #2a4595;
+  --concord-1: #bfb0f5;
+  --concord-2: #54448a;
+  --commonground-1: #5fd3bf;
+  --commonground-2: #145c51;
   color-scheme: dark;
 }
 
@@ -216,8 +217,8 @@
    adapts without knowing which chapter it is in. One system, four moods.
    ------------------------------------------------------------------------------------------ */
 .tone-ivory {
-  --paper: #faf7f0;
-  --soft: #fffdf8;
+  --paper: #fbf8f2;
+  --soft: #fffefa;
 }
 .tone-cool {
   --paper: #e9ecea;
@@ -240,10 +241,10 @@
   --line-strong: rgb(237 231 219 / 0.32);
   --grid: rgb(237 231 219 / 0.04);
   --focus: #ede7db;
-  --portico-1: #e07a88;
-  --synaptiq-1: #7b9dff;
-  --concord-1: #b6a5f2;
-  --commonground-1: #52c4b3;
+  --portico-1: #f0937d;
+  --synaptiq-1: #86a8ff;
+  --concord-1: #bfb0f5;
+  --commonground-1: #5fd3bf;
   color-scheme: dark;
 }
 :root[data-theme="dark"] .tone-ivory {
@@ -421,53 +422,200 @@
 }
 
 /* ------------------------------------------------------------------------------------------
-   Homepage portals. Hovering or focusing one tints the whole room in that project's color and
-   lights its line back to Human Judgment. Pure CSS (:has), so it costs no JavaScript.
+   The thread. One line that starts in the BA mark's flourish and runs through every page.
+   Paths use pathLength=1, so every draw is the same 0 → 1, whatever the real length.
    ------------------------------------------------------------------------------------------ */
-.portals {
-  --atmos: transparent;
-  background-color: color-mix(in srgb, var(--atmos) 7%, var(--paper));
-  transition: background-color 500ms ease;
+.mono-line {
+  stroke-dasharray: 1;
+  animation: trace 650ms cubic-bezier(0.6, 0, 0.2, 1) both;
+  animation-delay: var(--delay, 0ms);
 }
-.portals:has(.portal-portico:is(:hover, :focus-visible)) {
-  --atmos: var(--portico-1);
+.mono-fill {
+  animation: fade 520ms ease-out both;
+  animation-delay: var(--delay, 0ms);
 }
-.portals:has(.portal-synaptiq:is(:hover, :focus-visible)) {
-  --atmos: var(--synaptiq-1);
-}
-.portals:has(.portal-concord:is(:hover, :focus-visible)) {
-  --atmos: var(--concord-1);
-}
-.portals:has(.portal-commonground:is(:hover, :focus-visible)) {
-  --atmos: var(--commonground-1);
-}
-.portal-line {
-  stroke: var(--line-strong);
-  stroke-width: 1;
+
+.thread {
+  fill: none;
+  stroke: var(--a1);
+  stroke-width: 1.6;
+  stroke-linecap: round;
   transition:
-    stroke 400ms,
+    opacity 400ms,
     stroke-width 400ms;
 }
-.portals:has(.portal-portico:is(:hover, :focus-visible)) .portal-line-portico,
-.portals:has(.portal-synaptiq:is(:hover, :focus-visible)) .portal-line-synaptiq,
-.portals:has(.portal-concord:is(:hover, :focus-visible)) .portal-line-concord,
-.portals:has(.portal-commonground:is(:hover, :focus-visible))
-  .portal-line-commonground {
-  stroke: var(--a1);
-  stroke-width: 2.4;
+.thread-ink {
+  stroke: var(--ink);
 }
-/* Touch screens have no hover, so the product shows in full there; it wakes on hover elsewhere. */
+/* Drawn once, on arrival */
+.thread-draw {
+  stroke-dasharray: 1;
+  animation: trace 1400ms cubic-bezier(0.55, 0, 0.2, 1) both;
+  animation-delay: var(--delay, 0ms);
+}
+/* Drawn as the visitor reads down the page, where the browser supports scroll timelines;
+   elsewhere it is simply drawn. No JavaScript, no scroll listeners. */
+@supports (animation-timeline: view()) {
+  .thread-scroll {
+    stroke-dasharray: 1;
+    animation: trace linear both;
+    animation-timeline: view();
+    animation-range: entry 10% cover 55%;
+  }
+}
+:root[data-motion="reduce"] .thread-draw,
+:root[data-motion="reduce"] .thread-scroll,
+:root[data-motion="reduce"] .mono-line {
+  animation: none;
+  stroke-dashoffset: 0;
+}
+
+/* Atmosphere: soft fields of the four project colors behind the introduction. Static. */
+.atmosphere {
+  background:
+    radial-gradient(
+      40% 45% at 88% 18%,
+      color-mix(in srgb, var(--portico-2) 34%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      35% 40% at 70% 78%,
+      color-mix(in srgb, var(--synaptiq-2) 26%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      30% 35% at 12% 92%,
+      color-mix(in srgb, var(--concord-2) 30%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      30% 30% at 48% 8%,
+      color-mix(in srgb, var(--commonground-2) 20%, transparent),
+      transparent 70%
+    );
+}
+/* Dark: the same fields, fainter. (Never opacity on the section itself: that dims its text.) */
+:root[data-theme="dark"] .atmosphere {
+  background:
+    radial-gradient(
+      40% 45% at 88% 18%,
+      color-mix(in srgb, var(--portico-1) 12%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      35% 40% at 70% 78%,
+      color-mix(in srgb, var(--synaptiq-1) 10%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      30% 35% at 12% 92%,
+      color-mix(in srgb, var(--concord-1) 10%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      30% 30% at 48% 8%,
+      color-mix(in srgb, var(--commonground-1) 8%, transparent),
+      transparent 70%
+    );
+}
+/* Light screenshots glow on a dark page; keep the introduction's glimpses quiet there. */
+:root[data-theme="dark"] .hero-fragment {
+  opacity: 0.38;
+}
+
+/* Screenshot fragments: a crop of the real interface, dissolving at its edges. */
+.fragment {
+  -webkit-mask-image: radial-gradient(
+    closest-side,
+    black 55%,
+    transparent 100%
+  );
+  mask-image: radial-gradient(closest-side, black 55%, transparent 100%);
+}
+.fragment-v {
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    black 18%,
+    black 78%,
+    transparent
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    black 18%,
+    black 78%,
+    transparent
+  );
+}
+.fragment-h {
+  -webkit-mask-image: linear-gradient(to right, black 60%, transparent);
+  mask-image: linear-gradient(to right, black 60%, transparent);
+}
+
+/* Depth: fragments drift slightly slower than the type as the page scrolls (scroll timeline
+   only; nothing moves under reduced motion or in browsers without support). */
+@keyframes drift {
+  from {
+    transform: translateY(var(--drift, 24px));
+  }
+  to {
+    transform: translateY(calc(var(--drift, 24px) * -1));
+  }
+}
+@supports (animation-timeline: view()) {
+  .drift {
+    animation: drift linear both;
+    animation-timeline: view();
+  }
+}
+:root[data-motion="reduce"] .drift {
+  animation: none;
+}
+
+/* ------------------------------------------------------------------------------------------
+   The four questions. Hover, focus, or tap one and the other paths quiet down, its screenshot
+   comes into focus, and the room takes on its color. CSS only (:has).
+   ------------------------------------------------------------------------------------------ */
+.questions {
+  --atmos: transparent;
+  background-color: color-mix(in srgb, var(--atmos) 6%, var(--paper));
+  transition: background-color 500ms ease;
+}
+.questions:has(.q-portico:is(:hover, :focus-visible)) {
+  --atmos: var(--portico-1);
+}
+.questions:has(.q-synaptiq:is(:hover, :focus-visible)) {
+  --atmos: var(--synaptiq-1);
+}
+.questions:has(.q-concord:is(:hover, :focus-visible)) {
+  --atmos: var(--concord-1);
+}
+.questions:has(.q-commonground:is(:hover, :focus-visible)) {
+  --atmos: var(--commonground-1);
+}
+.questions:has(.q:is(:hover, :focus-visible)) .thread {
+  opacity: 0.22;
+}
+.questions:has(.q-portico:is(:hover, :focus-visible)) .strand-portico,
+.questions:has(.q-synaptiq:is(:hover, :focus-visible)) .strand-synaptiq,
+.questions:has(.q-concord:is(:hover, :focus-visible)) .strand-concord,
+.questions:has(.q-commonground:is(:hover, :focus-visible))
+  .strand-commonground {
+  opacity: 1;
+  stroke-width: 2.6;
+}
 @media (hover: hover) {
-  .portal-image {
-    opacity: 0.5;
-    filter: grayscale(0.85);
+  .q-image {
+    opacity: 0.55;
+    filter: saturate(0.35);
     transform: scale(1);
     transition:
       opacity 500ms,
       filter 500ms,
-      transform 700ms cubic-bezier(0.2, 0.7, 0.2, 1);
+      transform 800ms cubic-bezier(0.2, 0.7, 0.2, 1);
   }
-  .portal:is(:hover, :focus-visible) .portal-image {
+  .q:is(:hover, :focus-visible) .q-image {
     opacity: 1;
     filter: none;
     transform: scale(1.03);

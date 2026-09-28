@@ -13,6 +13,8 @@ export type Project = {
   name: string;
   chapter: string;
   tagline: string;
+  /** The human question the project answers: where someone was stuck. */
+  question: string;
   /** One sentence for the homepage; the case study holds the detail. */
   summary: string;
   intro: string;
@@ -43,6 +45,7 @@ export const PROJECTS: Project[] = [
     verb: "decide",
     name: "Portico",
     chapter: "01",
+    question: "How can an overwhelming decision become clearer?",
     tagline: "A command center for college applications.",
     summary:
       "Tracks every deadline, essay, recommendation, and document, and suggests what to work on next.",
@@ -135,6 +138,7 @@ export const PROJECTS: Project[] = [
     verb: "learn",
     name: "Synaptiq",
     chapter: "02",
+    question: "How can a student understand what they actually know?",
     tagline: "A study partner built from your own notes.",
     summary:
       "Finds the concepts you’re weakest on, then builds practice, a guided study plan, and a tutor grounded in your own notes.",
@@ -229,6 +233,7 @@ export const PROJECTS: Project[] = [
     verb: "connect",
     name: "Concord",
     chapter: "03",
+    question: "How can the right people find each other fairly?",
     tagline: "Mentorship matching that is fair by construction.",
     summary:
       "Mentees and mentors rank each other, and the Gale-Shapley algorithm pairs them so no two people would both rather be together.",
@@ -321,6 +326,7 @@ export const PROJECTS: Project[] = [
     verb: "act",
     name: "CommonGround",
     chapter: "04",
+    question: "How can local knowledge become collective action?",
     tagline:
       "Turning scattered local problems into trackable collective action.",
     summary:

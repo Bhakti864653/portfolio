@@ -1,100 +1,167 @@
-import Link from "next/link";
 import type { CSSProperties } from "react";
-import { SITE, VERB_ORDER, projectByVerb } from "@/lib/projects";
-import { Monogram } from "../Monogram";
-import { JudgmentFigure } from "../verbs/JudgmentFigure";
+import { SITE, VERB_ORDER, projectBySlug, projectByVerb } from "@/lib/projects";
+import { MONOGRAM_EXIT, Monogram } from "../Monogram";
+import { Fragment } from "../thread/Fragment";
+import { ThreadLayer } from "../thread/ThreadLayer";
 
 const delay = (ms: number) => ({ "--delay": `${ms}ms` }) as CSSProperties;
 
 /**
- * Act I. Who Bhakti is, readable on the first frame: every word is server-rendered and the
- * entrance animation only eases it in. The figure beside it is the site's one visual system.
+ * The introduction, built in planes: soft color fields and grain at the back; screenshot
+ * fragments (two behind the thread, two in front of it); the thread itself, drawn out of the
+ * monogram's flourish and under the headline; the type; and the invitation to follow it.
+ * Every word is server-rendered and readable before any animation code loads.
  */
 export function Arrival() {
+  const [portico, synaptiq, concord, commonground] = [
+    "portico",
+    "synaptiq",
+    "concord",
+    "commonground",
+  ].map((s) => projectBySlug(s)!);
+
   return (
     <section
       aria-labelledby="home-title"
-      className="grain grid-field relative border-b border-line"
+      className="atmosphere grain relative overflow-hidden"
     >
-      <div className="shell flex min-h-[calc(100svh-4rem)] flex-col pb-8 pt-6">
-        <div className="annot flex justify-between gap-4 border-b border-line pb-3">
-          <span>00 · Index</span>
-          <span className="hidden sm:inline">Panamá · 9° N, 79.5° W</span>
-          <span>Four systems</span>
+      {/* Visual layer, behind the thread (desktop only: on phones the statement owns the screen) */}
+      <div aria-hidden="true" className="absolute inset-0 hidden lg:block">
+        <Fragment
+          project={portico}
+          focus={[0.55, 0.42]}
+          zoom={1.5}
+          sizes="30vw"
+          className="hero-fragment drift absolute right-[4%] top-[9%] aspect-[4/3] w-[25vw] max-w-[360px] opacity-80"
+          style={{ "--drift": "18px" } as CSSProperties}
+          priority
+        />
+        <Fragment
+          project={concord}
+          focus={[0.25, 0.4]}
+          zoom={1.9}
+          sizes="24vw"
+          className="hero-fragment drift absolute bottom-[14%] right-[27%] aspect-square w-[17vw] max-w-[250px] opacity-70"
+          style={{ "--drift": "34px" } as CSSProperties}
+        />
+      </div>
+
+      <ThreadLayer variant="hero" className="z-10" />
+
+      {/* Visual layer, in front of the thread */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 z-20 hidden lg:block"
+      >
+        <Fragment
+          project={synaptiq}
+          focus={[0.4, 0.45]}
+          zoom={1.7}
+          sizes="22vw"
+          className="hero-fragment drift absolute right-[3%] top-[48%] aspect-[5/4] w-[19vw] max-w-[280px]"
+          style={{ "--drift": "48px" } as CSSProperties}
+        />
+        <Fragment
+          project={commonground}
+          focus={[0.45, 0.35]}
+          zoom={1.6}
+          sizes="20vw"
+          className="hero-fragment drift absolute right-[30%] top-[6%] aspect-[3/2] w-[14vw] max-w-[210px] opacity-90"
+          style={{ "--drift": "26px" } as CSSProperties}
+        />
+      </div>
+
+      <div className="shell relative z-30 flex min-h-[calc(100svh-4rem)] flex-col pb-10 pt-6">
+        {/* Identity and bearings */}
+        <div className="annot flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b border-line pb-3">
+          <p className="enter-fade" style={delay(0)}>
+            <span className="font-display text-[1.35rem] normal-case tracking-normal text-ink">
+              Bhakti Ahir
+            </span>
+            <span className="ml-3">
+              Student developer · Panama · 12th grade
+            </span>
+          </p>
+          <p className="hidden md:block">9° N, 79.5° W · Four systems</p>
         </div>
 
-        <div className="grid-12 flex-1 content-center gap-y-12 py-12 lg:items-center">
-          <div className="lg:col-span-7">
+        <div className="flex flex-1 flex-col justify-center py-8 lg:max-w-[62%]">
+          <span className="relative inline-block self-start">
             <Monogram
               draw
-              title={null}
-              className="h-14 w-auto text-ink sm:h-16"
+              title="BA, Bhakti Ahir’s monogram"
+              className="h-20 w-auto text-ink sm:h-24 lg:h-28"
             />
-            <h1
-              id="home-title"
-              className="enter-reveal mt-7 font-display text-[clamp(3.4rem,11vw,9.5rem)] uppercase leading-[0.86] tracking-[-0.02em]"
-              style={delay(400)}
-            >
-              Bhakti Ahir
-            </h1>
-            <p
-              className="body-copy enter-rise mt-7 max-w-[30rem] text-ink"
-              style={delay(750)}
-            >
-              {SITE.tagline}
-            </p>
-            <p
-              className="enter-rise mt-6 max-w-[34rem] font-display text-[clamp(1.8rem,3.4vw,2.7rem)] italic leading-[1.08]"
-              style={delay(950)}
-            >
-              “{SITE.philosophy}”
-            </p>
-            <p
-              className="enter-rise mt-8 flex flex-wrap items-baseline gap-x-3 gap-y-1 font-display text-2xl sm:text-3xl"
-              style={delay(1150)}
-            >
-              {VERB_ORDER.map((verb, i) => (
-                <span key={verb} className="flex items-baseline gap-3">
-                  <span
-                    className={`accent-${projectByVerb(verb).slug} capitalize text-a1`}
-                  >
-                    {verb}
-                  </span>
-                  {i < VERB_ORDER.length - 1 && (
-                    <span aria-hidden="true" className="text-faint">
-                      ·
-                    </span>
-                  )}
-                </span>
-              ))}
-            </p>
-            <div
-              className="enter-rise mt-10 flex flex-wrap items-center gap-3"
-              style={delay(1300)}
-            >
-              <Link
-                href="/work"
-                className="press group inline-flex h-12 items-center gap-2 rounded-full bg-ink px-6 text-sm font-semibold text-paper hover:opacity-90"
-              >
-                Enter the work
-                <span
-                  aria-hidden="true"
-                  className="transition-transform group-hover:translate-x-1"
-                >
-                  →
-                </span>
-              </Link>
-              <a
-                href="#directions"
-                className="annot link-draw px-2 py-3 text-ink"
-              >
-                Or choose a direction ↓
-              </a>
-            </div>
-          </div>
+            {/* The flourish's end: where the thread takes over */}
+            <span
+              data-thread="exit"
+              aria-hidden="true"
+              className="absolute h-px w-px"
+              style={{
+                left: `${MONOGRAM_EXIT.x * 100}%`,
+                top: `${MONOGRAM_EXIT.y * 100}%`,
+              }}
+            />
+          </span>
 
-          <div className="enter-fade lg:col-span-5" style={delay(600)}>
-            <JudgmentFigure />
+          <h1
+            id="home-title"
+            className="enter-reveal mt-6 font-display text-[clamp(3.4rem,8.4vw,7.4rem)] leading-[0.9] tracking-[-0.02em]"
+            style={delay(250)}
+          >
+            <span data-thread="headline" className="inline-block">
+              I build ways forward.
+            </span>
+          </h1>
+
+          <p
+            className="body-copy enter-rise mt-9 max-w-[36rem] text-ink"
+            style={delay(500)}
+          >
+            When decisions feel overwhelming, learning feels unclear, the right
+            guidance feels difficult to find, or local knowledge has nowhere to
+            go—I build systems that help people move forward.
+          </p>
+
+          <p
+            className="enter-rise mt-6 flex flex-wrap items-baseline gap-x-3 gap-y-1 font-display text-2xl sm:text-3xl"
+            style={delay(700)}
+          >
+            {VERB_ORDER.map((verb, i) => (
+              <span key={verb} className="flex items-baseline gap-3">
+                <span
+                  className={`accent-${projectByVerb(verb).slug} capitalize text-a1`}
+                >
+                  {verb}
+                </span>
+                {i < VERB_ORDER.length - 1 && (
+                  <span aria-hidden="true" className="text-faint">
+                    ·
+                  </span>
+                )}
+              </span>
+            ))}
+          </p>
+
+          <div
+            className="enter-rise mt-9 flex flex-wrap items-center gap-x-6 gap-y-4"
+            style={delay(900)}
+          >
+            <a
+              href="#questions"
+              className="press group inline-flex h-12 items-center gap-2 rounded-full bg-ink px-6 text-sm font-semibold text-paper hover:opacity-90"
+            >
+              Follow the thread
+              <span
+                aria-hidden="true"
+                className="transition-transform group-hover:translate-y-0.5"
+              >
+                ↓
+              </span>
+            </a>
+            <p className="font-display text-xl italic text-muted">
+              {SITE.philosophy}
+            </p>
           </div>
         </div>
       </div>

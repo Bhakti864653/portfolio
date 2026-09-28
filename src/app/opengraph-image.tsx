@@ -1,10 +1,5 @@
 import { ImageResponse } from "next/og";
-import {
-  MONOGRAM_JUNCTION,
-  MONOGRAM_ORDER,
-  MONOGRAM_PATHS,
-  MONOGRAM_VIEWBOX,
-} from "@/components/Monogram";
+import { MONOGRAM } from "@/components/Monogram";
 import { SITE } from "@/lib/projects";
 
 export const alt = "Bhakti Ahir — Technology should expand what people can do.";
@@ -21,34 +16,29 @@ export default function Image() {
         flexDirection: "column",
         justifyContent: "space-between",
         padding: 72,
-        background: "#f3efe7",
+        background: "#f6f2ea",
         color: "#111515",
       }}
     >
-      <svg
-        width="120"
-        height="101"
-        viewBox={MONOGRAM_VIEWBOX}
-        fill="none"
-        stroke="#111515"
-        strokeWidth="3.4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        {MONOGRAM_ORDER.map((v) => (
-          <path key={v} d={MONOGRAM_PATHS[v]} />
+      <svg width="160" height="120" viewBox={MONOGRAM.viewBox} fill="#111515">
+        {MONOGRAM.order.map((k) => (
+          <path
+            key={k}
+            d={MONOGRAM.shapes[k as keyof typeof MONOGRAM.shapes]}
+          />
         ))}
-        <circle
-          cx={MONOGRAM_JUNCTION.x}
-          cy={MONOGRAM_JUNCTION.y}
-          r="3.2"
-          fill="#f3efe7"
-          strokeWidth="2"
-        />
       </svg>
       <div style={{ display: "flex", flexDirection: "column" }}>
-        <div style={{ fontSize: 112, letterSpacing: -3, lineHeight: 1 }}>
-          BHAKTI AHIR
+        <div style={{ fontSize: 30, letterSpacing: 4 }}>BHAKTI AHIR</div>
+        <div
+          style={{
+            fontSize: 108,
+            letterSpacing: -3,
+            lineHeight: 1,
+            marginTop: 16,
+          }}
+        >
+          I build ways forward.
         </div>
         <div style={{ fontSize: 44, marginTop: 24, color: "#595f5b" }}>
           {SITE.philosophy}

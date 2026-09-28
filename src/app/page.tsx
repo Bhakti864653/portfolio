@@ -1,12 +1,12 @@
 import { Arrival } from "@/components/home/Arrival";
 import { Closing } from "@/components/home/Closing";
-import { Portals } from "@/components/home/Portals";
+import { Questions } from "@/components/home/Questions";
 
 export default function Home() {
   return (
     <>
       <Arrival />
-      <Portals />
+      <Questions />
       <Closing />
     </>
   );

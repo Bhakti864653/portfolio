@@ -148,7 +148,13 @@ export function CaseStudy({ project: p }: { project: Project }) {
   return (
     <article className={`accent-${p.slug}`} aria-labelledby="case-title">
       {/* Masthead: text only, on a faint grid */}
-      <header className="grid-field-subtle border-b border-line">
+      <header
+        className="border-b border-line"
+        style={{
+          background:
+            "radial-gradient(55% 90% at 88% 0%, color-mix(in srgb, var(--a2) 32%, transparent), transparent 70%)",
+        }}
+      >
         <div className="shell pb-14 pt-6 sm:pb-20">
           <div className="annot flex flex-wrap justify-between gap-2 border-b border-line pb-3">
             <Link href="/work" className="text-ink hover:underline">
@@ -163,9 +169,12 @@ export function CaseStudy({ project: p }: { project: Project }) {
 
           <div className="grid-12 mt-12 gap-y-8 sm:mt-16">
             <div className="lg:col-span-7">
+              <p className="mb-5 max-w-[34rem] font-display text-[clamp(1.5rem,2.4vw,2rem)] italic leading-[1.15] text-muted">
+                {p.question}
+              </p>
               <h1
                 id="case-title"
-                className="font-display text-[clamp(3rem,7vw,5.5rem)] leading-[0.95]"
+                className="font-display text-[clamp(3rem,7vw,5.5rem)] leading-[0.95] text-a1"
               >
                 {p.name}
               </h1>
@@ -224,7 +233,8 @@ export function CaseStudy({ project: p }: { project: Project }) {
             </div>
           </nav>
 
-          <div className="mt-10 lg:col-span-8 lg:col-start-5 lg:mt-0">
+          {/* The project's thread runs down beside the reading column, a node at each section */}
+          <div className="mt-10 border-l-2 border-a1 pl-6 sm:pl-10 lg:col-span-8 lg:col-start-5 lg:mt-0">
             {entries.map((e, i) => (
               <section
                 key={e.id}
@@ -234,8 +244,12 @@ export function CaseStudy({ project: p }: { project: Project }) {
               >
                 <h2
                   id={`${e.id}-h`}
-                  className="mb-6 flex items-baseline gap-4 font-display text-[2rem] leading-tight"
+                  className="relative mb-6 flex items-baseline gap-4 font-display text-[2rem] leading-tight"
                 >
+                  <span
+                    aria-hidden="true"
+                    className="absolute -left-[31px] top-1/2 h-3 w-3 -translate-y-1/2 rounded-full border-2 border-a1 bg-paper sm:-left-[47px]"
+                  />
                   <span className="annot text-a1">
                     {String(i + 1).padStart(2, "0")}
                   </span>

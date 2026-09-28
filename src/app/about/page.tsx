@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { NextPage } from "@/components/NextPage";
 import { PageMasthead } from "@/components/PageMasthead";
 import { Reveal } from "@/components/Reveal";
+import { STAGES } from "@/lib/journey";
+import { projectBySlug } from "@/lib/projects";
 
 export const metadata: Metadata = {
   title: "About",
@@ -9,6 +11,24 @@ export const metadata: Metadata = {
     "Bhakti Ahir, a 12th-grade student at The Oxford School in Panama, on why she builds and what she believes about AI and human judgment.",
   alternates: { canonical: "/about" },
 };
+
+/** Wraps a lesson in quotation marks unless it already opens with one. */
+const quote = (t: string) => (t.startsWith("“") ? t : `“${t}”`);
+
+/** A margin note: a lesson in my own words, quoted from a project's case study. */
+function Note({ slug, index }: { slug: string; index: number }) {
+  const p = projectBySlug(slug)!;
+  return (
+    <aside
+      className={`accent-${p.slug} border-l-2 border-a1 pl-4 lg:col-span-2 lg:col-start-11`}
+    >
+      <p className="annot text-a1">Note · from {p.name}</p>
+      <p className="mt-2 font-display text-[1.2rem] italic leading-snug">
+        {quote(p.caseStudy.learned[index])}
+      </p>
+    </aside>
+  );
+}
 
 const PRINCIPLES = [
   {
@@ -41,7 +61,7 @@ const BEYOND = [
 
 export default function AboutPage() {
   return (
-    <div className="tone-night grain relative bg-paper text-ink">
+    <div className="tone-ivory grain relative bg-paper text-ink">
       <PageMasthead number="03" label="About" title="Bhakti Ahir">
         <p className="annot normal-case tracking-normal text-ink">
           12th grade · The Oxford School, Panama · Computer Science
@@ -67,6 +87,37 @@ export default function AboutPage() {
               creates technology around real human needs.
             </p>
           </div>
+          <Note slug="portico" index={0} />
+        </div>
+      </section>
+
+      <section aria-labelledby="learn-title" className="shell pb-16 sm:pb-20">
+        <div className="grid-12 gap-y-6">
+          <h2 id="learn-title" className="annot text-ink lg:col-span-3">
+            How I learn
+          </h2>
+          <div className="lg:col-span-7">
+            <p className="body-copy max-w-[40rem] text-muted">
+              Every project made me learn something I had never done before,
+              because the problem needed it, not because a course came next.
+            </p>
+            <ul className="mt-6">
+              {STAGES.map((s) => (
+                <li
+                  key={s.id}
+                  className={`accent-${s.id} flex flex-wrap items-baseline gap-x-4 gap-y-1 border-t border-line py-3`}
+                >
+                  <span className="w-32 shrink-0 font-display text-xl text-a1">
+                    {s.label}
+                  </span>
+                  <span className="text-[0.98rem]">
+                    {s.introduced.join(" · ")}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <Note slug="synaptiq" index={1} />
         </div>
       </section>
 

@@ -143,7 +143,7 @@ function ChapterMenu({
           className="flex items-center gap-3"
           aria-label="Bhakti Ahir, home"
         >
-          <Monogram className="h-8 w-auto text-ink" title={null} />
+          <Monogram small className="h-8 w-auto text-ink" title={null} />
           <span className="font-display text-xl leading-none">Bhakti Ahir</span>
         </Link>
         <button
@@ -233,7 +233,7 @@ export function SiteHeader() {
             aria-label="Bhakti Ahir, home"
             aria-current={active === "index" ? "page" : undefined}
           >
-            <Monogram className="h-7 w-auto text-ink" title={null} />
+            <Monogram small className="h-8 w-auto text-ink" title={null} />
             <span aria-hidden="true" className="h-5 w-px bg-line-strong" />
             <span className="font-display text-xl leading-none tracking-tight">
               Bhakti Ahir

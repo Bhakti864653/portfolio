@@ -2,12 +2,15 @@ import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { CopyEmail } from "@/components/CopyEmail";
-import { JudgmentFigure } from "@/components/verbs/JudgmentFigure";
+import { Questions } from "@/components/home/Questions";
+import { Monogram } from "@/components/Monogram";
+import { buildThread } from "@/components/thread/ThreadLayer";
+import { PROJECTS } from "@/lib/projects";
 import { inline } from "@/lib/format";
 
-describe("JudgmentFigure", () => {
-  it("links every ability to its project and names it on focus", async () => {
-    render(<JudgmentFigure />);
+describe("Questions", () => {
+  it("links each human question to its case study, in project order", () => {
+    render(<Questions />);
     const links = screen.getAllByRole("link");
     expect(links.map((l) => l.getAttribute("href"))).toEqual([
       "/work/portico",
@@ -15,27 +18,65 @@ describe("JudgmentFigure", () => {
       "/work/concord",
       "/work/commonground",
     ]);
-    expect(links.map((l) => l.textContent)).toEqual([
-      "decide01 · Portico",
-      "learn02 · Synaptiq",
-      "connect03 · Concord",
-      "act04 · CommonGround",
-    ]);
+    expect(
+      screen.getAllByRole("heading", { level: 3 }).map((h) => h.textContent),
+    ).toEqual(PROJECTS.map((p) => p.question));
+    // Name and action are visible text, not hover-only.
+    expect(links[2]).toHaveTextContent("Concord");
+    expect(links[2]).toHaveTextContent("Read the case study");
+  });
+});
 
-    await userEvent.tab();
-    expect(links[0]).toHaveFocus();
-    expect(screen.getByText("→ Portico")).toBeInTheDocument();
-    await userEvent.tab();
-    expect(screen.getByText("→ Synaptiq")).toBeInTheDocument();
+describe("thread", () => {
+  const box = (x: number, y: number, w = 10, h = 10) => ({ x, y, w, h });
+
+  it("runs from the monogram's flourish and splits into the four project strands", () => {
+    const strands = buildThread(
+      "hero",
+      { exit: box(200, 100, 1, 1), headline: box(100, 150, 600, 200) },
+      1440,
+      900,
+    );
+    expect(strands).toHaveLength(5);
+    expect(strands[0].slug).toBeUndefined();
+    expect(strands[0].d.startsWith("M200.5 100.5")).toBe(true);
+    expect(strands.slice(1).map((s) => s.slug)).toEqual([
+      "portico",
+      "synaptiq",
+      "concord",
+      "commonground",
+    ]);
   });
 
-  it("has a text alternative and falls back to 2D without WebGL (jsdom)", () => {
-    const { container } = render(<JudgmentFigure />);
+  it("draws nothing until its anchors exist", () => {
+    expect(buildThread("hero", {}, 1440, 900)).toEqual([]);
+    expect(buildThread("contact", {}, 1440, 900)).toEqual([]);
+  });
+
+  it("connects the sequence in order, one colored stretch per project", () => {
+    const anchors = Object.fromEntries(
+      PROJECTS.map((p, i) => [`n-${p.slug}`, box(100 + i * 50, 200 + i * 400)]),
+    );
+    const strands = buildThread("sequence", anchors, 1440, 2000);
+    expect(strands.map((s) => s.slug)).toEqual([
+      "portico",
+      "portico",
+      "synaptiq",
+      "concord",
+      "commonground",
+    ]);
+  });
+});
+
+describe("Monogram", () => {
+  it("is labelled as BA and has a heavier small version", () => {
+    const { container, rerender } = render(<Monogram />);
     expect(
-      screen.getByRole("figure", { name: /all meeting at one center/ }),
+      screen.getByRole("img", { name: "Bhakti Ahir" }),
     ).toBeInTheDocument();
-    expect(container.querySelector("canvas")).toBeNull();
-    expect(container.querySelector("svg")).not.toBeNull();
+    const full = container.querySelector("path")!.getAttribute("d");
+    rerender(<Monogram small />);
+    expect(container.querySelector("path")!.getAttribute("d")).not.toBe(full);
   });
 });
 

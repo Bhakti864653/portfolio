@@ -68,26 +68,3 @@ export function useMediaQuery(query: string): boolean {
     () => false,
   );
 }
-
-let webglSupport: boolean | undefined;
-function detectWebGL() {
-  if (webglSupport === undefined) {
-    try {
-      const canvas = document.createElement("canvas");
-      webglSupport = Boolean(
-        canvas.getContext("webgl2") ?? canvas.getContext("webgl"),
-      );
-    } catch {
-      webglSupport = false;
-    }
-  }
-  return webglSupport;
-}
-
-export function useWebGLSupport(): boolean {
-  return useSyncExternalStore(
-    () => () => {},
-    detectWebGL,
-    () => false,
-  );
-}
