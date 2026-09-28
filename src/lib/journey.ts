@@ -1,17 +1,17 @@
 import type { Project } from "./projects";
 
-/** The four projects in the order they began (by each repo's first commit). */
+/** The four projects, in the site's project order. No dates or build order: each stands alone. */
 export type Stage = {
   id: Project["slug"];
   label: string;
   /** The problem that started it, in one line (from the case study's "The real problem"). */
   started: string;
-  /** What was new at this stage. */
+  /** What the project asked me to learn. */
   introduced: string[];
   /** The pieces the system was made of, as a measure of how complexity grew. */
   system: string[];
-  /** The lesson this stage handed to the next one. */
-  carried: string;
+  /** The lesson it taught me, in one line. */
+  lesson: string;
 };
 
 export const STAGES: Stage[] = [
@@ -26,8 +26,8 @@ export const STAGES: Stage[] = [
       "A production-only bug",
     ],
     system: ["Flask app", "SQLite / Turso", "Email API"],
-    carried:
-      "Every query scoped to its owner, so one account can never see another’s data.",
+    lesson:
+      "Scope every query to its owner, so one account can never see another’s data.",
   },
   {
     id: "synaptiq",
@@ -40,7 +40,7 @@ export const STAGES: Stage[] = [
       "Row Level Security",
     ],
     system: ["Next.js", "FastAPI", "Supabase", "Groq LLM"],
-    carried:
+    lesson:
       "An unlimited public demo endpoint taught me to audit rate limits on every endpoint.",
   },
   {
@@ -50,8 +50,8 @@ export const STAGES: Stage[] = [
       "Mentorship matches made by hand, or by one similarity number, are hard to explain.",
     introduced: ["A formal algorithm", "Realtime chat", "Database triggers"],
     system: ["Next.js", "FastAPI", "Postgres + RLS", "Realtime", "Triggers"],
-    carried:
-      "Explainable decisions: a score you can read became a reasoning trace for every AI agent.",
+    lesson:
+      "Explainable decisions: every match comes with a reason a person can read.",
   },
   {
     id: "commonground",
@@ -66,20 +66,21 @@ export const STAGES: Stage[] = [
       "Map tiles",
       "7 languages",
     ],
-    carried: "Next: a real database, documented as the next step.",
+    lesson:
+      "A person makes the final call: the Guide drafts, but never submits anything without a click.",
   },
 ];
 
 /**
- * Lessons that carried from one project into the next. Each stage listed is one where the
- * DEVLOG or README shows the idea actually applied.
+ * Lessons that show up across the projects. Each project listed is one where the DEVLOG or
+ * README shows the idea actually applied.
  */
 export type Thread = { title: string; note: string; stages: Stage["id"][] };
 
 export const THREADS: Thread[] = [
   {
     title: "Keep each person's data theirs",
-    note: "From `WHERE user_id = ?` on every query, to database-level security policies, to a type that makes private fields impossible to send.",
+    note: "`WHERE user_id = ?` on every query, database-level security policies, and a type that makes private fields impossible to send.",
     stages: ["portico", "synaptiq", "concord", "commonground"],
   },
   {
@@ -89,7 +90,7 @@ export const THREADS: Thread[] = [
   },
   {
     title: "Limit what one visitor can do",
-    note: "Login rate limiting, then a demo endpoint that could have drained the AI quota, then the same limiter ported to every endpoint.",
+    note: "Login rate limiting, limits on the demo so it can’t drain the AI quota, and the same limiter on every endpoint.",
     stages: ["portico", "synaptiq", "concord"],
   },
   {

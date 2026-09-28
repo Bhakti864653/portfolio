@@ -77,7 +77,7 @@ export const PROJECTS: Project[] = [
       ],
       why: [
         "I'm in my last year of school, so university applications were right in front of me. Every school had its own deadlines, essays, recommenders, and documents, and I wanted one place that showed what was done and what to do next.",
-        "It was also the right first project: a problem I understood well, small enough to start as a checklist, with plenty of room to grow as I learned.",
+        "It was also a problem I understood from the inside: simple enough to begin as a checklist, with room to grow into a full system for planning, reminders, and next steps.",
       ],
       users: [
         "Students applying to several universities who want one place to see what's done, what's due, and what to do next.",

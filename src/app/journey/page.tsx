@@ -10,7 +10,7 @@ import { SITE } from "@/lib/projects";
 export const metadata: Metadata = {
   title: "Journey",
   description:
-    "How four projects built on each other, from Portico to CommonGround: the problem behind each one, what failed, and what carried into the next.",
+    "Four projects and what each one taught me: the problem behind it, what it introduced, what failed, and the lesson I keep.",
   alternates: { canonical: "/journey" },
 };
 
@@ -32,8 +32,8 @@ export default function JourneyPage() {
         }
       >
         <p>
-          I started from zero, with my first line of Python. Each project began
-          where the last one left off, and each one had more moving parts.
+          Each project started with a problem someone really has, and each one
+          asked me to learn something I had never done before.
         </p>
         <a
           href={SITE.journeyRepo}
@@ -43,10 +43,7 @@ export default function JourneyPage() {
         </a>
       </PageMasthead>
 
-      <section
-        aria-label="Four projects in order"
-        className="shell pb-20 pt-6 sm:pb-28"
-      >
+      <section aria-label="Four projects" className="shell pb-20 pt-6 sm:pb-28">
         <Progression />
       </section>
 
@@ -60,7 +57,7 @@ export default function JourneyPage() {
               id="lessons-title"
               className="font-display text-[clamp(2rem,3.4vw,2.75rem)] leading-tight lg:col-span-4"
             >
-              Lessons that kept coming back
+              Lessons across the four projects
             </h2>
             <ul className="lg:col-span-8">
               {THREADS.map((thread) => (
@@ -73,7 +70,7 @@ export default function JourneyPage() {
                       {thread.title}
                     </p>
                     <p className="annot mt-1 normal-case tracking-normal">
-                      {thread.stages.map(label).join(" → ")}
+                      {thread.stages.map(label).join(" · ")}
                     </p>
                   </div>
                   <p className="text-[0.98rem] leading-relaxed text-muted">

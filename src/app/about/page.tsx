@@ -80,11 +80,11 @@ export default function AboutPage() {
             </p>
             <p className="body-copy max-w-[40rem] text-muted">
               I’m a 12th-grade student at The Oxford School in Panama, planning
-              to study Computer Science. I started programming from zero, and
-              each project began with a problem people really have: applying to
-              university, studying, finding a mentor, and the problems a
-              neighborhood shares. Long term, I want to build a company that
-              creates technology around real human needs.
+              to study Computer Science. Each of my projects began with a
+              problem people really have: applying to university, studying,
+              finding a mentor, and the problems a neighborhood shares. Long
+              term, I want to build a company that creates technology around
+              real human needs.
             </p>
           </div>
           <Note slug="portico" index={0} />

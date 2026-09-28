@@ -5,7 +5,7 @@ import { STAGES } from "@/lib/journey";
 import { projectBySlug } from "@/lib/projects";
 
 /**
- * The four projects as one continuous route. From 1024px it is a horizontal track the visitor
+ * The four projects side by side. From 1024px it is a horizontal track the visitor
  * scrolls natively (trackpad, shift-wheel, arrow keys, or the buttons), with a position
  * indicator; below that it is a plain vertical sequence. No scroll hijacking either way.
  */
@@ -101,12 +101,11 @@ export function Progression() {
       <ol
         ref={track}
         tabIndex={0}
-        aria-label="Development progression, Portico to CommonGround"
+        aria-label="Four projects"
         className={`relative flex flex-col lg:snap-x lg:snap-mandatory lg:flex-row lg:overflow-x-auto lg:overscroll-x-contain lg:pb-6 ${atEnd ? "" : "lg:[mask-image:linear-gradient(to_right,black_88%,transparent)]"}`}
       >
         {STAGES.map((s, i) => {
           const p = projectBySlug(s.id)!;
-          const next = STAGES[i + 1];
           return (
             <li
               key={s.id}
@@ -160,11 +159,9 @@ export function Progression() {
                   </dd>
                 </div>
                 <div className="border-l-2 border-a1 bg-soft py-3 pl-4 pr-3">
-                  <dt className="annot text-ink">
-                    {next ? `Carried into ${next.label} →` : "Still open"}
-                  </dt>
+                  <dt className="annot text-ink">The lesson I keep</dt>
                   <dd className="mt-1.5 text-[0.98rem] leading-relaxed text-muted">
-                    {s.carried}
+                    {s.lesson}
                   </dd>
                 </div>
               </dl>
