@@ -55,7 +55,7 @@ const BUILDERS: Record<
   ThreadVariant,
   (a: Anchors, w: number, h: number) => Strand[]
 > = {
-  // From the monogram's flourish, behind the headline, out along its underline, down to the
+  // From the end of the name, behind the headline, out along its underline, down to the
   // bottom of the introduction, where it splits into four colored strands.
   hero(a, w, h) {
     const exit = a.exit;
@@ -64,41 +64,50 @@ const BUILDERS: Record<
     const ex = cx(exit);
     const ey = cy(exit);
     if (w < MOBILE) {
-      const rail = 10;
-      const split = h - 72;
+      // Phones: out of the name and down the right margin, clear of the text, then across the
+      // empty space at the bottom to the left rail the four chapters share.
+      const edge = w - 7;
+      const split = h - 64;
       return [
         {
-          d: `M${pt(ex, ey)}C${pt(ex + 24, ey + 30)} ${pt(rail, ey + 20)} ${pt(rail, ey + 90)}L${pt(rail, split)}`,
+          d:
+            `M${pt(ex, ey)}` +
+            `C${pt(ex + 60, ey - 4)} ${pt(edge, ey + 6)} ${pt(edge, ey + 60)}` +
+            `L${pt(edge, split - 40)}`,
           mode: "draw",
-          delay: 1300,
+          delay: 900,
         },
         ...SLUGS.map((slug, i) => ({
-          d: `M${pt(rail, split)}${sCurve(rail, split, rail + i * 6, h)}`,
+          d: `M${pt(edge, split - 40)}${sCurve(edge, split - 40, 12 + i * 6, h)}`,
           slug,
           mode: "draw" as const,
-          delay: 2300,
+          delay: 1900,
         })),
       ];
     }
+    // Out of the name, around the headline's right side, back along beneath it, then down the
+    // left margin to the bottom, where it splits. It never crosses the headline's letters.
     const underline = head.y + head.h + 18;
-    const end = Math.min(head.x + head.w + 48, w - 40);
-    const split = { x: w * 0.5, y: h - 70 };
+    const right = Math.min(head.x + head.w + 36, w - 40);
+    const rail = Math.max(head.x - 26, 12);
+    const split = { x: rail, y: h - 70 };
     return [
       {
         d:
           `M${pt(ex, ey)}` +
-          `C${pt(ex + 70, ey + 12)} ${pt(head.x - 70, underline - 40)} ${pt(head.x, underline)}` +
-          `L${pt(end - 60, underline)}` +
-          `C${pt(end + 20, underline)} ${pt(end + 30, underline + 60)} ${pt(end - 40, underline + 110)}` +
-          `C${pt(end - 140, underline + 170)} ${pt(split.x + 60, split.y - 90)} ${pt(split.x, split.y)}`,
+          `C${pt(ex + 80, ey - 6)} ${pt(right, head.y - 20)} ${pt(right, head.y + head.h * 0.45)}` +
+          `C${pt(right, underline - 24)} ${pt(right - 16, underline)} ${pt(right - 48, underline)}` +
+          `L${pt(head.x + 24, underline)}` +
+          `C${pt(rail + 6, underline)} ${pt(rail, underline + 18)} ${pt(rail, underline + 48)}` +
+          `L${pt(split.x, split.y)}`,
         mode: "draw",
-        delay: 1300,
+        delay: 900,
       },
       ...SLUGS.map((slug, i) => ({
         d: `M${pt(split.x, split.y)}${sCurve(split.x, split.y, w * LANE[slug], h)}`,
         slug,
         mode: "draw" as const,
-        delay: 2400 + i * 90,
+        delay: 2000 + i * 90,
       })),
     ];
   },

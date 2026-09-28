@@ -3,7 +3,6 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { CopyEmail } from "@/components/CopyEmail";
 import { Questions } from "@/components/home/Questions";
-import { Monogram } from "@/components/Monogram";
 import { buildThread } from "@/components/thread/ThreadLayer";
 import { PROJECTS } from "@/lib/projects";
 import { inline } from "@/lib/format";
@@ -30,7 +29,7 @@ describe("Questions", () => {
 describe("thread", () => {
   const box = (x: number, y: number, w = 10, h = 10) => ({ x, y, w, h });
 
-  it("runs from the monogram's flourish and splits into the four project strands", () => {
+  it("runs from the end of the name and splits into the four project strands", () => {
     const strands = buildThread(
       "hero",
       { exit: box(200, 100, 1, 1), headline: box(100, 150, 600, 200) },
@@ -65,18 +64,6 @@ describe("thread", () => {
       "concord",
       "commonground",
     ]);
-  });
-});
-
-describe("Monogram", () => {
-  it("is labelled as BA and has a heavier small version", () => {
-    const { container, rerender } = render(<Monogram />);
-    expect(
-      screen.getByRole("img", { name: "Bhakti Ahir" }),
-    ).toBeInTheDocument();
-    const full = container.querySelector("path")!.getAttribute("d");
-    rerender(<Monogram small />);
-    expect(container.querySelector("path")!.getAttribute("d")).not.toBe(full);
   });
 });
 

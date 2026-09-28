@@ -1,6 +1,5 @@
 import type { CSSProperties } from "react";
 import { SITE, VERB_ORDER, projectBySlug, projectByVerb } from "@/lib/projects";
-import { MONOGRAM_EXIT, Monogram } from "../Monogram";
 import { Fragment } from "../thread/Fragment";
 import { ThreadLayer } from "../thread/ThreadLayer";
 
@@ -9,7 +8,7 @@ const delay = (ms: number) => ({ "--delay": `${ms}ms` }) as CSSProperties;
 /**
  * The introduction, built in planes: soft color fields and grain at the back; screenshot
  * fragments (two behind the thread, two in front of it); the thread itself, drawn out of the
- * monogram's flourish and under the headline; the type; and the invitation to follow it.
+ * end of her name and under the headline; the type; and the invitation to follow it.
  * Every word is server-rendered and readable before any animation code loads.
  */
 export function Arrival() {
@@ -75,34 +74,24 @@ export function Arrival() {
         {/* Identity and bearings */}
         <div className="annot flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b border-line pb-3">
           <p className="enter-fade" style={delay(0)}>
-            <span className="font-display text-[1.35rem] normal-case tracking-normal text-ink">
-              Bhakti Ahir
-            </span>
-            <span className="ml-3">
-              Student developer · Panama · 12th grade
-            </span>
+            Student developer · Panama · 12th grade
           </p>
           <p className="hidden md:block">9° N, 79.5° W · Four systems</p>
         </div>
 
         <div className="flex flex-1 flex-col justify-center py-8 lg:max-w-[62%]">
-          <span className="relative inline-block self-start">
-            <Monogram
-              draw
-              title="BA, Bhakti Ahir’s monogram"
-              className="h-20 w-auto text-ink sm:h-24 lg:h-28"
-            />
-            {/* The flourish's end: where the thread takes over */}
+          {/* The name, and at its end the point where the thread begins */}
+          <p
+            className="enter-rise relative self-start font-display text-[clamp(2.2rem,4.4vw,3.6rem)] italic leading-none"
+            style={delay(0)}
+          >
+            Bhakti Ahir
             <span
               data-thread="exit"
               aria-hidden="true"
-              className="absolute h-px w-px"
-              style={{
-                left: `${MONOGRAM_EXIT.x * 100}%`,
-                top: `${MONOGRAM_EXIT.y * 100}%`,
-              }}
+              className="absolute -right-3 bottom-[0.18em] h-px w-px"
             />
-          </span>
+          </p>
 
           <h1
             id="home-title"

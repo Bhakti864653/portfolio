@@ -1,5 +1,4 @@
 import { ImageResponse } from "next/og";
-import { MONOGRAM } from "@/components/Monogram";
 import { SITE } from "@/lib/projects";
 
 export const alt = "Bhakti Ahir — Technology should expand what people can do.";
@@ -20,14 +19,7 @@ export default function Image() {
         color: "#111515",
       }}
     >
-      <svg width="160" height="120" viewBox={MONOGRAM.viewBox} fill="#111515">
-        {MONOGRAM.order.map((k) => (
-          <path
-            key={k}
-            d={MONOGRAM.shapes[k as keyof typeof MONOGRAM.shapes]}
-          />
-        ))}
-      </svg>
+      <div style={{ display: "flex" }} />
       <div style={{ display: "flex", flexDirection: "column" }}>
         <div style={{ fontSize: 30, letterSpacing: 4 }}>BHAKTI AHIR</div>
         <div

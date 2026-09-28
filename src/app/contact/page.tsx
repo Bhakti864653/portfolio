@@ -2,7 +2,6 @@ import { existsSync } from "node:fs";
 import path from "node:path";
 import type { Metadata } from "next";
 import { CopyEmail } from "@/components/CopyEmail";
-import { Monogram } from "@/components/Monogram";
 import { ThreadLayer } from "@/components/thread/ThreadLayer";
 import { SITE } from "@/lib/projects";
 
@@ -80,10 +79,9 @@ export default function ContactPage() {
                 more capable than it found them.
               </span>
             </h1>
-            <Monogram
-              title="BA, Bhakti Ahir’s monogram"
-              className="h-28 w-auto text-ink sm:h-40 lg:col-span-3 lg:justify-self-end"
-            />
+            <p className="font-display text-[clamp(2.2rem,4vw,3.4rem)] italic leading-none lg:col-span-3 lg:justify-self-end">
+              Bhakti Ahir
+            </p>
           </div>
           <p className="mt-20 font-display text-[clamp(1.6rem,3vw,2.4rem)] italic sm:mt-28">
             <span data-thread="principle" className="inline-block">
