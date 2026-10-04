@@ -438,11 +438,24 @@
   background-size: 200% 100%;
   background-repeat: no-repeat;
 }
-.paper-left {
+/* Both screens show the very same paper (the sheet's left half). */
+.paper-left,
+.paper-right {
   background-position: left center;
 }
-.paper-right {
-  background-position: right center;
+/* Where the idea meets the arrival, a narrow strip continues the arrival's paper and fades into
+   the idea's own, so the two screens join without a visible edge while the sheet pans. */
+.paper-right::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background: url("/paper/sheet-light.webp") right center / 200% 100% no-repeat;
+  mask-image: linear-gradient(to right, #000, transparent 16%);
+}
+:root[data-theme="dark"] .paper-right::after {
+  background-image: url("/paper/sheet-dark.webp");
 }
 .paper::before {
   content: "";
