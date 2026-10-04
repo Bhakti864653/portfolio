@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { setMotion, setTheme, useMotion, useTheme } from "@/lib/prefs";
 import { SITE } from "@/lib/projects";
-import { Monogram } from "./Monogram";
 
 export const ROUTES = [
   { id: "index", href: "/", number: "00", label: "Index" },
@@ -143,7 +142,6 @@ function ChapterMenu({
           className="flex items-center gap-3"
           aria-label="Bhakti Ahir, home"
         >
-          <Monogram title={null} className="h-8 w-auto text-ink" />
           <span className="font-display text-2xl leading-none">
             Bhakti Ahir
           </span>
@@ -207,12 +205,36 @@ function ChapterMenu({
   );
 }
 
+/**
+ * On the homepage, the header sits directly on the entrance's paper (no bar, no border), as in
+ * the drawing; it takes on its usual bar once the entrance has scrolled away beneath it.
+ */
+function useOverEntrance(home: boolean) {
+  const [over, setOver] = useState(true);
+  useEffect(() => {
+    if (!home) return;
+    const check = () => {
+      const el = document.getElementById("entrance");
+      setOver(!!el && el.getBoundingClientRect().bottom > 64);
+    };
+    check();
+    window.addEventListener("scroll", check, { passive: true });
+    window.addEventListener("resize", check);
+    return () => {
+      window.removeEventListener("scroll", check);
+      window.removeEventListener("resize", check);
+    };
+  }, [home]);
+  return home && over;
+}
+
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const menuId = useId();
   const pathname = usePathname();
   const active = routeFor(pathname)?.id ?? null;
   const toggle = useRef<HTMLButtonElement>(null);
+  const overPaper = useOverEntrance(pathname === "/");
 
   const close = useCallback(() => {
     setOpen(false);
@@ -221,7 +243,9 @@ export function SiteHeader() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 border-b border-line bg-paper/90 backdrop-blur-md">
+      <header
+        className={`sticky top-0 z-40 border-b transition-[background-color,border-color] duration-300 ${overPaper ? "border-transparent bg-transparent" : "border-line bg-paper/90 backdrop-blur-md"}`}
+      >
         <a
           href="#main"
           className="annot absolute left-4 top-2 -translate-y-20 rounded bg-ink px-3 py-2 text-paper focus:translate-y-0"
@@ -235,7 +259,6 @@ export function SiteHeader() {
             aria-label="Bhakti Ahir, home"
             aria-current={active === "index" ? "page" : undefined}
           >
-            <Monogram title={null} className="h-8 w-auto text-ink" />
             <span className="font-display text-2xl leading-none tracking-tight">
               Bhakti Ahir
             </span>

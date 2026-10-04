@@ -67,6 +67,7 @@
   --color-a1: var(--a1);
   --color-a2: var(--a2);
   --font-display: var(--font-instrument-serif), "Times New Roman", serif;
+  --font-name: var(--font-playfair), "Times New Roman", serif;
   --font-sans: var(--font-instrument-sans), system-ui, sans-serif;
   --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
 }
@@ -313,18 +314,6 @@
   animation: draw 1100ms cubic-bezier(0.6, 0, 0.2, 1) both;
   animation-delay: var(--delay, 0ms);
 }
-/* The BA mark's curve sweeps in once, left to right, before the four paths draw in. */
-@keyframes sweep {
-  from {
-    clip-path: inset(0 100% 0 0);
-  }
-  to {
-    clip-path: inset(0 0 0 0);
-  }
-}
-.mark-sweep {
-  animation: sweep 750ms cubic-bezier(0.6, 0, 0.2, 1) 150ms both;
-}
 .enter-rise {
   animation: rise 800ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
   animation-delay: var(--delay, 0ms);
@@ -422,6 +411,112 @@
 }
 :root[data-motion="reduce"] .route-line {
   display: none;
+}
+
+/* ------------------------------------------------------------------------------------------
+   The entrance (see Entrance.tsx): two screens on one sheet of warm paper. The sheet's soft folds
+   and cloudy light are one image two screens wide (each screen shows its half, so they meet
+   seamlessly); a fine tooth tiles over it. Both come from scripts/paper.mjs.
+   ------------------------------------------------------------------------------------------ */
+.entrance {
+  --paper: #f5efe4;
+  /* The name's size, which the tagline and the line under the name both follow. */
+  --name: min(32vw, 26svh);
+}
+:root[data-theme="dark"] .entrance {
+  --paper: #141917;
+}
+@media (min-width: 768px) {
+  .entrance {
+    --name: min(18vw, 30svh);
+  }
+}
+.paper {
+  isolation: isolate;
+  background-color: var(--paper);
+  background-image: url("/paper/sheet-light.webp");
+  background-size: 200% 100%;
+  background-repeat: no-repeat;
+}
+.paper-left {
+  background-position: left center;
+}
+.paper-right {
+  background-position: right center;
+}
+.paper::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: url("/paper/tooth.png") 0 0 / 256px 256px;
+}
+:root[data-theme="dark"] .paper {
+  background-image: url("/paper/sheet-dark.webp");
+}
+:root[data-theme="dark"] .paper::before {
+  opacity: 0.45;
+}
+
+.entrance-name {
+  font-family: var(--font-name);
+  font-size: var(--name);
+  font-weight: 600;
+  /* Just enough that the h of "Ahir" clears the baseline of "Bhakti". */
+  line-height: 0.8;
+  letter-spacing: -0.01em;
+}
+.entrance-tagline {
+  margin-top: calc(var(--name) * 0.25);
+  font-size: clamp(1.45rem, min(3.5vw, 5.8svh), 3.4rem);
+  line-height: 1.1;
+}
+.entrance-idea {
+  font-family: var(--font-display);
+  /* Capped so it stays on one line in the text column at any width, as in the drawing. */
+  font-size: clamp(3rem, min(7.4vw, 12.6svh), 6.4rem);
+  line-height: 1;
+  letter-spacing: -0.012em;
+  /* Instrument Serif has one weight; the drawing's headline sits a hair heavier. */
+  -webkit-text-stroke: 0.012em currentColor;
+}
+.entrance-idea em {
+  font-style: italic;
+}
+.entrance-idea:focus {
+  outline: none;
+}
+
+/* The figure beside the text, from 1024px up: centered where the reference puts it, about five
+   sixths of the way across the content, and sized to fit the screen's height. */
+@media (min-width: 1024px) {
+  .idea-figure-box {
+    --fw: min(36vw, calc((100svh - 4rem) * 0.68), 35rem);
+    width: var(--fw);
+    left: calc(
+      clamp(1rem, 4vw, 3rem) + 0.837 * (100% - 2 * clamp(1rem, 4vw, 3rem)) -
+        var(--fw) / 2
+    );
+    top: calc(53% - var(--fw) * 0.577);
+  }
+}
+
+/* Lines that draw in: the arrival line once on load; the figure's paths (and, when stacked, the
+   returning line) once the idea is in view. Instant under reduced motion. */
+.line-arrive {
+  --len: 1;
+  animation: draw 1800ms cubic-bezier(0.65, 0, 0.25, 1) 300ms both;
+}
+.draw-path {
+  stroke-dasharray: 1;
+}
+[data-paths="pending"] .draw-path {
+  stroke-dashoffset: 1;
+}
+[data-paths="alive"] .draw-path {
+  --len: 1;
+  animation: draw 1100ms cubic-bezier(0.6, 0, 0.2, 1) var(--delay, 0ms) both;
 }
 
 /* ------------------------------------------------------------------------------------------

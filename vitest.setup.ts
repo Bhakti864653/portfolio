@@ -14,3 +14,12 @@ Object.defineProperty(window, "matchMedia", {
     removeEventListener: vi.fn(),
   })),
 });
+
+// Nor ResizeObserver or IntersectionObserver; nothing in the tests depends on them firing.
+class NoopObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
+for (const name of ["ResizeObserver", "IntersectionObserver"])
+  Object.defineProperty(window, name, { writable: true, value: NoopObserver });

@@ -3,6 +3,7 @@ import {
   Instrument_Sans,
   Instrument_Serif,
   JetBrains_Mono,
+  Playfair_Display,
 } from "next/font/google";
 import { SiteFooter } from "@/components/SiteFooter";
 import { RouteFocus } from "@/components/RouteFocus";
@@ -15,6 +16,13 @@ const serif = Instrument_Serif({
   variable: "--font-instrument-serif",
   subsets: ["latin"],
   weight: "400",
+  style: ["normal", "italic"],
+});
+// The name on the arrival screen, and the idea's headline: a high-contrast display serif.
+const name = Playfair_Display({
+  variable: "--font-playfair",
+  subsets: ["latin"],
+  weight: ["500", "600"],
   style: ["normal", "italic"],
 });
 const sans = Instrument_Sans({
@@ -58,7 +66,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${serif.variable} ${sans.variable} ${mono.variable} antialiased`}
+      className={`${serif.variable} ${name.variable} ${sans.variable} ${mono.variable} antialiased`}
       suppressHydrationWarning
     >
       <head>
