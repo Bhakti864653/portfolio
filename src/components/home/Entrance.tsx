@@ -539,7 +539,7 @@ export function Entrance() {
                   </span>
                 </h1>
                 <p className="entrance-tagline ml-[0.06em] font-display text-ink">
-                  I build things that help people move forward.
+                  Building what school doesn’t teach.
                 </p>
               </div>
               <a href="#idea" onClick={toIdea} className={`${CONTINUE} pt-8`}>
@@ -578,10 +578,11 @@ export function Entrance() {
                   </h2>
                   <p
                     ref={desc}
-                    className="mt-[clamp(1rem,2.6svh,1.6rem)] max-w-[29em] text-[clamp(1rem,1.3vw,1.2rem)] leading-[1.45] text-ink"
+                    className="mt-[clamp(1rem,2.6svh,1.6rem)] max-w-[29em] text-balance text-[clamp(1rem,1.3vw,1.2rem)] leading-[1.45] text-ink"
                   >
-                    I build tools that help people decide, learn, connect, and
-                    act—while keeping the final choice in human hands.
+                    Four live apps for real problems: college applications,
+                    studying, mentorship, and neighborhoods. Every one leaves
+                    the final call to you.
                   </p>
                   <div className="mt-10 lg:mt-[clamp(4.5rem,14svh,8rem)]">
                     <AbilityWords listRef={words} />

@@ -55,7 +55,7 @@ describe("Entrance", () => {
     expect(h1.className).not.toMatch(/enter-/);
     expect(screen.getByText("A personal portfolio")).toBeInTheDocument();
     expect(
-      screen.getByText("I build things that help people move forward."),
+      screen.getByText("Building what school doesn’t teach."),
     ).toBeInTheDocument();
     expect(
       screen.getByRole("link", { name: /Continue to the idea/ }),
@@ -68,7 +68,7 @@ describe("Entrance", () => {
       screen.getByRole("heading", { level: 2, name: "I build ways forward." }),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/keeping the final choice in human hands/),
+      screen.getByText(/Every one leaves the final call to you/),
     ).toBeInTheDocument();
     expect(
       screen.getByRole("link", { name: /Continue to the work/ }),
