@@ -90,7 +90,6 @@ export const PROJECTS: Project[] = [
         "Pipeline view, analytics charts, a cost comparison table, and a deadline timeline",
         "Soft delete with Undo, duplicate an application, and export to CSV or a calendar (.ics) file",
         "Real accounts, plus a private demo sandbox for every visitor",
-        "A daily email reminder for approaching deadlines",
       ],
       system: {
         heading: "One task model instead of four",
