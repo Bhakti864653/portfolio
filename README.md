@@ -2,7 +2,7 @@
 
 > Technology should expand what people can do.
 
-My personal portfolio, built around four human abilities, each tied to one project I built:
+My personal portfolio, built around four human abilities, each tied to one project I built. Live at https://bhakti-ahir.vercel.app.
 
 | Ability     | Project                                                      | What it is                                                            |
 | ----------- | ------------------------------------------------------------ | --------------------------------------------------------------------- |
@@ -13,16 +13,16 @@ My personal portfolio, built around four human abilities, each tied to one proje
 
 ## What's inside
 
-- **The four-verb system** on the homepage: four paths that all run through one center, "Human judgment". Choosing a verb introduces its project. On wide screens with motion allowed it is drawn in 3D (React Three Fiber, loaded only when it will be shown); on phones, with reduced motion, or without WebGL it is a flat SVG. Every word lives in normal HTML, never inside the 3D canvas.
+- **The four-verb system** on the homepage: an entrance of two screens on one sheet of paper, where a fine line runs from my name into four paths that meet at one center, "Human Judgment". On large screens with motion allowed the sheet pans across as you scroll; on phones, with reduced motion, or without JavaScript the two screens simply stack. Below it, one entrance per ability introduces its project. The figure is SVG and every word is normal HTML.
 - **A case study for each project** at `/work/[slug]`: the problem, design decisions, privacy and safety, the hardest challenge, limitations, and what I learned.
-- **A development journey** showing the lessons that carried from one project into the next.
+- **A development journey** showing the lessons that carried from one project into the next, plus an about page and a contact page.
 - Light and dark themes, a reduced-motion switch, keyboard-accessible controls, and a layout tested from 320px to 1440px.
 
 Every claim about a project comes from that project's own README, development log, or code. The copy lives in one place: [`src/lib/projects.ts`](src/lib/projects.ts).
 
 ## Tech stack
 
-Next.js 16 (App Router) · TypeScript · Tailwind CSS v4 · React Three Fiber · Vitest + Testing Library · Prettier
+Next.js 16 (App Router) · TypeScript · Tailwind CSS v4 · Vitest + Testing Library · Prettier
 
 ## Running it locally
 
