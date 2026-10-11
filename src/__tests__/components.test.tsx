@@ -54,6 +54,24 @@ describe("IdeaFigure", () => {
     expect(screen.getByText("Judgment")).toBeInTheDocument();
   });
 
+  it("switches paths only when the pointer rests on one, not when it passes over", async () => {
+    render(<IdeaFigure />);
+    await userEvent.hover(
+      screen.getByRole("link", { name: /learn: Synaptiq/ }),
+    );
+    expect(screen.getByText("→ Synaptiq")).toBeInTheDocument();
+    // Crossing another label on the way somewhere else doesn't switch...
+    const act = screen.getByRole("link", { name: /act: CommonGround/ });
+    await userEvent.hover(act);
+    await userEvent.unhover(act);
+    await new Promise((r) => setTimeout(r, 200));
+    expect(screen.getByText("→ Synaptiq")).toBeInTheDocument();
+    // ...but resting on it does.
+    await userEvent.hover(act);
+    await new Promise((r) => setTimeout(r, 200));
+    expect(screen.getByText("→ CommonGround")).toBeInTheDocument();
+  });
+
   it("on a touchscreen, the first tap previews the project instead of leaving the page", () => {
     render(<IdeaFigure />);
     const learn = screen.getByRole("link", { name: /learn: Synaptiq/ });

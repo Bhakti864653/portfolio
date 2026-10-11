@@ -52,6 +52,26 @@ export function AbilityProvider({ children }: { children: ReactNode }) {
   );
 }
 
+/**
+ * A region that keeps the chosen ability while the pointer is anywhere inside it, and lets it go
+ * (after the usual grace period) only when the pointer leaves the region entirely. The idea
+ * screen uses it, so the pointer can travel from a path across to its preview card.
+ */
+export function AbilityArea({
+  className,
+  children,
+}: {
+  className?: string;
+  children: ReactNode;
+}) {
+  const { release } = useAbility();
+  return (
+    <div className={className} onMouseLeave={release}>
+      {children}
+    </div>
+  );
+}
+
 /** The shared ability when inside a provider; otherwise a private one (used on its own). */
 export function useAbility(): AbilityState {
   const shared = useContext(AbilityContext);

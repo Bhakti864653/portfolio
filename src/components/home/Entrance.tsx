@@ -13,7 +13,7 @@ import {
 } from "react";
 import { useMediaQuery, useMotion } from "@/lib/prefs";
 import { triggerEgg } from "../motion/EasterEgg";
-import { AbilityProvider } from "../verbs/ability";
+import { AbilityArea, AbilityProvider } from "../verbs/ability";
 import { IdeaFigure, LEAD, VIEW } from "./IdeaFigure";
 import { LineFilter } from "./LineFilter";
 import { PreviewSlot } from "./PreviewSlot";
@@ -680,7 +680,7 @@ export function Entrance() {
               />
             )}
             <AbilityProvider>
-              <div className="shell relative flex flex-1 flex-col pb-[clamp(1.25rem,5svh,3rem)] pt-[calc(4rem+clamp(2rem,7svh,4rem))]">
+              <AbilityArea className="shell relative flex flex-1 flex-col pb-[clamp(1.25rem,5svh,3rem)] pt-[calc(4rem+clamp(2rem,7svh,4rem))]">
                 <div className="relative z-10 my-auto lg:max-w-[58%] lg:pt-[4svh]">
                   <h2
                     id="idea-title"
@@ -730,7 +730,7 @@ export function Entrance() {
                   Continue to the work
                   <LineArrow />
                 </a>
-              </div>
+              </AbilityArea>
             </AbilityProvider>
           </section>
         </div>

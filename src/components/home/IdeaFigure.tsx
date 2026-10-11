@@ -2,14 +2,12 @@
 
 import Link from "next/link";
 import {
-  useEffect,
   useId,
   useRef,
   type CSSProperties,
   type FocusEvent,
   type MouseEvent,
 } from "react";
-import { useMediaQuery, useMotion } from "@/lib/prefs";
 import { projectByVerb, VERB_ORDER, type Verb } from "@/lib/projects";
 import { useAbility } from "../verbs/ability";
 import { LineFilter } from "./LineFilter";
@@ -107,8 +105,7 @@ const ALIGN = {
  *
  * `paths` controls the strokes only: "pending" hides them until the screen is in view, "alive"
  * draws them in, one after another, growing outward from Human Judgment. The labels, nodes, and
- * center are always visible. On a desktop with full motion, the whole figure also tilts gently
- * toward the cursor, and the chosen path glows.
+ * center are always visible. The chosen path thickens and glows while the others fade back.
  */
 export function IdeaFigure({
   paths,
@@ -124,49 +121,15 @@ export function IdeaFigure({
   const { active, setActive, release } = useAbility();
   const filter = useId();
   const project = active ? projectByVerb(active) : null;
-  const motion = useMotion();
-  const finePointer = useMediaQuery("(hover: hover) and (pointer: fine)");
-  const box = useRef<HTMLElement | null>(null);
   const pointer = useRef<string>("mouse");
   /** When the last touch or pen press began, so the focus it causes can be told apart. */
   const pressedAt = useRef(0);
-
-  // The cursor's pull: the figure tilts a few degrees toward it. Only the figure's transform
-  // changes (the paths themselves are never redrawn), so the browser's compositor does all the
-  // work and the paper filters on the paths are never recomputed while the cursor moves.
-  useEffect(() => {
-    const el = box.current;
-    if (!el || motion !== "full" || !finePointer) return;
-    let frame = 0;
-    let last: PointerEvent | null = null;
-    const update = () => {
-      frame = 0;
-      if (!last) return;
-      const r = el.getBoundingClientRect();
-      const x = (last.clientX - r.left) / r.width - 0.5;
-      const y = (last.clientY - r.top) / r.height - 0.5;
-      // The transform itself, not a CSS variable: a variable would make every part of the
-      // drawing inherit a change and recalculate its style on each frame.
-      el.style.transform = `perspective(1100px) rotateX(${(-y * 6).toFixed(2)}deg) rotateY(${(x * 7).toFixed(2)}deg)`;
-    };
-    const onMove = (e: PointerEvent) => {
-      if (e.pointerType !== "mouse") return;
-      last = e;
-      if (!frame) frame = requestAnimationFrame(update);
-    };
-    const onLeave = () => {
-      cancelAnimationFrame(frame);
-      frame = 0;
-      el.style.removeProperty("transform");
-    };
-    el.addEventListener("pointermove", onMove);
-    el.addEventListener("pointerleave", onLeave);
-    return () => {
-      el.removeEventListener("pointermove", onMove);
-      el.removeEventListener("pointerleave", onLeave);
-      onLeave();
-    };
-  }, [motion, finePointer]);
+  /**
+   * Hover intent: a path is chosen only once the pointer rests on its label for a moment, so
+   * crossing other labels on the way to a preview card doesn't switch the card.
+   */
+  const intent = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const INTENT_MS = 120;
 
   function blur(e: FocusEvent<HTMLElement>) {
     if (!e.currentTarget.contains(e.relatedTarget as Node | null)) release();
@@ -182,13 +145,11 @@ export function IdeaFigure({
 
   return (
     <figure
-      ref={box}
       aria-labelledby="idea-figure-caption"
       className="idea-figure relative @container"
       data-paths={paths}
       data-active={active ?? undefined}
       onBlur={blur}
-      onMouseLeave={release}
     >
       <figcaption id="idea-figure-caption" className="sr-only">
         Four paths, one for each ability (decide, learn, connect, and act), all
@@ -347,8 +308,17 @@ export function IdeaFigure({
                 onClick={(e) => choose(e, verb)}
                 // A tap also fires mouseenter just before its click; only real mice hover.
                 onMouseEnter={() => {
-                  if (pointer.current === "mouse") setActive(verb);
+                  if (pointer.current !== "mouse") return;
+                  clearTimeout(intent.current);
+                  // The first choice is immediate; switching away from one waits for intent.
+                  if (!active) setActive(verb);
+                  else
+                    intent.current = setTimeout(
+                      () => setActive(verb),
+                      INTENT_MS,
+                    );
                 }}
+                onMouseLeave={() => clearTimeout(intent.current)}
                 // A tap focuses the link just before its click; only keyboard focus previews here,
                 // so the tap itself can decide between previewing and opening.
                 onFocus={(e) => {

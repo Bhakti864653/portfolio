@@ -824,14 +824,6 @@ html.lenis body {
 .path-node {
   transition: r 300ms ease;
 }
-/* The figure tilts toward the cursor (desktop, full motion). It is its own GPU layer, so the
-   tilt never redraws the paths or their paper filters. */
-@media (hover: hover) and (pointer: fine) {
-  :root[data-motion="full"] .idea-figure {
-    transition: transform 700ms cubic-bezier(0.2, 0.7, 0.2, 1);
-    will-change: transform;
-  }
-}
 .judgment-pulse {
   position: absolute;
   width: 3.8cqw;

@@ -14,8 +14,8 @@ import { useAbility } from "../verbs/ability";
  *
  * All four cards are built (and their pictures loaded) ahead of time, stacked in the same spot;
  * choosing a path only fades and slides the right one in, so nothing is created, fetched, or
- * decoded at the moment you point. That is what keeps the switch smooth. They are built once the
- * slot comes near the screen, not while the page first loads, so they never slow the opening.
+ * decoded at the moment you point. That is what keeps the switch smooth. They are built just
+ * after the page has loaded (or when the slot nears the screen), so they never slow the opening.
  *
  * There are two slots in the page, beside the figure on wide screens and under it on narrower
  * ones; only the one on screen takes part in the morph, so the transition always has a single
@@ -28,27 +28,41 @@ export function PreviewSlot({
   /** Receives the slot, e.g. so the Entrance can aim its line through the gap above it. */
   slotRef?: (el: HTMLDivElement | null) => void;
 }) {
-  const { active, setActive, release } = useAbility();
+  const { active, setActive } = useAbility();
   const wide = useMediaQuery("(min-width: 1024px)");
   const onScreen = slotRef ? wide : !wide;
   const box = useRef<HTMLDivElement | null>(null);
   const [built, setBuilt] = useState(false);
 
-  // Build the cards when the slot is about to come into view (the observer sees the panning
-  // sheet's transform too). Under reduced motion there is no pan, so the same rule applies.
+  // Build the cards once the page has settled after loading, or as soon as the slot is about to
+  // come into view, whichever is first: always before anyone can point at a path, and never
+  // during the first load, which they would slow down.
   useEffect(() => {
     const el = box.current;
     if (!el || built) return;
+    const build = () => setBuilt(true);
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (!entry.isIntersecting) return;
-        observer.disconnect();
-        setBuilt(true);
+        if (entry.isIntersecting) build();
       },
       { rootMargin: "300px" },
     );
     observer.observe(el);
-    return () => observer.disconnect();
+    let idle = 0;
+    const whenIdle = () => {
+      idle =
+        "requestIdleCallback" in window
+          ? window.requestIdleCallback(build, { timeout: 3000 })
+          : (setTimeout(build, 1500) as unknown as number);
+    };
+    if (document.readyState === "complete") whenIdle();
+    else window.addEventListener("load", whenIdle, { once: true });
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("load", whenIdle);
+      if ("cancelIdleCallback" in window) window.cancelIdleCallback(idle);
+      else clearTimeout(idle);
+    };
   }, [built]);
 
   return (
@@ -77,7 +91,6 @@ export function PreviewSlot({
               data-cursor="View"
               data-on={on || undefined}
               onMouseEnter={() => setActive(p.verb)}
-              onMouseLeave={release}
               className={`preview-card accent-${p.slug} block overflow-hidden rounded-[10px] border border-line-strong bg-soft shadow-[0_24px_60px_-28px_rgb(0_0_0/0.45)]`}
             >
               <MediaSlot
