@@ -156,9 +156,10 @@ function usePointerEffects(on: boolean) {
 }
 
 /**
- * A soft ring that trails the real cursor (which always stays visible). Over anything with
- * [data-cursor] it grows and shows that label, e.g. "View" over project cards. It never takes
- * pointer events, so it can't block a click, and keyboard and touch users never see it.
+ * A small dot that trails the real cursor (which always stays visible). Over anything with
+ * [data-cursor] it becomes a small pill with that label beside the arrow, e.g. "View" over project
+ * cards. It never takes pointer events, so it can't block a click, and keyboard and touch
+ * users never see it.
  */
 function Cursor() {
   const ring = useRef<HTMLDivElement>(null);
