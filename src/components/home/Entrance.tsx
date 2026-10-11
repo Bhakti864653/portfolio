@@ -699,7 +699,11 @@ export function Entrance() {
                     the final call to you.
                   </p>
                   <div className="mt-10 hidden lg:mt-[clamp(2.5rem,7svh,5rem)] lg:block">
-                    <PreviewSlot slotRef={words} />
+                    <PreviewSlot
+                      slotRef={(el) => {
+                        words.current = el;
+                      }}
+                    />
                   </div>
                 </div>
 

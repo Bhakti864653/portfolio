@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import type { Ref } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useMediaQuery } from "@/lib/prefs";
 import { PROJECTS } from "@/lib/projects";
 import { MediaSlot } from "../MediaSlot";
@@ -14,21 +14,49 @@ import { useAbility } from "../verbs/ability";
  *
  * All four cards are built (and their pictures loaded) ahead of time, stacked in the same spot;
  * choosing a path only fades and slides the right one in, so nothing is created, fetched, or
- * decoded at the moment you point. That is what keeps the switch smooth.
+ * decoded at the moment you point. That is what keeps the switch smooth. They are built once the
+ * slot comes near the screen, not while the page first loads, so they never slow the opening.
  *
  * There are two slots in the page, beside the figure on wide screens and under it on narrower
  * ones; only the one on screen takes part in the morph, so the transition always has a single
  * source. The cards repeat what each path's own link says, so they stay out of the tab order:
  * keyboard users open the project from the path itself.
  */
-export function PreviewSlot({ slotRef }: { slotRef?: Ref<HTMLDivElement> }) {
+export function PreviewSlot({
+  slotRef,
+}: {
+  /** Receives the slot, e.g. so the Entrance can aim its line through the gap above it. */
+  slotRef?: (el: HTMLDivElement | null) => void;
+}) {
   const { active, setActive, release } = useAbility();
   const wide = useMediaQuery("(min-width: 1024px)");
   const onScreen = slotRef ? wide : !wide;
+  const box = useRef<HTMLDivElement | null>(null);
+  const [built, setBuilt] = useState(false);
+
+  // Build the cards when the slot is about to come into view (the observer sees the panning
+  // sheet's transform too). Under reduced motion there is no pan, so the same rule applies.
+  useEffect(() => {
+    const el = box.current;
+    if (!el || built) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        observer.disconnect();
+        setBuilt(true);
+      },
+      { rootMargin: "300px" },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [built]);
 
   return (
     <div
-      ref={slotRef}
+      ref={(el) => {
+        box.current = el;
+        slotRef?.(el);
+      }}
       className="preview-slot"
       data-open={!!active || undefined}
     >
@@ -36,43 +64,45 @@ export function PreviewSlot({ slotRef }: { slotRef?: Ref<HTMLDivElement> }) {
         <span className="hint-pointer">Point at</span>
         <span className="hint-touch">Tap</span> a path to preview its project
       </p>
-      {PROJECTS.map((p) => {
-        const on = active === p.verb;
-        return (
-          <Link
-            key={p.slug}
-            href={`/work/${p.slug}`}
-            tabIndex={-1}
-            aria-hidden="true"
-            data-cursor="View"
-            data-on={on || undefined}
-            onMouseEnter={() => setActive(p.verb)}
-            onMouseLeave={release}
-            className={`preview-card accent-${p.slug} block overflow-hidden rounded-[10px] border border-line-strong bg-soft shadow-[0_24px_60px_-28px_rgb(0_0_0/0.45)]`}
-          >
-            <MediaSlot
-              project={p}
-              sizes="(min-width: 1024px) 26rem, 90vw"
-              morph={onScreen}
-              imageClassName="preview-image"
-            />
-            <div className="flex items-start justify-between gap-4 p-4">
-              <div>
-                <p className="font-display text-[1.7rem] leading-none text-a1">
-                  {p.name}
-                </p>
-                <p className="mt-1.5 text-[0.95rem] leading-snug text-ink">
-                  {p.oneLine}
-                </p>
+      {(built || active) &&
+        PROJECTS.map((p) => {
+          const on = active === p.verb;
+          return (
+            <Link
+              key={p.slug}
+              href={`/work/${p.slug}`}
+              prefetch={false}
+              tabIndex={-1}
+              aria-hidden="true"
+              data-cursor="View"
+              data-on={on || undefined}
+              onMouseEnter={() => setActive(p.verb)}
+              onMouseLeave={release}
+              className={`preview-card accent-${p.slug} block overflow-hidden rounded-[10px] border border-line-strong bg-soft shadow-[0_24px_60px_-28px_rgb(0_0_0/0.45)]`}
+            >
+              <MediaSlot
+                project={p}
+                sizes="(min-width: 1024px) 26rem, 90vw"
+                morph={onScreen}
+                imageClassName="preview-image"
+              />
+              <div className="flex items-start justify-between gap-4 p-4">
+                <div>
+                  <p className="font-display text-[1.7rem] leading-none text-a1">
+                    {p.name}
+                  </p>
+                  <p className="mt-1.5 text-[0.95rem] leading-snug text-ink">
+                    {p.oneLine}
+                  </p>
+                </div>
+                <span className="badge shrink-0">{p.badge}</span>
               </div>
-              <span className="badge shrink-0">{p.badge}</span>
-            </div>
-            <p className="annot flex items-center gap-2 border-t border-line px-4 py-2.5 text-ink">
-              Open the case study <span className="preview-arrow">→</span>
-            </p>
-          </Link>
-        );
-      })}
+              <p className="annot flex items-center gap-2 border-t border-line px-4 py-2.5 text-ink">
+                Open the case study <span className="preview-arrow">→</span>
+              </p>
+            </Link>
+          );
+        })}
     </div>
   );
 }

@@ -104,25 +104,52 @@ describe("Entrance", () => {
     ).toBeInTheDocument();
   });
 
-  it("shows the chosen project's preview, already built, when a path is highlighted", async () => {
-    const { container } = render(<Entrance />);
-    // Every preview is built ahead of time (one slot beside the figure, one under it), so
-    // pointing at a path only switches which card is shown.
-    const cards = () =>
-      Array.from(container.querySelectorAll<HTMLElement>(".preview-card"));
-    expect(cards()).toHaveLength(2 * PROJECTS.length);
-    expect(cards().filter((c) => c.dataset.on !== undefined)).toHaveLength(0);
-
-    const learn = screen.getByRole("link", { name: /learn: Synaptiq/ });
-    await userEvent.hover(learn);
-    expect(screen.getByText("→ Synaptiq")).toBeInTheDocument();
-    const shown = cards().filter((c) => c.dataset.on !== undefined);
-    expect(shown).toHaveLength(2);
-    for (const card of shown) {
-      expect(card).toHaveAttribute("href", "/work/synaptiq");
-      expect(card).toHaveTextContent("Adaptive AI tutor");
-      expect(card).toHaveTextContent(projectBySlug("synaptiq")!.oneLine);
+  it("builds the previews once their slot nears the screen, then only switches between them", async () => {
+    // Let the slots report that they are in view, as they do once the idea screen arrives.
+    const Real = window.IntersectionObserver;
+    class InView {
+      constructor(private cb: IntersectionObserverCallback) {}
+      observe() {
+        this.cb(
+          [{ isIntersecting: true } as IntersectionObserverEntry],
+          this as unknown as IntersectionObserver,
+        );
+      }
+      unobserve() {}
+      disconnect() {}
     }
+    window.IntersectionObserver =
+      InView as unknown as typeof IntersectionObserver;
+    try {
+      const { container } = render(<Entrance />);
+      const cards = () =>
+        Array.from(container.querySelectorAll<HTMLElement>(".preview-card"));
+      // Every preview is ready before anyone points (one slot beside the figure, one under it).
+      expect(cards()).toHaveLength(2 * PROJECTS.length);
+      expect(cards().filter((c) => c.dataset.on !== undefined)).toHaveLength(0);
+
+      await userEvent.hover(
+        screen.getByRole("link", { name: /learn: Synaptiq/ }),
+      );
+      expect(screen.getByText("→ Synaptiq")).toBeInTheDocument();
+      const shown = cards().filter((c) => c.dataset.on !== undefined);
+      expect(shown).toHaveLength(2);
+      for (const card of shown) {
+        expect(card).toHaveAttribute("href", "/work/synaptiq");
+        expect(card).toHaveTextContent("Adaptive AI tutor");
+        expect(card).toHaveTextContent(projectBySlug("synaptiq")!.oneLine);
+      }
+    } finally {
+      window.IntersectionObserver = Real;
+    }
+  });
+
+  it("does not build the previews while the page first loads", () => {
+    const { container } = render(<Entrance />);
+    expect(container.querySelectorAll(".preview-card")).toHaveLength(0);
+    expect(screen.getAllByText(/a path to preview its project/)).toHaveLength(
+      2,
+    );
   });
 
   it("stacks the two screens, with nothing waiting to draw, under reduced motion", () => {
