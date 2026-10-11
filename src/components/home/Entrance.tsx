@@ -57,11 +57,10 @@ const curve = (start: Pt, ...segs: Seg[]) =>
   segs.map(([a, b, c]) => `C${pt(a)} ${pt(b)} ${pt(c)}`).join("");
 
 /**
- * The arrival line, from the name's own measurements: it begins just under the foot of the "A",
- * dips a little below the baseline beneath "hir", then rises in a long S off the right edge, so it
- * never touches the name or the sentence under it at any width. It leaves at `exit`, the height
- * where the idea's line comes back in, so the two meet as one line while the sheet pans (unless
- * that height would make it climb too steeply or not at all).
+ * The arrival line, from the statement's own measurements: it begins just under the last word,
+ * dips a little below its baseline, then runs in a long S off the right edge. While the sheet pans
+ * it always leaves at `exit`, the height where the idea's line comes back in, so the two meet as
+ * one unbroken line at the seam; when the screens stack (no seam) it simply rises off the edge.
  */
 function arrivalLine(
   panel: DOMRect,
@@ -76,8 +75,7 @@ function arrivalLine(
   const s: Pt = [left + 0.16 * word.width, b + 0.012 * fs];
   const low: Pt = [left + 0.62 * word.width, b + 0.085 * fs];
   const rise = Math.min(0.49 * fs, 0.35 * (W - low[0]));
-  const fits = exit < low[1] - 0.12 * fs && exit > low[1] - 1.4 * rise;
-  const end: Pt = [W + 4, fits ? exit : low[1] - rise];
+  const end: Pt = [W + 4, Number.isFinite(exit) ? exit : low[1] - rise];
   const crest: Pt = [low[0] + 0.86 * (W - low[0]), end[1] - 0.03 * fs];
   const run = low[0] - s[0];
   return {

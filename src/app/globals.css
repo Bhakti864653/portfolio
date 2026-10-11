@@ -488,6 +488,9 @@
   font-weight: 600;
   line-height: 0.9;
   letter-spacing: -0.028em;
+  /* Balanced lines keep the last line ("people can do.") long, which the arrival line is drawn
+     around: without it, "people" moves up a line and sits in the line's path. */
+  text-wrap: balance;
 }
 .entrance-tagline {
   margin-top: calc(var(--statement) * 0.34);
