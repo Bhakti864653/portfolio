@@ -331,7 +331,7 @@ export const PROJECTS: Project[] = [
     summary:
       "Residents report local problems anonymously, every case gets a public number and history, and the AI Guide never acts without confirmation.",
     intro:
-      "A civic platform piloted for Santiago de Veraguas, Panama. Residents report problems or propose fixes anonymously, and every case gets a public number and status history. The AI Guide helps, but never acts without a person's confirmation.",
+      "An independent student demo of a civic platform for Santiago de Veraguas, Panama. Residents report problems or propose fixes anonymously, and every case gets a public number and status history. The AI Guide helps, but never acts without a person's confirmation.",
     hardestProblem:
       "Private moderator notes were being sent to every visitor's browser inside the page data, even though they never appeared on screen. A public data type now makes passing a private field to a public page a compile error.",
     repo: "https://github.com/Bhakti864653/commonground",
@@ -404,8 +404,9 @@ export const PROJECTS: Project[] = [
         "A public landing page was added at `/`, and the dashboard moved to `/home`.",
       ],
       limitations: [
-        "It's a prototype with no database yet. Submitted cases and new communities live in memory and disappear on a restart or redeploy.",
-        "The admin area is a passphrase-gated prototype, not a real account system.",
+        "It runs as an independent student demo: it sends no reports to any authority and isn't affiliated with the Alcaldía de Santiago. AI-prepared referrals to an office are built but paused.",
+        "Photos are never stored, only their file name and type, so a case can't show an image.",
+        "Areas are broad zones (center, north, south, east, west), not neighborhood names.",
         "Starter communities that visitors create have no local moderator until one reviews them.",
       ],
       learned: [
