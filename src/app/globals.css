@@ -812,8 +812,8 @@ html.lenis body {
   filter: blur(7px);
 }
 .path-glow {
-  opacity: calc(var(--near, 0) * 0.4);
-  transition: opacity 300ms ease;
+  opacity: 0;
+  transition: opacity 250ms ease;
 }
 .path-glow[data-on] {
   opacity: 0.55;
@@ -824,12 +824,35 @@ html.lenis body {
 .path-node {
   transition: r 300ms ease;
 }
-.idea-figure[data-active] .judgment-core {
-  animation: core 1.8s ease-in-out infinite;
+/* The figure tilts toward the cursor (desktop, full motion). It is its own GPU layer, so the
+   tilt never redraws the paths or their paper filters. */
+@media (hover: hover) and (pointer: fine) {
+  :root[data-motion="full"] .idea-figure {
+    transition: transform 700ms cubic-bezier(0.2, 0.7, 0.2, 1);
+    will-change: transform;
+  }
 }
-@keyframes core {
-  50% {
-    stroke-width: 4;
+.judgment-pulse {
+  position: absolute;
+  width: 3.8cqw;
+  height: 3.8cqw;
+  translate: -50% -50%;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+}
+.idea-figure[data-active] .judgment-pulse {
+  animation: pulse-ring 1.8s ease-out infinite;
+}
+@keyframes pulse-ring {
+  from {
+    transform: scale(0.9);
+    opacity: 0.55;
+  }
+  to {
+    transform: scale(2.6);
+    opacity: 0;
   }
 }
 .path-label {
@@ -850,15 +873,39 @@ html.lenis body {
     min-height: min(21rem, 34svh);
   }
 }
-.preview-card {
-  animation: preview-in 560ms cubic-bezier(0.2, 0.85, 0.2, 1) both;
+/* All four cards share one spot; the chosen one fades and slides in. Opacity and transform
+   only, so switching costs the browser almost nothing. */
+.preview-slot {
+  display: grid;
 }
-@keyframes preview-in {
-  from {
-    opacity: 0;
-    transform: translateY(16px) scale(0.95);
-    filter: blur(6px);
-  }
+.preview-slot > * {
+  grid-area: 1 / 1;
+}
+.preview-hint {
+  transition: opacity 250ms ease;
+}
+.preview-slot[data-open] .preview-hint {
+  opacity: 0;
+}
+.preview-card {
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(14px) scale(0.97);
+  pointer-events: none;
+  transition:
+    opacity 300ms ease,
+    transform 450ms cubic-bezier(0.2, 0.85, 0.2, 1),
+    visibility 0s linear 450ms;
+}
+.preview-card[data-on] {
+  visibility: visible;
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+  transition:
+    opacity 300ms ease,
+    transform 450ms cubic-bezier(0.2, 0.85, 0.2, 1),
+    visibility 0s;
 }
 .preview-image {
   transition: transform 700ms cubic-bezier(0.2, 0.7, 0.2, 1);

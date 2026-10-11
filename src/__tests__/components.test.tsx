@@ -104,16 +104,25 @@ describe("Entrance", () => {
     ).toBeInTheDocument();
   });
 
-  it("floats in a preview with a badge when a path is highlighted", async () => {
-    render(<Entrance />);
+  it("shows the chosen project's preview, already built, when a path is highlighted", async () => {
+    const { container } = render(<Entrance />);
+    // Every preview is built ahead of time (one slot beside the figure, one under it), so
+    // pointing at a path only switches which card is shown.
+    const cards = () =>
+      Array.from(container.querySelectorAll<HTMLElement>(".preview-card"));
+    expect(cards()).toHaveLength(2 * PROJECTS.length);
+    expect(cards().filter((c) => c.dataset.on !== undefined)).toHaveLength(0);
+
     const learn = screen.getByRole("link", { name: /learn: Synaptiq/ });
     await userEvent.hover(learn);
     expect(screen.getByText("→ Synaptiq")).toBeInTheDocument();
-    // One preview beside the figure (wide screens) and one under it (phones).
-    expect(screen.getAllByText("Adaptive AI tutor")).toHaveLength(2);
-    expect(
-      screen.getAllByText(projectBySlug("synaptiq")!.oneLine),
-    ).toHaveLength(2);
+    const shown = cards().filter((c) => c.dataset.on !== undefined);
+    expect(shown).toHaveLength(2);
+    for (const card of shown) {
+      expect(card).toHaveAttribute("href", "/work/synaptiq");
+      expect(card).toHaveTextContent("Adaptive AI tutor");
+      expect(card).toHaveTextContent(projectBySlug("synaptiq")!.oneLine);
+    }
   });
 
   it("stacks the two screens, with nothing waiting to draw, under reduced motion", () => {

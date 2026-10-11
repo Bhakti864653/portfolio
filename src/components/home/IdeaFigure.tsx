@@ -83,46 +83,12 @@ const PATHS: Record<Verb, Path> = {
   },
 };
 
-const r1 = (n: number) => Math.round(n * 10) / 10;
-
-/**
- * The path's `d`, with each control point pulled toward (px, py) by up to `reach` units the
- * closer it is: the path seems to bend toward the cursor. The ends never move, so every path
- * still meets the center.
- */
-function toD({ start, segs }: Curve, px = 0, py = 0, reach = 0): string {
-  const bend = (x: number, y: number): [number, number] => {
-    if (!reach) return [x, y];
-    const dx = px - x;
-    const dy = py - y;
-    const d = Math.hypot(dx, dy) || 1;
-    const k = Math.max(0, 1 - d / 170) * reach;
-    return [x + (dx / d) * k, y + (dy / d) * k];
-  };
+/** The path's `d`, from its points. */
+function toD({ start, segs }: Curve): string {
   return (
     `M${start[0]} ${start[1]}` +
-    segs
-      .map(([a, b, c, d, x, y]) => {
-        const [ax, ay] = bend(a, b);
-        const [cx, cy] = bend(c, d);
-        return `C${r1(ax)} ${r1(ay)} ${r1(cx)} ${r1(cy)} ${x} ${y}`;
-      })
-      .join("")
+    segs.map(([a, b, c, d, x, y]) => `C${a} ${b} ${c} ${d} ${x} ${y}`).join("")
   );
-}
-
-/** How close (0 to 1) the point is to any of the path's points. */
-function nearness({ start, segs }: Curve, px: number, py: number): number {
-  const pts = [
-    start,
-    ...segs.flatMap((s) => [
-      [s[0], s[1]],
-      [s[2], s[3]],
-      [s[4], s[5]],
-    ]),
-  ];
-  const d = Math.min(...pts.map(([x, y]) => Math.hypot(px - x, py - y)));
-  return Math.max(0, 1 - d / 130);
 }
 
 const pct = (n: number, from: number, span: number) =>
@@ -141,8 +107,8 @@ const ALIGN = {
  *
  * `paths` controls the strokes only: "pending" hides them until the screen is in view, "alive"
  * draws them in, one after another, growing outward from Human Judgment. The labels, nodes, and
- * center are always visible. On a desktop with full motion, the paths also bend a little and
- * glow as the cursor comes near them.
+ * center are always visible. On a desktop with full motion, the whole figure also tilts gently
+ * toward the cursor, and the chosen path glows.
  */
 export function IdeaFigure({
   paths,
@@ -160,42 +126,28 @@ export function IdeaFigure({
   const project = active ? projectByVerb(active) : null;
   const motion = useMotion();
   const finePointer = useMediaQuery("(hover: hover) and (pointer: fine)");
-  const box = useRef<SVGSVGElement | null>(null);
-  const strokes = useRef<Partial<Record<Verb, SVGPathElement | null>>>({});
-  const glows = useRef<Partial<Record<Verb, SVGPathElement | null>>>({});
+  const box = useRef<HTMLElement | null>(null);
   const pointer = useRef<string>("mouse");
   /** When the last touch or pen press began, so the focus it causes can be told apart. */
   const pressedAt = useRef(0);
 
-  // The cursor's pull: bend and glow by proximity, in the figure's own units.
+  // The cursor's pull: the figure tilts a few degrees toward it. Only the figure's transform
+  // changes (the paths themselves are never redrawn), so the browser's compositor does all the
+  // work and the paper filters on the paths are never recomputed while the cursor moves.
   useEffect(() => {
-    const svg = box.current;
-    if (!svg || motion !== "full" || !finePointer) return;
+    const el = box.current;
+    if (!el || motion !== "full" || !finePointer) return;
     let frame = 0;
     let last: PointerEvent | null = null;
-    const draw = (px?: number, py?: number) => {
-      for (const verb of VERB_ORDER) {
-        const curve = PATHS[verb].curve;
-        const d = px === undefined ? toD(curve) : toD(curve, px, py, 16);
-        strokes.current[verb]?.setAttribute("d", d);
-        const glow = glows.current[verb];
-        if (glow) {
-          glow.setAttribute("d", d);
-          glow.style.setProperty(
-            "--near",
-            px === undefined ? "0" : nearness(curve, px, py!).toFixed(3),
-          );
-        }
-      }
-    };
     const update = () => {
       frame = 0;
-      const ctm = svg.getScreenCTM();
-      if (!last || !ctm) return;
-      const pt = new DOMPoint(last.clientX, last.clientY).matrixTransform(
-        ctm.inverse(),
-      );
-      draw(pt.x, pt.y);
+      if (!last) return;
+      const r = el.getBoundingClientRect();
+      const x = (last.clientX - r.left) / r.width - 0.5;
+      const y = (last.clientY - r.top) / r.height - 0.5;
+      // The transform itself, not a CSS variable: a variable would make every part of the
+      // drawing inherit a change and recalculate its style on each frame.
+      el.style.transform = `perspective(1100px) rotateX(${(-y * 6).toFixed(2)}deg) rotateY(${(x * 7).toFixed(2)}deg)`;
     };
     const onMove = (e: PointerEvent) => {
       if (e.pointerType !== "mouse") return;
@@ -205,14 +157,13 @@ export function IdeaFigure({
     const onLeave = () => {
       cancelAnimationFrame(frame);
       frame = 0;
-      draw();
+      el.style.removeProperty("transform");
     };
-    const area = svg.closest("figure") ?? svg;
-    area.addEventListener("pointermove", onMove as EventListener);
-    area.addEventListener("pointerleave", onLeave);
+    el.addEventListener("pointermove", onMove);
+    el.addEventListener("pointerleave", onLeave);
     return () => {
-      area.removeEventListener("pointermove", onMove as EventListener);
-      area.removeEventListener("pointerleave", onLeave);
+      el.removeEventListener("pointermove", onMove);
+      el.removeEventListener("pointerleave", onLeave);
       onLeave();
     };
   }, [motion, finePointer]);
@@ -231,6 +182,7 @@ export function IdeaFigure({
 
   return (
     <figure
+      ref={box}
       aria-labelledby="idea-figure-caption"
       className="idea-figure relative @container"
       data-paths={paths}
@@ -245,10 +197,7 @@ export function IdeaFigure({
       </figcaption>
 
       <svg
-        ref={(el) => {
-          box.current = el;
-          svgRef?.(el);
-        }}
+        ref={svgRef}
         viewBox={`${VIEW.x} ${VIEW.y} ${VIEW.w} ${VIEW.h}`}
         className="block h-auto w-full overflow-visible"
         aria-hidden="true"
@@ -289,9 +238,6 @@ export function IdeaFigure({
           {VERB_ORDER.map((verb) => (
             <path
               key={verb}
-              ref={(el) => {
-                glows.current[verb] = el;
-              }}
               d={toD(PATHS[verb].curve)}
               stroke={`url(#${filter}-${verb})`}
               strokeWidth={14}
@@ -308,9 +254,6 @@ export function IdeaFigure({
             return (
               <path
                 key={verb}
-                ref={(el) => {
-                  strokes.current[verb] = el;
-                }}
                 d={toD(PATHS[verb].curve)}
                 pathLength={1}
                 stroke={`url(#${filter}-${verb})`}
@@ -321,7 +264,7 @@ export function IdeaFigure({
                 style={
                   {
                     "--delay": `${delay + i * 320}ms`,
-                    transition: "opacity 400ms, stroke-width 400ms",
+                    transition: "opacity 220ms, stroke-width 220ms",
                   } as CSSProperties
                 }
               />
@@ -350,6 +293,14 @@ export function IdeaFigure({
           className="judgment-core"
         />
       </svg>
+
+      {/* A ring that pulses out from Human Judgment while a path is chosen. It is a plain element
+          animated with transform and opacity, so it never makes the drawing redraw. */}
+      <span
+        aria-hidden="true"
+        className="judgment-pulse"
+        style={{ left: pct(0, VIEW.x, VIEW.w), top: pct(0, VIEW.y, VIEW.h) }}
+      />
 
       {/* Set in two parts either side of x = 5, where the Learn path rises between the words */}
       <p
