@@ -11,7 +11,6 @@ import { preload } from "react-dom";
 export default function Home() {
   // The opening screen's paper is the largest thing on it: start fetching it with the page.
   preload("/paper/sheet-light.webp", { as: "image", fetchPriority: "high" });
-  preload("/paper/sheet-dark.webp", { as: "image" });
   return (
     <>
       <Intro />

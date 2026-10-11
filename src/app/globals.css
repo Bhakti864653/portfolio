@@ -695,11 +695,11 @@ html.lenis body {
 :root[data-motion="reduce"] .intro {
   display: none !important;
 }
+/* Opacity and transform only, so leaving costs the phone almost nothing to draw. */
 @keyframes intro-out {
   to {
     opacity: 0;
     transform: translateY(-6svh) scale(1.04);
-    filter: blur(10px);
     visibility: hidden;
   }
 }
@@ -758,10 +758,18 @@ html.lenis body {
     filter: blur(7px);
   }
 }
-/* Phones skip the blur, which is the costly part to paint. */
+/* Phones get the lighter version: the statement rises word by word (7 pieces instead of 45),
+   without the blur, which keeps the first screen quick to lay out and paint. */
 @media (pointer: coarse) {
   :root[data-motion="full"] .hero-letter {
-    animation-name: letter-in-light;
+    animation: none;
+  }
+  :root[data-motion="full"] .hero-word {
+    animation: letter-in-light 850ms cubic-bezier(0.2, 0.85, 0.2, 1) both;
+    animation-delay: calc(180ms + var(--wi) * 90ms);
+  }
+  :root[data-intro="play"] .hero-word {
+    animation-delay: calc(1380ms + var(--wi) * 90ms);
   }
 }
 @keyframes letter-in-light {

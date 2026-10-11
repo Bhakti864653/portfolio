@@ -303,6 +303,7 @@ function StatementLetters({
               <span
                 ref={last ? lastRef : undefined}
                 className={`hero-word ${word === "expand" ? "italic" : ""}`}
+                style={{ "--wi": w } as CSSProperties}
               >
                 {last && (
                   <span
