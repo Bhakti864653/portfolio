@@ -21,6 +21,7 @@ export function MediaSlot({
   morph = false,
   className = "",
   imageClassName = "",
+  fill = false,
 }: {
   project: Project;
   sizes: string;
@@ -28,10 +29,12 @@ export function MediaSlot({
   morph?: boolean;
   className?: string;
   imageClassName?: string;
+  /** Fill the parent's box (e.g. a grid cell) instead of keeping its own 16:9 shape. */
+  fill?: boolean;
 }) {
   const slot = (
     <div
-      className={`relative aspect-video overflow-hidden bg-soft ${className}`}
+      className={`relative ${fill ? "h-full w-full" : "aspect-video"} overflow-hidden bg-soft ${className}`}
     >
       {p.media ? (
         <DemoVideo project={p} />

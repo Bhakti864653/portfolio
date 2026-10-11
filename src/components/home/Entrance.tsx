@@ -458,7 +458,11 @@ export function Entrance() {
     };
     measure();
     const observer = new ResizeObserver(measure);
-    for (const el of [arrival.current, idea.current])
+    // Also watch the idea screen's content and the figure: if anything in that column changes
+    // size (fonts arriving, the previews being built), the figure can move, and the line must
+    // still land exactly on Human Judgment.
+    const content = words.current?.closest(".shell");
+    for (const el of [arrival.current, idea.current, content, figure.current])
       if (el) observer.observe(el);
     document.fonts?.ready.then(measure);
     return () => observer.disconnect();

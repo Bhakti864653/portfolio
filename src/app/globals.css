@@ -860,10 +860,10 @@ html.lenis body {
 .preview-slot {
   max-width: 26rem;
 }
-@media (min-width: 1024px) {
-  .preview-slot {
-    min-height: min(21rem, 34svh);
-  }
+/* The compact card beside the figure: about 150px tall, so the column always fits the screen. */
+.preview-slot:has(.preview-compact) {
+  max-width: 34rem;
+  min-height: 9.5rem;
 }
 /* All four cards share one spot; the chosen one fades and slides in. Opacity and transform
    only, so switching costs the browser almost nothing. */
@@ -873,7 +873,9 @@ html.lenis body {
 .preview-slot > * {
   grid-area: 1 / 1;
 }
+/* The hint is only words; it must never catch the click meant for the card on top of it. */
 .preview-hint {
+  pointer-events: none;
   transition: opacity 250ms ease;
 }
 .preview-slot[data-open] .preview-hint {
@@ -890,6 +892,8 @@ html.lenis body {
     visibility 0s linear 450ms;
 }
 .preview-card[data-on] {
+  position: relative;
+  z-index: 1;
   visibility: visible;
   opacity: 1;
   transform: none;

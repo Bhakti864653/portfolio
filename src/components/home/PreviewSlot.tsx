@@ -31,6 +31,9 @@ export function PreviewSlot({
   const { active, setActive } = useAbility();
   const wide = useMediaQuery("(min-width: 1024px)");
   const onScreen = slotRef ? wide : !wide;
+  // Beside the figure (wide screens) the card is compact, so it always fits on a laptop screen;
+  // under the figure (narrow screens) there is room for the full card.
+  const compact = !!slotRef;
   const box = useRef<HTMLDivElement | null>(null);
   const [built, setBuilt] = useState(false);
 
@@ -91,28 +94,48 @@ export function PreviewSlot({
               data-cursor="View"
               data-on={on || undefined}
               onMouseEnter={() => setActive(p.verb)}
-              className={`preview-card accent-${p.slug} block overflow-hidden rounded-[10px] border border-line-strong bg-soft shadow-[0_24px_60px_-28px_rgb(0_0_0/0.45)]`}
+              className={`preview-card accent-${p.slug} ${compact ? "preview-compact grid grid-cols-[minmax(0,11.5rem)_minmax(0,1fr)]" : "block"} overflow-hidden rounded-[10px] border border-line-strong bg-soft shadow-[0_24px_60px_-28px_rgb(0_0_0/0.45)]`}
             >
               <MediaSlot
                 project={p}
-                sizes="(min-width: 1024px) 26rem, 90vw"
+                sizes={compact ? "12rem" : "90vw"}
                 morph={onScreen}
+                fill={compact}
                 imageClassName="preview-image"
               />
-              <div className="flex items-start justify-between gap-4 p-4">
-                <div>
-                  <p className="font-display text-[1.7rem] leading-none text-a1">
-                    {p.name}
-                  </p>
-                  <p className="mt-1.5 text-[0.95rem] leading-snug text-ink">
+              {compact ? (
+                <div className="flex min-w-0 flex-col justify-center gap-2 px-4 py-3">
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+                    <p className="font-display text-[1.6rem] leading-none text-a1">
+                      {p.name}
+                    </p>
+                    <span className="badge">{p.badge}</span>
+                  </div>
+                  <p className="text-[0.9rem] leading-snug text-ink">
                     {p.oneLine}
                   </p>
+                  <p className="annot flex items-center gap-2 text-ink">
+                    Open the case study <span className="preview-arrow">→</span>
+                  </p>
                 </div>
-                <span className="badge shrink-0">{p.badge}</span>
-              </div>
-              <p className="annot flex items-center gap-2 border-t border-line px-4 py-2.5 text-ink">
-                Open the case study <span className="preview-arrow">→</span>
-              </p>
+              ) : (
+                <>
+                  <div className="flex items-start justify-between gap-4 p-4">
+                    <div>
+                      <p className="font-display text-[1.7rem] leading-none text-a1">
+                        {p.name}
+                      </p>
+                      <p className="mt-1.5 text-[0.95rem] leading-snug text-ink">
+                        {p.oneLine}
+                      </p>
+                    </div>
+                    <span className="badge shrink-0">{p.badge}</span>
+                  </div>
+                  <p className="annot flex items-center gap-2 border-t border-line px-4 py-2.5 text-ink">
+                    Open the case study <span className="preview-arrow">→</span>
+                  </p>
+                </>
+              )}
             </Link>
           );
         })}
