@@ -75,9 +75,85 @@ describe("project data", () => {
     expect(projectBySlug("nope")).toBeUndefined();
   });
 
-  it("journey threads only reference real stages", () => {
+  it("journey threads only reference real stages, in one line each", () => {
     const ids = STAGES.map((s) => s.id);
-    for (const t of THREADS)
+    for (const t of THREADS) {
       for (const id of t.stages) expect(ids).toContain(id);
+      expect(t.note.split(/(?<=[.!?])\s/).length, t.title).toBe(1);
+    }
+  });
+
+  it("gives each project the requested badge, a one-liner, and 2-3 tags", () => {
+    expect(PROJECTS.map((p) => p.badge)).toEqual([
+      "61 tests",
+      "Adaptive AI tutor",
+      "Stable matching",
+      "7 languages",
+    ]);
+    for (const p of PROJECTS) {
+      expect(p.oneLine.length, p.slug).toBeLessThan(110);
+      expect(p.tags.length).toBeGreaterThanOrEqual(2);
+      expect(p.tags.length).toBeLessThanOrEqual(3);
+    }
+  });
+
+  it("has at least three real screenshots per project, each a real file with a description", () => {
+    for (const p of PROJECTS) {
+      const shots = [p.screenshot, ...p.gallery];
+      expect(shots.length, p.slug).toBeGreaterThanOrEqual(3);
+      for (const s of shots) {
+        expect(
+          existsSync(path.join(process.cwd(), "public", s.src)),
+          s.src,
+        ).toBe(true);
+        expect(s.alt.length).toBeGreaterThan(20);
+      }
+    }
+  });
+
+  it("keeps the short case study sections short", () => {
+    for (const p of PROJECTS) {
+      expect(p.short.does.length).toBeGreaterThanOrEqual(3);
+      expect(p.short.does.length).toBeLessThanOrEqual(4);
+      expect(p.short.learned.length).toBeLessThanOrEqual(4);
+      for (const text of [p.short.problem, p.short.hard])
+        expect(text.split(/(?<=[.!?])\s/).length, p.slug).toBeLessThanOrEqual(
+          3,
+        );
+    }
+  });
+
+  it("matches what the apps do today", () => {
+    const portico = projectBySlug("portico")!;
+    // Reminder emails exist in the code but are switched off: never offered as a feature.
+    expect(portico.caseStudy.features.join(" ")).not.toMatch(/remind/i);
+    expect(portico.caseStudy.limitations.join(" ")).toMatch(/switched off/);
+    expect(portico.stack.join(" ")).toMatch(/61 tests/);
+
+    const commonground = projectBySlug("commonground")!;
+    expect(commonground.intro).toMatch(/student demo/);
+    expect(commonground.caseStudy.limitations.join(" ")).toMatch(
+      /referrals .* paused/,
+    );
+  });
+});
+
+describe("certifications and media", () => {
+  it("formats certificate dates", async () => {
+    const { formatMonth, CERTIFICATIONS } =
+      await import("@/lib/certifications");
+    expect(formatMonth("2026-10")).toBe("October 2026");
+    for (const c of CERTIFICATIONS) {
+      expect(c.url).toMatch(/^https:\/\//);
+      expect(c.date).toMatch(/^\d{4}-\d{2}$/);
+    }
+  });
+
+  it("points any demo video at a real file", () => {
+    for (const p of PROJECTS)
+      if (p.media)
+        expect(
+          existsSync(path.join(process.cwd(), "public", p.media.video)),
+        ).toBe(true);
   });
 });

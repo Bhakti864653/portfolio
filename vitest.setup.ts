@@ -23,3 +23,15 @@ class NoopObserver {
 }
 for (const name of ["ResizeObserver", "IntersectionObserver"])
   Object.defineProperty(window, name, { writable: true, value: NoopObserver });
+
+// The app runs on the React bundled with Next.js, which has <ViewTransition>; the plain `react`
+// package these tests import does not yet. Outside a browser transition it only renders its
+// children, so a pass-through stands in for it here.
+vi.mock("react", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("react")>();
+  return {
+    ...actual,
+    ViewTransition: ({ children }: { children?: import("react").ReactNode }) =>
+      children,
+  };
+});

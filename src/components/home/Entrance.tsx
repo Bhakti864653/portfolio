@@ -1,26 +1,28 @@
 "use client";
 
-import Link from "next/link";
 import {
   useEffect,
   useId,
   useRef,
   useState,
+  type CSSProperties,
   type FocusEvent,
   type MouseEvent,
   type Ref,
+  type RefObject,
 } from "react";
 import { useMediaQuery, useMotion } from "@/lib/prefs";
-import { projectByVerb, VERB_ORDER } from "@/lib/projects";
-import { AbilityProvider, useAbility } from "../verbs/ability";
+import { triggerEgg } from "../motion/EasterEgg";
+import { AbilityProvider } from "../verbs/ability";
 import { IdeaFigure, LEAD, VIEW } from "./IdeaFigure";
 import { LineFilter } from "./LineFilter";
+import { PreviewSlot } from "./PreviewSlot";
 
 /**
- * The entrance: two full screens on one sheet of paper. The first is the arrival (the name, and a
- * fine colored line that starts under it and runs off to the right); the second is the idea (the
- * line comes back in from the left, under the words, and becomes one of four paths meeting at
- * Human Judgment).
+ * The entrance: two full screens on one sheet of paper. The first is the arrival (the statement,
+ * revealed letter by letter, and a fine colored line that starts under its last word and runs off
+ * to the right); the second is the idea (the line comes back in from the left, under the words,
+ * and becomes one of four paths meeting at Human Judgment).
  *
  * On a large screen with full motion the two screens sit side by side and the sheet pans across
  * as you scroll (or click "Continue to the idea"): the line draws ahead of the second screen as it
@@ -264,45 +266,148 @@ function LineArrow() {
 const CONTINUE =
   "annot group inline-flex min-h-11 items-center gap-5 self-start text-[0.72rem] tracking-[0.2em] text-muted transition-colors hover:text-ink";
 
-/** The four abilities as words, each a link to its project, sharing state with the figure. */
-function AbilityWords({ listRef }: { listRef: Ref<HTMLUListElement> }) {
-  const { active, setActive } = useAbility();
-  return (
-    <ul
-      ref={listRef}
-      aria-label="Four abilities"
-      onMouseLeave={() => setActive(null)}
-      className="flex flex-wrap items-baseline gap-x-[0.55em] gap-y-1 font-display text-[min(7.2vw,2.5rem)] leading-tight lg:text-[clamp(2rem,min(3.05vw,5.4svh),3rem)]"
-    >
-      {VERB_ORDER.map((verb, i) => {
-        const p = projectByVerb(verb);
-        return (
-          <li key={verb} className="flex items-baseline gap-[0.55em]">
-            <Link
-              href={`/work/${p.slug}`}
-              onMouseEnter={() => setActive(verb)}
-              onFocus={() => setActive(verb)}
-              onBlur={() => setActive(null)}
-              className={`accent-${p.slug} link-draw capitalize text-a1 transition-opacity duration-300 ${active && active !== verb ? "opacity-50" : ""}`}
-            >
-              {verb}
-              <span className="sr-only">: {p.name}</span>
-            </Link>
-            {i < VERB_ORDER.length - 1 && (
-              <span aria-hidden="true" className="text-[0.6em] text-ink">
-                ·
-              </span>
-            )}
-          </li>
-        );
-      })}
-    </ul>
+/** The statement, word by word ("expand" set in italic). */
+const STATEMENT = [
+  "Technology",
+  "should",
+  "expand",
+  "what",
+  "people",
+  "can",
+  "do.",
+];
+
+/**
+ * The hero statement as separate letters, so each can rise in turn (and lean toward the cursor).
+ * Screen readers get the sentence once, as plain text; the letters are hidden from them.
+ * `lastRef` and `baselineRef` mark the last word, where the arrival line starts.
+ */
+function StatementLetters({
+  lastRef,
+  baselineRef,
+}: {
+  lastRef: Ref<HTMLSpanElement>;
+  baselineRef: Ref<HTMLSpanElement>;
+}) {
+  const starts = STATEMENT.map((_, w) =>
+    STATEMENT.slice(0, w).reduce((n, word) => n + word.length, 0),
   );
+  return (
+    <>
+      <span className="sr-only">{STATEMENT.join(" ")}</span>
+      <span aria-hidden="true">
+        {STATEMENT.map((word, w) => {
+          const last = w === STATEMENT.length - 1;
+          return (
+            <span key={word}>
+              <span
+                ref={last ? lastRef : undefined}
+                className={`hero-word ${word === "expand" ? "italic" : ""}`}
+              >
+                {last && (
+                  <span
+                    ref={baselineRef}
+                    className="inline-block h-0 w-0 align-baseline"
+                  />
+                )}
+                {[...word].map((ch, c) => (
+                  <span
+                    key={c}
+                    className="hero-letter"
+                    style={{ "--i": starts[w] + c } as CSSProperties}
+                  >
+                    {ch}
+                  </span>
+                ))}
+              </span>{" "}
+            </span>
+          );
+        })}
+      </span>
+    </>
+  );
+}
+
+/**
+ * On a desktop with full motion, the statement's letters lean a few pixels toward the cursor,
+ * strongest for the letters nearest it, and settle back when it leaves.
+ */
+function useLettersFollowCursor(
+  section: RefObject<HTMLElement | null>,
+  on: boolean,
+) {
+  useEffect(() => {
+    const el = section.current;
+    if (!el || !on) return;
+    const letters = Array.from(
+      el.querySelectorAll<HTMLElement>(".hero-letter"),
+    );
+    let centers: [number, number][] = [];
+    let frame = 0;
+    let px = 0;
+    let py = 0;
+    const measure = () => {
+      for (const l of letters) l.style.removeProperty("translate");
+      centers = letters.map((l) => {
+        const r = l.getBoundingClientRect();
+        return [r.left + r.width / 2, r.top + r.height / 2];
+      });
+    };
+    const update = () => {
+      frame = 0;
+      letters.forEach((l, i) => {
+        const [cx, cy] = centers[i];
+        const dx = px - cx;
+        const dy = py - cy;
+        const d = Math.hypot(dx, dy) || 1;
+        const pull = Math.max(0, 1 - d / 320) * 9;
+        l.style.translate = `${((dx / d) * pull).toFixed(2)}px ${((dy / d) * pull).toFixed(2)}px`;
+      });
+    };
+    const onMove = (e: PointerEvent) => {
+      if (e.pointerType !== "mouse") return;
+      if (!centers.length) measure();
+      px = e.clientX;
+      py = e.clientY;
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+    const settle = () => {
+      cancelAnimationFrame(frame);
+      frame = 0;
+      for (const l of letters) l.style.removeProperty("translate");
+      centers = [];
+    };
+    el.addEventListener("pointermove", onMove);
+    el.addEventListener("pointerleave", settle);
+    window.addEventListener("scroll", settle, { passive: true });
+    window.addEventListener("resize", settle);
+    return () => {
+      el.removeEventListener("pointermove", onMove);
+      el.removeEventListener("pointerleave", settle);
+      window.removeEventListener("scroll", settle);
+      window.removeEventListener("resize", settle);
+      settle();
+    };
+  }, [section, on]);
+}
+
+/** Tapping my name five times in a row (handy on a phone, with no keyboard) shows an egg. */
+function useNameTaps() {
+  const taps = useRef<number[]>([]);
+  return () => {
+    const now = Date.now();
+    taps.current = [...taps.current.filter((t) => now - t < 1600), now];
+    if (taps.current.length >= 5) {
+      taps.current = [];
+      triggerEgg(now % 2 ? "panama" : "india");
+    }
+  };
 }
 
 export function Entrance() {
   const motion = useMotion();
   const wide = useMediaQuery("(min-width: 1024px) and (min-height: 600px)");
+  const finePointer = useMediaQuery("(hover: hover) and (pointer: fine)");
   const mode: "pan" | "stack" = motion === "full" && wide ? "pan" : "stack";
   const animate = motion === "full";
 
@@ -310,10 +415,10 @@ export function Entrance() {
   const track = useRef<HTMLDivElement>(null);
   const arrival = useRef<HTMLElement>(null);
   const idea = useRef<HTMLElement>(null);
-  const ahir = useRef<HTMLSpanElement>(null);
+  const lastWord = useRef<HTMLSpanElement>(null);
   const baseline = useRef<HTMLSpanElement>(null);
   const desc = useRef<HTMLParagraphElement>(null);
-  const words = useRef<HTMLUListElement>(null);
+  const words = useRef<HTMLDivElement>(null);
   const figure = useRef<SVGSVGElement>(null);
   const lead = useRef<SVGPathElement>(null);
   const ideaTitle = useRef<HTMLHeadingElement>(null);
@@ -322,6 +427,8 @@ export function Entrance() {
     null,
   );
   const [alive, setAlive] = useState(false);
+  const tapName = useNameTaps();
+  useLettersFollowCursor(arrival, animate && finePointer);
 
   // Measure the text and the figure, and draw both lines from them; again whenever either screen
   // changes size (a resize, a font arriving, or the switch between panning and stacking).
@@ -329,9 +436,9 @@ export function Entrance() {
     const measure = () => {
       const a = arrival.current;
       const i = idea.current;
-      if (!a || !i || !ahir.current || !baseline.current) return;
+      if (!a || !i || !lastWord.current || !baseline.current) return;
       if (!desc.current || !words.current || !figure.current) return;
-      const fs = parseFloat(getComputedStyle(ahir.current).fontSize);
+      const fs = parseFloat(getComputedStyle(lastWord.current).fontSize);
       const lead = leadLine(
         i.getBoundingClientRect(),
         desc.current.getBoundingClientRect(),
@@ -341,7 +448,7 @@ export function Entrance() {
       setLines({
         arrival: arrivalLine(
           a.getBoundingClientRect(),
-          ahir.current.getBoundingClientRect(),
+          lastWord.current.getBoundingClientRect(),
           baseline.current.getBoundingClientRect().bottom,
           fs,
           // Only a panning sheet has a seam to meet across.
@@ -426,6 +533,14 @@ export function Entrance() {
     const from = window.scrollY;
     const distance = to - from;
     const duration = Math.min(1800, 900 + Math.abs(distance) * 0.5);
+    // With smooth scrolling on, let it drive the glide, so the two never fight.
+    if (window.__lenis) {
+      window.__lenis.scrollTo(to, {
+        duration: duration / 1000,
+        onComplete: done,
+      });
+      return;
+    }
     let start = 0;
     let frame = 0;
     const stop = () => {
@@ -520,25 +635,25 @@ export function Entrance() {
             <div className="shell relative flex flex-1 flex-col pb-[clamp(1.25rem,5svh,3rem)] pt-[calc(4rem+clamp(2rem,9svh,5.5rem))]">
               {/* Centered in the screen's height; on a desktop screen it nearly fills it, as drawn */}
               <div className="my-auto">
-                <p className="annot text-[clamp(0.66rem,0.92vw,0.82rem)] tracking-[0.42em]">
-                  A personal portfolio
+                <p className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+                  {/* Tapping the name five times shows an easter egg (no keyboard needed). */}
+                  <span
+                    className="hero-name font-name italic text-ink"
+                    onClick={tapName}
+                  >
+                    Bhakti Ahir
+                  </span>
+                  <span className="annot text-[clamp(0.62rem,0.86vw,0.78rem)] tracking-[0.32em]">
+                    A personal portfolio
+                  </span>
                 </p>
                 <h1
                   id="home-title"
-                  className="entrance-name mt-[0.1em] -ml-[0.035em] text-ink"
+                  className="entrance-statement mt-[0.16em] -ml-[0.03em] text-ink"
                 >
-                  <span className="block">Bhakti</span>{" "}
-                  <span className="block">
-                    <span ref={ahir} className="italic font-medium">
-                      <span
-                        ref={baseline}
-                        className="inline-block h-0 w-0 align-baseline"
-                      />
-                      Ahir
-                    </span>
-                  </span>
+                  <StatementLetters lastRef={lastWord} baselineRef={baseline} />
                 </h1>
-                <p className="entrance-tagline ml-[0.06em] font-display text-ink">
+                <p className="entrance-tagline ml-[0.04em] font-display text-ink">
                   Building what school doesn’t teach.
                 </p>
               </div>
@@ -584,17 +699,24 @@ export function Entrance() {
                     studying, mentorship, and neighborhoods. Every one leaves
                     the final call to you.
                   </p>
-                  <div className="mt-10 lg:mt-[clamp(4.5rem,14svh,8rem)]">
-                    <AbilityWords listRef={words} />
+                  <div className="mt-10 hidden lg:mt-[clamp(2.5rem,7svh,5rem)] lg:block">
+                    <PreviewSlot slotRef={words} />
                   </div>
                 </div>
 
                 <div className="idea-figure-box relative z-10 mx-auto mt-12 w-full max-w-[26rem] lg:absolute lg:mt-0 lg:max-w-none">
                   <IdeaFigure
                     paths={paths}
-                    svgRef={figure}
+                    svgRef={(el) => {
+                      figure.current = el;
+                    }}
                     delay={pan ? 0 : 650}
                   />
+                </div>
+
+                {/* Below 1024px the preview sits under the figure instead of beside it */}
+                <div className="relative z-10 mx-auto mt-4 w-full max-w-[26rem] lg:hidden">
+                  <PreviewSlot />
                 </div>
 
                 <a

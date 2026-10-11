@@ -5,11 +5,13 @@ import {
   JetBrains_Mono,
   Playfair_Display,
 } from "next/font/google";
+import { MotionLayer } from "@/components/motion/MotionLayer";
 import { SiteFooter } from "@/components/SiteFooter";
 import { RouteFocus } from "@/components/RouteFocus";
 import { SiteHeader } from "@/components/SiteHeader";
 import { PREFS_BOOT_SCRIPT } from "@/lib/prefs";
 import { SITE } from "@/lib/projects";
+import { HAS_RESUME } from "@/lib/resume";
 import "./globals.css";
 
 const serif = Instrument_Serif({
@@ -35,7 +37,7 @@ const mono = JetBrains_Mono({
 });
 
 const description =
-  "Bhakti Ahir: a student developer in Panama building human-centered tools for learning, opportunity, and community. Four live projects: Portico, Synaptiq, Concord, and CommonGround.";
+  "Bhakti Ahir: a student developer in Panama building human-centered tools for learning, opportunity, and community. Four live projects: Portico, Synaptiq, Concord, and CommonGround (a student demo).";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
@@ -73,12 +75,15 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <script dangerouslySetInnerHTML={{ __html: PREFS_BOOT_SCRIPT }} />
       </head>
       <body className="flex min-h-dvh flex-col">
-        <SiteHeader />
+        <SiteHeader hasResume={HAS_RESUME} />
         <main id="main" className="flex-1">
           {children}
         </main>
         <SiteFooter />
         <RouteFocus />
+        <MotionLayer />
+        {/* Film grain: a faint moving texture over the page that never takes a click */}
+        <div aria-hidden="true" className="film-grain" />
       </body>
     </html>
   );

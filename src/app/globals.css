@@ -8,7 +8,7 @@
   --paper: #f6f2ea;
   --soft: #fdfbf6;
   --ink: #111515;
-  --muted: #5b615d;
+  --muted: #4c524e;
   --faint: #8a8f89;
   --line: rgb(17 21 21 / 0.14);
   --line-strong: rgb(17 21 21 / 0.32);
@@ -37,8 +37,8 @@
   --paper: #121615;
   --soft: #1a1f1d;
   --ink: #ede7db;
-  --muted: #a9aca3;
-  --faint: #767b74;
+  --muted: #b8bbb2;
+  --faint: #80857e;
   --line: rgb(237 231 219 / 0.13);
   --line-strong: rgb(237 231 219 / 0.3);
   --grid: rgb(237 231 219 / 0.04);
@@ -180,12 +180,14 @@
 /* Scroll-reveal: content is visible by default (no-JS, reduced motion); JS opts sections in. */
 [data-reveal="pending"] {
   opacity: 0;
-  transform: translateY(18px);
+  transform: translateY(42px) scale(0.985);
+  filter: blur(6px);
 }
 [data-reveal] {
   transition:
-    opacity 700ms cubic-bezier(0.2, 0.7, 0.2, 1),
-    transform 700ms cubic-bezier(0.2, 0.7, 0.2, 1);
+    opacity 900ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    transform 1000ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    filter 900ms cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
 :root[data-motion="reduce"] *,
@@ -201,6 +203,7 @@
 :root[data-motion="reduce"] [data-reveal="pending"] {
   opacity: 1;
   transform: none;
+  filter: none;
 }
 
 @keyframes draw {
@@ -420,15 +423,15 @@
    ------------------------------------------------------------------------------------------ */
 .entrance {
   --paper: #f5efe4;
-  /* The name's size, which the tagline and the line under the name both follow. */
-  --name: min(32vw, 26svh);
+  /* The statement's size, which the tagline and the line under it both follow. */
+  --statement: clamp(2.7rem, min(14.5vw, 11svh), 10.5rem);
 }
 :root[data-theme="dark"] .entrance {
   --paper: #141917;
 }
 @media (min-width: 768px) {
   .entrance {
-    --name: min(18vw, 30svh);
+    --statement: min(9.4vw, 16.5svh);
   }
 }
 .paper {
@@ -463,27 +466,48 @@
   inset: 0;
   z-index: -1;
   pointer-events: none;
+  opacity: 0;
+  transition: opacity 600ms ease;
+}
+/* The fine paper tooth is pure decoration, so it loads once the page is up (MotionLayer sets
+   data-ready) instead of competing with the first screen for bandwidth. */
+:root[data-ready] .paper::before {
+  opacity: 1;
   background: url("/paper/tooth.png") 0 0 / 256px 256px;
 }
 :root[data-theme="dark"] .paper {
   background-image: url("/paper/sheet-dark.webp");
 }
-:root[data-theme="dark"] .paper::before {
+:root[data-ready][data-theme="dark"] .paper::before {
   opacity: 0.45;
 }
 
-.entrance-name {
+.entrance-statement {
   font-family: var(--font-name);
-  font-size: var(--name);
+  font-size: var(--statement);
   font-weight: 600;
-  /* Just enough that the h of "Ahir" clears the baseline of "Bhakti". */
-  line-height: 0.8;
-  letter-spacing: -0.01em;
+  line-height: 0.9;
+  letter-spacing: -0.028em;
 }
 .entrance-tagline {
-  margin-top: calc(var(--name) * 0.25);
-  font-size: clamp(1.45rem, min(3.5vw, 5.8svh), 3.4rem);
+  margin-top: calc(var(--statement) * 0.34);
+  font-size: clamp(1.25rem, min(2.7vw, 4.6svh), 2.6rem);
   line-height: 1.1;
+}
+.hero-name {
+  font-size: clamp(1.35rem, min(2.4vw, 4svh), 2.3rem);
+  font-weight: 500;
+  cursor: default;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.hero-word {
+  display: inline-block;
+  white-space: nowrap;
+}
+.hero-letter {
+  display: inline-block;
+  transition: translate 600ms cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 .entrance-idea {
   font-family: var(--font-display);
@@ -519,7 +543,10 @@
    returning line) once the idea is in view. Instant under reduced motion. */
 .line-arrive {
   --len: 1;
-  animation: draw 1800ms cubic-bezier(0.65, 0, 0.25, 1) 300ms both;
+  animation: draw 1800ms cubic-bezier(0.65, 0, 0.25, 1) 900ms both;
+}
+:root[data-intro="play"] .line-arrive {
+  animation-delay: 2100ms;
 }
 .draw-path {
   stroke-dasharray: 1;
@@ -574,6 +601,794 @@
     transition: transform 700ms cubic-bezier(0.2, 0.7, 0.2, 1);
   }
   .portal:is(:hover, :focus-visible) .portal-image {
-    transform: scale(1.03);
+    transform: scale(1.06);
   }
+}
+
+/* ==========================================================================================
+   The makeover. Every rule below is decoration on top of content that already works: under
+   reduced motion (data-motion="reduce") nothing here moves, and on phones the heaviest effects
+   (cursor, tilt, magnetic pull, moving grain) never start.
+   ========================================================================================== */
+
+/* ---------- Page transitions (React <ViewTransition>, see app/template.tsx) ---------- */
+::view-transition-old(.page-exit) {
+  animation: vt-out 280ms cubic-bezier(0.4, 0, 1, 1) both;
+}
+::view-transition-new(.page-enter) {
+  animation: vt-in 560ms cubic-bezier(0.2, 0.75, 0.2, 1) both;
+}
+@keyframes vt-out {
+  to {
+    opacity: 0;
+    transform: translateY(-28px) scale(0.985);
+  }
+}
+@keyframes vt-in {
+  from {
+    opacity: 0;
+    transform: translateY(44px);
+  }
+}
+/* A project picture or title growing into the page it opens. */
+::view-transition-group(.morph) {
+  animation-duration: 700ms;
+  animation-timing-function: cubic-bezier(0.7, 0, 0.2, 1);
+}
+::view-transition-old(.morph),
+::view-transition-new(.morph) {
+  height: 100%;
+  object-fit: cover;
+  object-position: left top;
+}
+:root[data-motion="reduce"]::view-transition-group(*),
+:root[data-motion="reduce"]::view-transition-old(*),
+:root[data-motion="reduce"]::view-transition-new(*) {
+  animation: none !important;
+}
+/* Where view transitions run, they replace the simpler fallback ease-in. */
+@supports (view-transition-name: none) {
+  .route-enter {
+    animation: none;
+  }
+}
+
+/* ---------- Smooth scrolling (Lenis) ---------- */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* ---------- Intro: the name assembles on the paper, then scatters away (see Intro.tsx) ---------- */
+/* It plays over the real page (no opaque curtain), so the page itself is painted at once. */
+.intro {
+  display: none;
+}
+:root[data-intro="play"] .intro,
+:root[data-intro="leaving"] .intro {
+  position: fixed;
+  inset: 0;
+  z-index: 95;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  color: var(--ink);
+  cursor: pointer;
+}
+:root[data-intro="play"] .intro {
+  animation: intro-out 520ms cubic-bezier(0.7, 0, 0.3, 1) 1180ms forwards;
+}
+:root[data-intro="leaving"] .intro {
+  animation: intro-out 320ms cubic-bezier(0.7, 0, 0.3, 1) forwards;
+}
+:root[data-motion="reduce"] .intro {
+  display: none !important;
+}
+@keyframes intro-out {
+  to {
+    opacity: 0;
+    transform: translateY(-6svh) scale(1.04);
+    filter: blur(10px);
+    visibility: hidden;
+  }
+}
+/* While the name holds the stage, the rest of the first screen waits its turn. */
+:root[data-intro="play"] .entrance .shell > a {
+  animation: fade 600ms ease-out 1700ms both;
+}
+.intro-name {
+  font-family: var(--font-name);
+  font-style: italic;
+  font-weight: 500;
+  font-size: clamp(3rem, 11vw, 9rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.intro-letter {
+  display: inline-block;
+  animation: assemble 760ms cubic-bezier(0.2, 0.9, 0.2, 1) both;
+  animation-delay: calc(var(--i) * 38ms);
+}
+@keyframes assemble {
+  from {
+    opacity: 0;
+    transform: translate(var(--fx), var(--fy)) rotate(var(--fr)) scale(0.6);
+  }
+}
+.intro-rule {
+  width: min(60vw, 32rem);
+  height: 2px;
+  background: linear-gradient(90deg, #e0582f, #8a55ea, #4b6cf3, #129184);
+  transform-origin: left;
+  animation: rule 700ms cubic-bezier(0.65, 0, 0.25, 1) 420ms both;
+}
+@keyframes rule {
+  from {
+    transform: scaleX(0);
+  }
+}
+.intro-skip {
+  color: var(--muted);
+  animation: fade 600ms ease-out 500ms both;
+}
+
+/* ---------- Hero statement: letter by letter ---------- */
+:root[data-motion="full"] .hero-letter {
+  animation: letter-in 900ms cubic-bezier(0.2, 0.85, 0.2, 1) both;
+  animation-delay: calc(180ms + var(--i) * 26ms);
+}
+:root[data-intro="play"] .hero-letter {
+  animation-delay: calc(1380ms + var(--i) * 26ms);
+}
+@keyframes letter-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.5em) rotate(7deg);
+    filter: blur(7px);
+  }
+}
+/* Phones skip the blur, which is the costly part to paint. */
+@media (pointer: coarse) {
+  :root[data-motion="full"] .hero-letter {
+    animation-name: letter-in-light;
+  }
+}
+@keyframes letter-in-light {
+  from {
+    opacity: 0;
+    transform: translateY(0.5em) rotate(7deg);
+  }
+}
+:root[data-motion="full"] .entrance-tagline,
+:root[data-motion="full"] .hero-name {
+  animation: rise 900ms cubic-bezier(0.2, 0.7, 0.2, 1) 1000ms both;
+}
+:root[data-intro="play"] .entrance-tagline,
+:root[data-intro="play"] .hero-name {
+  animation-delay: 2150ms;
+}
+
+/* ---------- The circle: paths grow outward from Human Judgment ---------- */
+.draw-out {
+  stroke-dasharray: 1;
+}
+[data-paths="pending"] .draw-out {
+  stroke-dashoffset: -1;
+}
+[data-paths="alive"] .draw-out {
+  animation: draw-out 1200ms cubic-bezier(0.6, 0, 0.2, 1) var(--delay, 0ms) both;
+}
+@keyframes draw-out {
+  from {
+    stroke-dashoffset: -1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+.path-glows {
+  filter: blur(7px);
+}
+.path-glow {
+  opacity: calc(var(--near, 0) * 0.4);
+  transition: opacity 300ms ease;
+}
+.path-glow[data-on] {
+  opacity: 0.55;
+}
+[data-paths="pending"] .path-glow {
+  opacity: 0;
+}
+.path-node {
+  transition: r 300ms ease;
+}
+.idea-figure[data-active] .judgment-core {
+  animation: core 1.8s ease-in-out infinite;
+}
+@keyframes core {
+  50% {
+    stroke-width: 4;
+  }
+}
+.path-label {
+  transition:
+    color 300ms,
+    transform 300ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.path-label:is(:hover, :focus-visible) {
+  transform: scale(1.08);
+}
+
+/* The preview card that floats in when a path is chosen */
+.preview-slot {
+  max-width: 26rem;
+}
+@media (min-width: 1024px) {
+  .preview-slot {
+    min-height: min(21rem, 34svh);
+  }
+}
+.preview-card {
+  animation: preview-in 560ms cubic-bezier(0.2, 0.85, 0.2, 1) both;
+}
+@keyframes preview-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.95);
+    filter: blur(6px);
+  }
+}
+.preview-image {
+  transition: transform 700ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.preview-card:hover .preview-image {
+  transform: scale(1.05);
+}
+.preview-arrow {
+  display: inline-block;
+  transition: translate 300ms;
+}
+.preview-card:hover .preview-arrow {
+  translate: 5px 0;
+}
+.preview-hint .hint-touch {
+  display: none;
+}
+@media (hover: none) {
+  .preview-hint .hint-pointer {
+    display: none;
+  }
+  .preview-hint .hint-touch {
+    display: inline;
+  }
+}
+
+/* ---------- Badges and tags ---------- */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  background: var(--a1);
+  color: var(--paper);
+  padding: 0.5em 0.85em;
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+.tag {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  padding: 0.45em 0.85em;
+  font-size: 0.85rem;
+  line-height: 1;
+  color: var(--ink);
+}
+
+/* ---------- Showcase: cards that stack as you scroll (desktop) ---------- */
+.stack {
+  display: grid;
+  gap: 1.25rem;
+}
+@media (min-width: 1024px) {
+  .stack {
+    gap: 0;
+  }
+  .stack-item {
+    position: sticky;
+    top: calc(5.5rem + var(--n) * 1.6rem);
+    padding-bottom: 7svh;
+  }
+  .stack-item:last-child {
+    padding-bottom: 0;
+  }
+}
+.tilt {
+  transform: perspective(1400px) rotateX(var(--tilt-x, 0deg))
+    rotateY(var(--tilt-y, 0deg));
+  transition:
+    transform 600ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    box-shadow 600ms ease,
+    border-color 400ms;
+}
+.tilt:is(:hover, :focus-visible) {
+  border-color: var(--a1);
+  box-shadow: 0 50px 90px -50px rgb(0 0 0 / 0.5);
+}
+
+/* ---------- Statement that fills with color as it scrolls past ---------- */
+@supports (animation-timeline: view()) {
+  :root[data-motion="full"] .fill-text {
+    view-timeline-name: --fill;
+  }
+  :root[data-motion="full"] .fill-word {
+    opacity: 0.54;
+    animation: fill-in linear both;
+    animation-timeline: --fill;
+    animation-range: cover calc(18% + var(--w) * 34%) cover
+      calc(24% + var(--w) * 34%);
+  }
+}
+/* Opacity, not color, so the fill runs on the compositor. Unfilled words stay above 3:1. */
+@keyframes fill-in {
+  to {
+    opacity: 1;
+  }
+}
+
+/* Sections below the first screen skip layout and paint until they come near the viewport,
+   so the opening screen is ready sooner. The size hint keeps the scrollbar steady. */
+.below-fold {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 900px;
+}
+
+/* ---------- Tech marquee ---------- */
+.marquee {
+  overflow: hidden;
+  padding-block: clamp(1.25rem, 3vw, 2rem);
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 48s linear infinite;
+}
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+.marquee-row {
+  display: flex;
+  gap: 2.5rem;
+  padding-right: 2.5rem;
+}
+.marquee-item {
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;
+  white-space: nowrap;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4.4vw, 3.6rem);
+  line-height: 1;
+}
+.marquee-dot {
+  font-size: 0.35em;
+  color: var(--muted);
+}
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+:root[data-motion="reduce"] .marquee-track {
+  animation: none;
+  width: auto;
+  flex-wrap: wrap;
+  padding-inline: clamp(1rem, 4vw, 3rem);
+}
+:root[data-motion="reduce"] .marquee-row {
+  flex-wrap: wrap;
+  row-gap: 0.75rem;
+}
+:root[data-motion="reduce"] .marquee-row[aria-hidden] {
+  display: none;
+}
+
+/* ---------- Custom cursor (desktop with a mouse; the real cursor stays visible) ---------- */
+.cursor-ring {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 90;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 250ms;
+}
+.cursor-ring[data-visible] {
+  opacity: 1;
+}
+.cursor-ring span {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  translate: -50% -50%;
+  border: 1.5px solid var(--ink);
+  border-radius: 50%;
+  color: transparent;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  transition:
+    width 320ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    height 320ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    background-color 300ms,
+    color 200ms,
+    border-color 300ms;
+}
+.cursor-ring[data-label] span {
+  width: 86px;
+  height: 86px;
+  border-color: transparent;
+  background: var(--ink);
+  color: var(--paper);
+}
+
+/* ---------- Magnetic pull (MotionLayer sets `translate`) ---------- */
+[data-magnetic] {
+  transition:
+    translate 450ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    transform 120ms ease-out,
+    opacity 160ms,
+    background-color 200ms,
+    border-color 200ms,
+    color 200ms;
+}
+
+/* ---------- Film grain ---------- */
+.film-grain {
+  position: fixed;
+  inset: -50%;
+  z-index: 85;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grain 1s steps(6) infinite;
+}
+:root[data-theme="dark"] .film-grain {
+  opacity: 0.07;
+}
+@keyframes grain {
+  0% {
+    transform: translate(0, 0);
+  }
+  20% {
+    transform: translate(-6%, 4%);
+  }
+  40% {
+    transform: translate(5%, -3%);
+  }
+  60% {
+    transform: translate(-3%, -6%);
+  }
+  80% {
+    transform: translate(6%, 5%);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+@media (pointer: coarse) {
+  .film-grain {
+    inset: 0;
+    opacity: 0.035;
+    animation: none;
+  }
+}
+:root[data-motion="reduce"] .film-grain {
+  display: none;
+}
+
+/* ---------- Header and phone menu ---------- */
+.header-bar {
+  transition: height 300ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.site-header[data-scrolled] .header-bar {
+  height: 3.5rem;
+}
+.menu-panel {
+  animation: menu-in 480ms cubic-bezier(0.7, 0, 0.2, 1) both;
+}
+@keyframes menu-in {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+}
+.menu-item {
+  animation: rise 650ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-delay: calc(180ms + var(--i) * 70ms);
+}
+
+/* ---------- Copy email ---------- */
+.copy-label {
+  display: inline-block;
+}
+.copy-email[data-copied] .copy-label {
+  animation: pop 460ms cubic-bezier(0.2, 1.7, 0.4, 1);
+}
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: scale(0.5) translateY(6px);
+  }
+}
+
+/* ---------- Case studies ---------- */
+.case-title {
+  margin-top: 0.08em;
+  font-family: var(--font-display);
+  font-size: clamp(4rem, 15vw, 13rem);
+  line-height: 0.86;
+  letter-spacing: -0.03em;
+}
+.case-lead {
+  max-width: 42ch;
+  font-size: clamp(1.25rem, 2vw, 1.6rem);
+  line-height: 1.4;
+}
+:root[data-motion="full"] .summary-card {
+  animation: rise 900ms cubic-bezier(0.2, 0.7, 0.2, 1) 200ms both;
+}
+.read-more {
+  interpolate-size: allow-keywords;
+}
+.read-more::details-content {
+  block-size: 0;
+  overflow: clip;
+  transition:
+    block-size 450ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    content-visibility 450ms allow-discrete;
+}
+.read-more[open]::details-content {
+  block-size: auto;
+}
+.gallery-image {
+  transition: transform 800ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.gallery-thumb:is(:hover, :focus-visible) .gallery-image {
+  transform: scale(1.06);
+}
+.lightbox {
+  width: min(92vw, 1400px);
+  max-width: none;
+  max-height: none;
+  margin: auto;
+  border: 0;
+  padding: 0;
+  background: transparent;
+}
+.lightbox::backdrop {
+  background: rgb(8 10 10 / 0.9);
+}
+.lightbox[open] {
+  animation: lightbox-in 380ms cubic-bezier(0.2, 0.85, 0.2, 1);
+}
+@keyframes lightbox-in {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+}
+.lightbox-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 78svh;
+  object-fit: contain;
+  border-radius: 8px;
+}
+.lightbox-caption {
+  color: rgb(243 239 230 / 0.88);
+}
+.lightbox-controls {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+.lightbox-btn {
+  min-height: 2.75rem;
+  border: 1px solid rgb(243 239 230 / 0.4);
+  border-radius: 999px;
+  padding: 0 1.1rem;
+  color: #f3efe6;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: background-color 200ms;
+}
+.lightbox-btn:hover {
+  background: rgb(243 239 230 / 0.14);
+}
+.lightbox-btn:focus-visible {
+  outline-color: #f3efe6;
+}
+
+/* The big "Next project" band: its color sweeps in on hover. */
+.next-band {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  transition: color 400ms;
+}
+.next-band::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--a1);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 750ms cubic-bezier(0.7, 0, 0.2, 1);
+}
+.next-band:is(:hover, :focus-visible)::before {
+  transform: scaleX(1);
+}
+.next-name {
+  font-family: var(--font-display);
+  font-size: clamp(3.6rem, 12vw, 11rem);
+  line-height: 0.88;
+  letter-spacing: -0.03em;
+  color: var(--a1);
+  transition: color 400ms;
+}
+.next-arrow {
+  font-size: clamp(2.5rem, 7vw, 6rem);
+  line-height: 1;
+  transition: transform 700ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.next-band:is(:hover, :focus-visible)
+  :is(.next-name, .next-label, .next-line, .next-arrow) {
+  color: var(--paper);
+}
+.next-band:is(:hover, :focus-visible) .next-arrow {
+  transform: translateX(1.5rem);
+}
+
+/* ---------- Journey: the line draws, then each card bursts in ---------- */
+.stage-line {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  transform-origin: top;
+}
+@media (min-width: 1024px) {
+  .stage-line {
+    bottom: auto;
+    width: 100%;
+    height: 2px;
+    transform-origin: left;
+  }
+}
+[data-state="waiting"] .stage-line {
+  transform: scaleY(0);
+}
+@media (min-width: 1024px) {
+  [data-state="waiting"] .stage-line {
+    transform: scaleX(0);
+  }
+}
+[data-state="shown"] .stage-line {
+  transition: transform 900ms cubic-bezier(0.6, 0, 0.2, 1);
+}
+[data-state="waiting"] .stage-body {
+  opacity: 0;
+  transform: translateY(34px) scale(0.95);
+}
+[data-state="waiting"] .stage-dot {
+  transform: scale(0);
+}
+[data-state="shown"] .stage-body {
+  transition:
+    opacity 600ms ease 420ms,
+    transform 850ms cubic-bezier(0.2, 1.35, 0.35, 1) 420ms;
+}
+[data-state="shown"] .stage-dot {
+  transition: transform 500ms cubic-bezier(0.2, 1.8, 0.4, 1) 300ms;
+}
+
+/* ---------- Easter egg ---------- */
+.egg-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 96;
+  pointer-events: none;
+}
+.egg-burst span {
+  position: absolute;
+  left: 50%;
+  bottom: -2rem;
+  width: 0.7rem;
+  height: 1.1rem;
+  border-radius: 2px;
+  background: var(--c);
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 0.08);
+  animation: egg 2.6s cubic-bezier(0.2, 0.7, 0.3, 1) var(--d) both;
+}
+@keyframes egg {
+  0% {
+    transform: translate(0, 0) rotate(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--x), -95vh) rotate(calc(var(--r) * 3));
+    opacity: 0;
+  }
+}
+:root[data-motion="reduce"] .egg-burst {
+  display: none;
+}
+.egg-caption {
+  position: absolute;
+  left: 50%;
+  bottom: 2.5rem;
+  translate: -50% 0;
+  max-width: calc(100vw - 2rem);
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--paper);
+  padding: 0.85rem 1.4rem;
+  font-family: var(--font-display);
+  font-size: clamp(1.2rem, 3vw, 1.6rem);
+  line-height: 1.2;
+  text-align: center;
+  animation: egg-caption 4.2s ease both;
+}
+@keyframes egg-caption {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.9);
+  }
+  10%,
+  85% {
+    opacity: 1;
+    transform: none;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* ---------- Certifications ---------- */
+.cert-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  padding: 0 1rem;
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+.cert-chip:hover {
+  background: var(--soft);
 }

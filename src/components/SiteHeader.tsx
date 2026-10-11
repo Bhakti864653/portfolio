@@ -2,7 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useCallback, useEffect, useId, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  type CSSProperties,
+} from "react";
 import { setMotion, setTheme, useMotion, useTheme } from "@/lib/prefs";
 import { SITE } from "@/lib/projects";
 
@@ -81,10 +88,12 @@ function Preferences() {
 function ChapterMenu({
   id,
   active,
+  hasResume,
   onClose,
 }: {
   id: string;
   active: string | null;
+  hasResume: boolean;
   onClose: () => void;
 }) {
   const panel = useRef<HTMLDivElement>(null);
@@ -133,7 +142,7 @@ function ChapterMenu({
       role="dialog"
       aria-modal="true"
       aria-label="Menu"
-      className="grain fixed inset-0 z-50 flex flex-col overflow-y-auto bg-paper lg:hidden"
+      className="menu-panel grain fixed inset-0 z-50 flex flex-col overflow-y-auto bg-paper lg:hidden"
     >
       <div className="shell flex h-16 shrink-0 items-center justify-between border-b border-line">
         <Link
@@ -157,8 +166,12 @@ function ChapterMenu({
 
       <nav aria-label="Pages" className="shell flex-1 py-6">
         <ol>
-          {ROUTES.map((c) => (
-            <li key={c.id} className="border-b border-line">
+          {ROUTES.map((c, i) => (
+            <li
+              key={c.id}
+              className="menu-item border-b border-line"
+              style={{ "--i": i } as CSSProperties}
+            >
               <Link
                 href={c.href}
                 onClick={onClose}
@@ -186,6 +199,7 @@ function ChapterMenu({
             { href: SITE.linkedin, label: "LinkedIn ↗" },
             { href: SITE.github, label: "GitHub ↗" },
             { href: `mailto:${SITE.email}`, label: "Email" },
+            ...(hasResume ? [{ href: "/resume.pdf", label: "Résumé ↓" }] : []),
           ].map((l) => (
             <li key={l.label}>
               <a
@@ -215,7 +229,14 @@ function useOverEntrance(home: boolean) {
     if (!home) return;
     const check = () => {
       const el = document.getElementById("entrance");
-      setOver(!!el && el.getBoundingClientRect().bottom > 64);
+      // While the desktop sheet pans, nothing slides under the header, so it stays on the paper.
+      // When the screens stack (phones), text scrolls beneath it, so it takes on its bar as soon
+      // as the page moves, keeping both readable.
+      setOver(
+        !!el &&
+          el.getBoundingClientRect().bottom > 64 &&
+          (el.dataset.mode === "pan" || window.scrollY < 40),
+      );
     };
     check();
     window.addEventListener("scroll", check, { passive: true });
@@ -228,13 +249,26 @@ function useOverEntrance(home: boolean) {
   return home && over;
 }
 
-export function SiteHeader() {
+/** True once the page has scrolled a little: the header then tightens to a slimmer bar. */
+function useScrolled() {
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const check = () => setScrolled(window.scrollY > 24);
+    check();
+    window.addEventListener("scroll", check, { passive: true });
+    return () => window.removeEventListener("scroll", check);
+  }, []);
+  return scrolled;
+}
+
+export function SiteHeader({ hasResume = false }: { hasResume?: boolean }) {
   const [open, setOpen] = useState(false);
   const menuId = useId();
   const pathname = usePathname();
   const active = routeFor(pathname)?.id ?? null;
   const toggle = useRef<HTMLButtonElement>(null);
   const overPaper = useOverEntrance(pathname === "/");
+  const scrolled = useScrolled();
 
   const close = useCallback(() => {
     setOpen(false);
@@ -244,7 +278,8 @@ export function SiteHeader() {
   return (
     <>
       <header
-        className={`sticky top-0 z-40 border-b transition-[background-color,border-color] duration-300 ${overPaper ? "border-transparent bg-transparent" : "border-line bg-paper/90 backdrop-blur-md"}`}
+        data-scrolled={(scrolled && !overPaper) || undefined}
+        className={`site-header sticky top-0 z-40 border-b transition-[background-color,border-color] duration-300 ${overPaper ? "border-transparent bg-transparent" : "border-line bg-paper/90 backdrop-blur-md"}`}
       >
         <a
           href="#main"
@@ -252,7 +287,7 @@ export function SiteHeader() {
         >
           Skip to content
         </a>
-        <div className="shell flex h-16 items-center justify-between gap-6">
+        <div className="header-bar shell flex h-16 items-center justify-between gap-6">
           <Link
             href="/"
             className="flex items-center gap-3"
@@ -284,7 +319,16 @@ export function SiteHeader() {
               ))}
             </ol>
           </nav>
-          <div className="hidden lg:block">
+          <div className="hidden items-center gap-3 lg:flex">
+            {hasResume && (
+              <a
+                href="/resume.pdf"
+                data-magnetic="0.2"
+                className="press annot inline-flex h-9 items-center rounded-full bg-ink px-4 text-paper hover:opacity-90"
+              >
+                Résumé ↓
+              </a>
+            )}
             <Preferences />
           </div>
 
@@ -303,7 +347,14 @@ export function SiteHeader() {
         <RouteLine pathname={pathname} />
       </header>
       {/* Outside the header: its backdrop blur would otherwise contain this fixed panel. */}
-      {open && <ChapterMenu id={menuId} active={active} onClose={close} />}
+      {open && (
+        <ChapterMenu
+          id={menuId}
+          active={active}
+          hasResume={hasResume}
+          onClose={close}
+        />
+      )}
     </>
   );
 }

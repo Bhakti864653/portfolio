@@ -1,10 +1,10 @@
 import Link from "next/link";
-import type { ReactNode } from "react";
+import { ViewTransition, type ReactNode } from "react";
 import { inline } from "@/lib/format";
-import { PROJECTS, type Project } from "@/lib/projects";
-import { Plate } from "./Plate";
-
-type Entry = { id: string; label: string; content: ReactNode };
+import { PROJECTS, type Project, type Shot } from "@/lib/projects";
+import { Gallery } from "./case/Gallery";
+import { MediaSlot } from "./MediaSlot";
+import { Reveal } from "./Reveal";
 
 const Paragraphs = ({ items }: { items: string[] }) => (
   <div className="space-y-4">
@@ -21,7 +21,7 @@ const Bullets = ({ items }: { items: string[] }) => (
     {items.map((t) => (
       <li
         key={t}
-        className="body-copy grid grid-cols-[1.5rem_1fr] border-b border-line py-4 first:pt-0 last:border-0 last:pb-0"
+        className="body-copy grid grid-cols-[1.5rem_1fr] border-b border-line py-3.5 first:pt-0 last:border-0 last:pb-0"
       >
         <span
           aria-hidden="true"
@@ -33,92 +33,132 @@ const Bullets = ({ items }: { items: string[] }) => (
   </ul>
 );
 
+/** Extra detail, folded away by default so each section stays short. */
+function ReadMore({ children }: { children: ReactNode }) {
+  return (
+    <details className="read-more mt-8 border-t border-line">
+      <summary className="group flex min-h-12 cursor-pointer list-none items-center justify-between gap-4 pt-4 text-sm font-semibold">
+        <span className="link-draw">Read more</span>
+        <span
+          aria-hidden="true"
+          className="text-xl leading-none transition-transform duration-300 group-open:rotate-45"
+        >
+          +
+        </span>
+      </summary>
+      <div className="read-more-body space-y-8 pb-2 pt-6">{children}</div>
+    </details>
+  );
+}
+
+const More = ({ title, children }: { title: string; children: ReactNode }) => (
+  <div>
+    <h3 className="annot mb-3 text-ink">{title}</h3>
+    {children}
+  </div>
+);
+
+type Entry = { id: string; label: string; body: ReactNode; more?: ReactNode };
+
+/**
+ * A project's case study: a full-width hero (the name morphs in from the card that opened it),
+ * a summary card, the 16:9 media slot, a gallery of real screenshots, then five short sections,
+ * each with its full detail folded into "Read more". It ends with a large link to the next one.
+ */
 export function CaseStudy({ project: p }: { project: Project }) {
   const cs = p.caseStudy;
   const index = PROJECTS.indexOf(p);
   const next = PROJECTS[(index + 1) % PROJECTS.length];
   const previous = PROJECTS[(index + PROJECTS.length - 1) % PROJECTS.length];
+  // The main screenshot is already shown above, so the gallery only repeats it when it would
+  // otherwise have fewer than three shots.
+  const shots: Shot[] =
+    p.gallery.length >= 3
+      ? p.gallery
+      : [{ ...p.screenshot, width: 1440, height: 900 }, ...p.gallery];
 
   const entries: Entry[] = [
     {
       id: "problem",
-      label: "The real problem",
-      content: <Paragraphs items={cs.problem} />,
-    },
-    {
-      id: "why",
-      label: "Why I chose it",
-      content: <Paragraphs items={cs.why} />,
-    },
-    {
-      id: "users",
-      label: "Who it’s for",
-      content: <Paragraphs items={cs.users} />,
-    },
-    {
-      id: "features",
-      label: "Core features",
-      content: <Bullets items={cs.features} />,
-    },
-    {
-      id: "system",
-      label: "The important system",
-      content: (
+      label: "The problem",
+      body: <p className="case-lead">{p.short.problem}</p>,
+      more: (
         <>
-          <p className="mb-5 text-xl font-semibold leading-snug">
-            {cs.system.heading}
-          </p>
-          <Paragraphs items={cs.system.body} />
+          <More title="The real problem">
+            <Paragraphs items={cs.problem} />
+          </More>
+          <More title="Why I chose it">
+            <Paragraphs items={cs.why} />
+          </More>
+          <More title="Who it’s for">
+            <Paragraphs items={cs.users} />
+          </More>
         </>
       ),
     },
     {
-      id: "design",
-      label: "Product decisions",
-      content: <Bullets items={cs.design} />,
-    },
-    {
-      id: "safety",
-      label: "Privacy, safety & fairness",
-      content: <Bullets items={cs.safety} />,
-    },
-    {
-      id: "challenge",
-      label: "Engineering challenge",
-      content: (
-        <div className="border-l-2 border-a1 pl-5">
-          <p className="mb-5 text-xl font-semibold leading-snug">
-            {cs.challenge.heading}
-          </p>
-          <Paragraphs items={cs.challenge.body} />
-        </div>
+      id: "does",
+      label: "What it does",
+      body: <Bullets items={p.short.does} />,
+      more: (
+        <>
+          <More title="Every feature">
+            <Bullets items={cs.features} />
+          </More>
+          <More title={`The important system: ${cs.system.heading}`}>
+            <Paragraphs items={cs.system.body} />
+          </More>
+          <More title="Product decisions">
+            <Bullets items={cs.design} />
+          </More>
+          <More title="Privacy, safety & fairness">
+            <Bullets items={cs.safety} />
+          </More>
+        </>
       ),
     },
     {
-      id: "changes",
-      label: "What changed along the way",
-      content: <Bullets items={cs.changes} />,
-    },
-    {
-      id: "limitations",
-      label: "Current limitations",
-      content: <Bullets items={cs.limitations} />,
+      id: "hard",
+      label: "The hard part",
+      body: (
+        <div className="border-l-2 border-a1 pl-5">
+          <p className="mb-3 text-xl font-semibold leading-snug">
+            {cs.challenge.heading}
+          </p>
+          <p className="body-copy max-w-[68ch]">{inline(p.short.hard)}</p>
+        </div>
+      ),
+      more: (
+        <>
+          <More title="The full story">
+            <Paragraphs items={cs.challenge.body} />
+          </More>
+          <More title="What changed along the way">
+            <Bullets items={cs.changes} />
+          </More>
+          <More title="Current limitations">
+            <Bullets items={cs.limitations} />
+          </More>
+        </>
+      ),
     },
     {
       id: "learned",
       label: "What I learned",
-      content: <Bullets items={cs.learned} />,
+      body: <Bullets items={p.short.learned} />,
+      more: (
+        <More title="In the project’s own words">
+          <Bullets items={cs.learned} />
+        </More>
+      ),
     },
     {
-      id: "stack",
-      label: "Technology",
-      content: (
+      id: "tech",
+      label: "Tech",
+      body: (
         <ul className="flex max-w-prose flex-wrap gap-2">
           {p.stack.map((s) => (
-            <li
-              key={s}
-              className="rounded-full border border-line-strong px-3 py-1.5 text-sm text-ink"
-            >
+            <li key={s} className="tag">
               {s}
             </li>
           ))}
@@ -127,31 +167,13 @@ export function CaseStudy({ project: p }: { project: Project }) {
     },
   ];
 
-  const toc = (
-    <ol className="space-y-0.5">
-      {entries.map((e, i) => (
-        <li key={e.id}>
-          <a
-            href={`#${e.id}`}
-            className="flex min-h-10 items-center gap-3 text-[0.95rem] text-muted hover:text-ink"
-          >
-            <span className="annot w-6 text-faint">
-              {String(i + 1).padStart(2, "0")}
-            </span>
-            {e.label}
-          </a>
-        </li>
-      ))}
-    </ol>
-  );
-
   return (
     <article className={`accent-${p.slug}`} aria-labelledby="case-title">
-      {/* Masthead: text only, on a faint grid */}
-      <header className="grid-field-subtle border-b border-line">
-        <div className="shell pb-14 pt-6 sm:pb-20">
+      {/* Hero */}
+      <header className="case-hero grid-field-subtle border-b border-line">
+        <div className="shell pb-12 pt-6 sm:pb-16">
           <div className="annot flex flex-wrap justify-between gap-2 border-b border-line pb-3">
-            <Link href="/work" className="text-ink hover:underline">
+            <Link href="/work" className="link-draw text-ink">
               ← All work
             </Link>
             <span>
@@ -161,33 +183,50 @@ export function CaseStudy({ project: p }: { project: Project }) {
             </span>
           </div>
 
-          <div className="grid-12 mt-12 gap-y-8 sm:mt-16">
-            <div className="lg:col-span-7">
-              <p className="mb-4 max-w-[34rem] font-display text-[1.35rem] italic leading-snug text-muted">
-                {p.question}
-              </p>
-              <h1
-                id="case-title"
-                className="font-display text-[clamp(3rem,7vw,5.5rem)] leading-[0.95] text-a1"
+          <p className="mt-12 max-w-[34rem] font-display text-[1.35rem] italic leading-snug text-muted sm:mt-16">
+            {p.question}
+          </p>
+          <ViewTransition name={`title-${p.slug}`} share="morph" default="none">
+            <h1 id="case-title" className="case-title w-fit text-a1">
+              {p.name}
+            </h1>
+          </ViewTransition>
+
+          <div className="grid-12 mt-10 gap-y-8">
+            <p className="text-[clamp(1.3rem,2.4vw,1.9rem)] leading-snug text-ink lg:col-span-6">
+              {p.tagline}
+            </p>
+            <div className="summary-card rounded-[14px] border border-line-strong bg-soft p-6 sm:p-7 lg:col-span-6 lg:col-start-7">
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <p className="max-w-[30rem] text-lg leading-snug">
+                  {p.oneLine}
+                </p>
+                <span className="badge">{p.badge}</span>
+              </div>
+              <ul
+                className="mt-5 flex flex-wrap gap-2"
+                aria-label="Main technologies"
               >
-                {p.name}
-              </h1>
-              <p className="mt-4 text-xl leading-snug text-ink">{p.tagline}</p>
-            </div>
-            <div className="lg:col-span-4 lg:col-start-9 lg:self-end">
-              <p className="body-copy text-muted">{p.intro}</p>
+                {p.tags.map((t) => (
+                  <li key={t} className="tag">
+                    {t}
+                  </li>
+                ))}
+              </ul>
               <div className="mt-6 flex flex-wrap gap-3">
                 <a
                   href={p.live}
-                  className="inline-flex h-12 items-center rounded-full bg-ink px-6 text-sm font-semibold text-paper hover:opacity-90"
+                  data-magnetic
+                  className="press inline-flex h-12 items-center rounded-full bg-ink px-6 text-sm font-semibold text-paper hover:bg-a1"
                 >
-                  Open the live app ↗
+                  Live site ↗
                 </a>
                 <a
                   href={p.repo}
-                  className="inline-flex h-12 items-center rounded-full border border-line-strong px-5 text-sm font-semibold text-ink hover:bg-soft"
+                  data-magnetic
+                  className="press inline-flex h-12 items-center rounded-full border border-line-strong px-5 text-sm font-semibold text-ink hover:bg-paper"
                 >
-                  Repository ↗
+                  GitHub ↗
                 </a>
               </div>
               <p className="mt-4 text-sm leading-relaxed text-muted">
@@ -198,85 +237,91 @@ export function CaseStudy({ project: p }: { project: Project }) {
         </div>
       </header>
 
-      {/* The screenshot, large and on its own */}
+      {/* The media slot: a demo video if there is one, otherwise the screenshot */}
       <div className="shell py-12 sm:py-16">
-        <div className="mx-auto max-w-[1120px]">
-          <Plate project={p} figure={`${p.chapter}.1`} priority />
-        </div>
+        <MediaSlot
+          project={p}
+          sizes="(min-width: 1320px) 1224px, 94vw"
+          priority
+          morph
+          className="rounded-[14px] border border-line-strong"
+        />
       </div>
 
-      {/* Reading: contents on the left, one comfortable column on the right */}
-      <div className="border-t border-line">
-        <div className="shell grid-12 py-12 sm:py-16">
-          <nav aria-label="On this page" className="lg:col-span-3">
-            <details className="rounded-[6px] border border-line lg:hidden">
-              <summary className="group flex min-h-12 cursor-pointer list-none items-center justify-between px-4 text-sm font-semibold">
-                On this page
-                <span
-                  aria-hidden="true"
-                  className="text-lg leading-none transition-transform group-open:rotate-45"
-                >
-                  +
-                </span>
-              </summary>
-              <div className="border-t border-line px-4 py-2">{toc}</div>
-            </details>
-            <div className="sticky top-24 hidden lg:block">
-              <p className="annot mb-3 text-ink">On this page</p>
-              {toc}
-            </div>
-          </nav>
+      {/* More real screenshots */}
+      <section aria-labelledby="gallery-title" className="shell pb-16 sm:pb-20">
+        <h2 id="gallery-title" className="annot mb-5 text-ink">
+          Inside the app
+        </h2>
+        <Gallery shots={shots} name={p.name} />
+      </section>
 
-          <div className="mt-10 lg:col-span-8 lg:col-start-5 lg:mt-0">
-            {entries.map((e, i) => (
+      {/* Five short sections */}
+      <div className="border-t border-line">
+        <div className="shell py-12 sm:py-16">
+          {entries.map((e, i) => (
+            <Reveal key={e.id}>
               <section
-                key={e.id}
                 id={e.id}
                 aria-labelledby={`${e.id}-h`}
-                className="scroll-mt-24 border-t border-line py-12 first:border-t-0 first:pt-0"
+                className="grid-12 scroll-mt-24 gap-y-5 border-t border-line py-12 first:border-t-0 first:pt-0"
               >
                 <h2
                   id={`${e.id}-h`}
-                  className="mb-6 flex items-baseline gap-4 font-display text-[2rem] leading-tight"
+                  className="flex items-baseline gap-4 font-display text-[clamp(2rem,3.6vw,3rem)] leading-tight lg:col-span-4"
                 >
                   <span className="annot text-a1">
                     {String(i + 1).padStart(2, "0")}
                   </span>
                   {e.label}
                 </h2>
-                {e.content}
+                <div className="lg:col-span-8">
+                  {e.body}
+                  {e.more && <ReadMore>{e.more}</ReadMore>}
+                </div>
               </section>
-            ))}
-          </div>
+            </Reveal>
+          ))}
         </div>
       </div>
 
-      {/* Previous and next project */}
-      <nav
-        aria-label="More projects"
-        className="grid border-t border-line sm:grid-cols-2"
-      >
-        {[
-          { p: previous, label: "Previous", arrow: "←" },
-          { p: next, label: "Next", arrow: "→" },
-        ].map(({ p: q, label, arrow }, i) => (
+      {/* Next project */}
+      <nav aria-label="More projects" className="border-t border-line">
+        <Link
+          href={`/work/${next.slug}`}
+          data-cursor="Next"
+          className={`next-band accent-${next.slug} group block`}
+        >
+          <span className="shell flex flex-col gap-4 py-16 sm:py-24">
+            <span className="annot next-label">
+              Next project · {next.chapter}{" "}
+              <span className="capitalize">· {next.verb}</span>
+            </span>
+            <span className="flex items-end justify-between gap-6">
+              <ViewTransition
+                name={`title-${next.slug}`}
+                share="morph"
+                default="none"
+              >
+                <span className="next-name w-fit">{next.name}</span>
+              </ViewTransition>
+              <span aria-hidden="true" className="next-arrow">
+                →
+              </span>
+            </span>
+            <span className="next-line max-w-[36rem] text-lg leading-snug">
+              {next.oneLine}
+            </span>
+          </span>
+        </Link>
+        <div className="shell border-t border-line py-5">
           <Link
-            key={label}
-            href={`/work/${q.slug}`}
-            className={`accent-${q.slug} group block border-t-2 border-a1 ${i === 1 ? "sm:border-l sm:border-l-line sm:text-right" : ""}`}
+            href={`/work/${previous.slug}`}
+            className={`accent-${previous.slug} link-draw annot text-ink`}
           >
-            <div className="flex flex-col gap-3 px-[clamp(1rem,4vw,3rem)] py-12 sm:py-16">
-              <span className="annot">
-                {label} · {q.chapter}
-              </span>
-              <span className="font-display text-[clamp(2.2rem,4.5vw,3.75rem)] leading-none group-hover:underline group-hover:decoration-1 group-hover:underline-offset-8">
-                {i === 0 && <span aria-hidden="true">{arrow} </span>}
-                <span className="capitalize text-a1">{q.verb}</span> {q.name}
-                {i === 1 && <span aria-hidden="true"> {arrow}</span>}
-              </span>
-            </div>
+            ← Previous: {previous.name}
           </Link>
-        ))}
+        </div>
       </nav>
     </article>
   );

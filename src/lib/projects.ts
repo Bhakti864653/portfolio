@@ -7,12 +7,39 @@ export type Verb = "decide" | "connect" | "learn" | "act";
 
 export type Section = { heading: string; body: string[] };
 
+/** A real screenshot of the live app. */
+export type Shot = { src: string; alt: string; width: number; height: number };
+
+/**
+ * A demo video for a project's 16:9 media slot. Drop the file in `public/media/` and add one
+ * line to the project, e.g. `media: { video: "/media/portico.mp4" },`. It plays muted and
+ * looped once scrolled into view; until then (and under reduced motion) the poster shows,
+ * which defaults to the project's screenshot.
+ */
+export type Media = { video: string; poster?: string };
+
 export type Project = {
   slug: "portico" | "concord" | "synaptiq" | "commonground";
   verb: Verb;
   name: string;
   chapter: string;
   tagline: string;
+  /** One line for cards and previews. */
+  oneLine: string;
+  /** A short, checkable highlight shown as a badge. */
+  badge: string;
+  /** Two or three headline technologies for cards. */
+  tags: string[];
+  media?: Media;
+  /** More real screenshots for the case study gallery (the main screenshot comes first). */
+  gallery: Shot[];
+  /** The five short case-study sections; the full detail lives in caseStudy. */
+  short: {
+    problem: string;
+    does: string[];
+    hard: string;
+    learned: string[];
+  };
   /** The human question the project answers: where someone was stuck. */
   question: string;
   /** One sentence for the homepage; the case study holds the detail. */
@@ -52,7 +79,7 @@ export const PROJECTS: Project[] = [
     intro:
       "Portico tracks every deadline, essay, recommendation letter, and document, gives each school a readiness score, and suggests what to work on next.",
     hardestProblem:
-      "The free host erased its disk on every restart, so saved applications kept disappearing. I moved the database to hosted SQLite, and sent reminders through an email API because the host blocks email ports.",
+      "The free host erased its disk on every restart, so saved applications kept disappearing. I moved the production database to hosted SQLite (Turso) and kept a plain local file for development.",
     repo: "https://github.com/Bhakti864653/uni-app-tracker",
     live: "https://uni-app-tracker-b70h.onrender.com/",
     liveNote:
@@ -61,15 +88,60 @@ export const PROJECTS: Project[] = [
       src: "/work/portico.png",
       alt: "Portico demo dashboard: a route illustration toward decision day, university cards with completion rings and deadline countdowns, and a suggested next move",
     },
+    oneLine:
+      "A command center for college applications: every deadline, essay, and what to do next.",
+    badge: "61 tests",
+    tags: ["Python", "Flask", "SQLite"],
+    gallery: [
+      {
+        src: "/work/gallery/portico-1.webp",
+        alt: "Portico overview in the demo sandbox: “Your route to decision day”, a countdown to the next deadline, and university cards with completion rings",
+        width: 1440,
+        height: 900,
+      },
+      {
+        src: "/work/gallery/portico-2.webp",
+        alt: "Portico applications board: universities in Researching, Building, Ready, and Submitted columns, each with its readiness percentage",
+        width: 1440,
+        height: 900,
+      },
+      {
+        src: "/work/gallery/portico-3.webp",
+        alt: "Portico readiness page: an overall 57% score, a bar per university, and a tuition, aid, and net-cost comparison table",
+        width: 1440,
+        height: 900,
+      },
+      {
+        src: "/work/gallery/portico-4.webp",
+        alt: "Portico calendar: October deadlines on a month grid and a queue of upcoming deadlines",
+        width: 1440,
+        height: 900,
+      },
+    ],
+    short: {
+      problem:
+        "Every university has its own deadlines, essays, recommenders, and documents. Spread across notes, it’s hard to see what’s ready and what to do first.",
+      does: [
+        "Tracks deadlines, essays, recommendations, and documents for each school",
+        "Gives each school a 0–100% readiness score and a ranked “what to do next” list",
+        "Counts down to every deadline and exports them to your calendar",
+        "Lets anyone try a private demo, no account needed",
+      ],
+      hard: "The live app crashed with “Resource deadlock avoided” while everything worked on my laptop. The database library started threads before the server split into worker processes. Waiting for the first real request fixed it.",
+      learned: [
+        "“It works when I test it” isn’t the same as “it survives a deploy.”",
+        "Spotting that several features share one shape turned about four times the work into about 1.3 times.",
+        "Scope every query to its owner, so one account can never see another’s data.",
+      ],
+    },
     stack: [
       "Python",
       "Flask",
       "SQLite / Turso",
       "Jinja",
       "Chart.js",
-      "Resend",
       "GitHub Actions",
-      "pytest",
+      "pytest (61 tests)",
     ],
     caseStudy: {
       problem: [
@@ -87,6 +159,7 @@ export const PROJECTS: Project[] = [
         "Checklist, essay, recommendation, and document tracking, each with its own status flow",
         "A 0–100% Readiness Score per school, blending all four kinds of task",
         "Smart Suggestions: a rule-based “what to work on next” list ranked by urgency",
+        "Deadline countdowns (“5 days left”, “3 days overdue”) on every school",
         "Pipeline view, analytics charts, a cost comparison table, and a deadline timeline",
         "Soft delete with Undo, duplicate an application, and export to CSV or a calendar (.ics) file",
         "Real accounts, plus a private demo sandbox for every visitor",
@@ -119,10 +192,12 @@ export const PROJECTS: Project[] = [
         "It started with one shared password. It now has real accounts with fully separated data.",
         "The first version kept its database as a file next to the code. The free host wipes that file on every deploy, so production moved to Turso.",
         "Reminders moved from Gmail SMTP to an HTTPS email API after the host's network-level block on email ports.",
+        "Reminder emails were rebuilt so each student gets only their own deadlines, at their own address. A fact-check found they had only ever reached the site owner.",
         "It was renamed from “uni-app-tracker” to Portico.",
       ],
       limitations: [
         "It runs on a free tier, so the first request after a quiet period is slow.",
+        "Deadline reminder emails are built but switched off: sending to students needs a verified email domain the project doesn't have yet.",
         "Suggestions are rules, not advice. They rank tasks by deadline and don't judge essay quality or which schools to choose.",
       ],
       learned: [
@@ -152,6 +227,52 @@ export const PROJECTS: Project[] = [
     screenshot: {
       src: "/work/synaptiq.png",
       alt: "Synaptiq landing page: the headline “Know what you actually know”, with sign-up, log-in, and try-the-demo buttons beside the Synaptiq mascot",
+    },
+    oneLine:
+      "Turns your own notes into a quiz, then practice aimed at what you don’t know yet.",
+    badge: "Adaptive AI tutor",
+    tags: ["Next.js", "FastAPI", "Supabase"],
+    gallery: [
+      {
+        src: "/work/gallery/synaptiq-dashboard.png",
+        alt: "Synaptiq dashboard: your study materials and overall mastery at a glance",
+        width: 676,
+        height: 529,
+      },
+      {
+        src: "/work/gallery/synaptiq-study-guide.png",
+        alt: "Synaptiq study guide for “How Neural Networks Learn”: an exam-date planner and the first topic at 80%",
+        width: 676,
+        height: 529,
+      },
+      {
+        src: "/work/gallery/synaptiq-tutor.png",
+        alt: "Synaptiq tutor answering “How does gradient descent work?” from the student’s own uploaded notes",
+        width: 676,
+        height: 529,
+      },
+      {
+        src: "/work/gallery/synaptiq-flashcards.png",
+        alt: "Synaptiq flashcards, scheduled with SM-2 spaced repetition",
+        width: 676,
+        height: 529,
+      },
+    ],
+    short: {
+      problem:
+        "Rereading notes feels like studying but doesn’t show what you don’t know. A generic AI chat isn’t tied to your material and happily uses facts your course never taught.",
+      does: [
+        "Builds a diagnostic quiz from your PDFs, slides, or documents",
+        "Scores mastery per concept and aims new practice at your weakest ones",
+        "Answers questions with a tutor limited to your own material",
+        "Schedules flashcards with SM-2, the algorithm behind Anki",
+      ],
+      hard: "Regenerating a quiz deleted the old one before saving the new one, so a single malformed AI response could leave a student with nothing. Now every item is checked first, and a bad response changes nothing.",
+      learned: [
+        "How to ask an LLM for structured JSON, and how to handle every way that fails.",
+        "Verify security claims against the real system, not a dashboard’s picture of it.",
+        "A file input’s `accept` attribute is a convenience, not a control.",
+      ],
     },
     stack: [
       "Next.js 16",
@@ -248,6 +369,40 @@ export const PROJECTS: Project[] = [
       src: "/work/concord.png",
       alt: "Concord landing page: the headline “Find the mentor who already walked your path”, a sample match between a mentee and a mentor with the reason they were paired, and the five steps of how it works",
     },
+    oneLine:
+      "Mentorship matching where no mentee and mentor would both rather be with each other.",
+    badge: "Stable matching",
+    tags: ["Next.js", "FastAPI", "Postgres"],
+    gallery: [
+      {
+        src: "/work/gallery/concord-1.webp",
+        alt: "Concord “How matching actually works”: four steps of the Gale-Shapley algorithm and a sandbox to try it yourself",
+        width: 1440,
+        height: 900,
+      },
+      {
+        src: "/work/gallery/concord-2.webp",
+        alt: "Concord demo dashboard: the mentee’s matched mentor, the next session, milestones, and their journey so far",
+        width: 1440,
+        height: 900,
+      },
+    ],
+    short: {
+      problem:
+        "Mentorship programs often match people by hand or by one similarity score. Both are hard to explain, and both can leave two people who would each rather be with someone else.",
+      does: [
+        "Mentees and mentors build profiles and rank each other",
+        "Every suggestion explains its score in shared words and tags",
+        "Gale-Shapley pairs people in rounds, so every match is stable",
+        "Matched pairs get live chat, shared goals, and a session log",
+      ],
+      hard: "Mentors can take several mentees, and each round only matches people still waiting. That created a mentor with no spots left, which crashed the algorithm until it learned to reject those proposals outright.",
+      learned: [
+        "Implement an algorithm from its formal description, and test the property that defines it.",
+        "A successful build log doesn’t mean a working deployment. Check the real setting.",
+        "Going from “recompute everything” to incremental rounds creates brand-new states.",
+      ],
+    },
     stack: [
       "Next.js 16",
       "React 19",
@@ -276,6 +431,7 @@ export const PROJECTS: Project[] = [
         "A “How it works” page with an interactive sandbox that steps through the algorithm",
         "Live chat, shared goals, a session log, private check-ins, and private notes once matched",
         "Notifications created by database triggers",
+        "Consent-based mentor invitations by private link, and mentors who opt in before they can be matched",
         "Rematch requests, blocking, reporting, and community guidelines",
       ],
       system: {
@@ -307,6 +463,7 @@ export const PROJECTS: Project[] = [
         "The single wipe-and-recompute matching run became an incremental round state machine.",
         "An AI-written match explanation was built and then removed completely. The key on the host was wrong, and then the account had no credits. The deterministic explanation became the permanent one.",
         "Leftover demo accounts are cleaned up by a scheduled job every 6 hours.",
+        "Mentors now join matching only after onboarding, agreeing to be shown, and opting into a round.",
       ],
       limitations: [
         "Suggestions score every profile on the other side one by one, with no pagination. That's fine at this scale, but it wouldn't be for many users.",
@@ -342,11 +499,58 @@ export const PROJECTS: Project[] = [
       src: "/work/commonground.png",
       alt: "CommonGround community page for Santiago de Veraguas in Spanish: a map of five approximate areas holding numbered case markers, and an introduction to the Guide",
     },
+    oneLine:
+      "A student demo where neighbors report local problems anonymously, in seven languages.",
+    badge: "7 languages",
+    tags: ["Next.js", "TypeScript", "Groq agents"],
+    gallery: [
+      {
+        src: "/work/gallery/commonground-1.webp",
+        alt: "CommonGround home for Santiago de Veraguas: a street map with numbered cases inside approximate area zones, under the student-demo banner",
+        width: 1440,
+        height: 900,
+      },
+      {
+        src: "/work/gallery/commonground-2.webp",
+        alt: "A CommonGround example case: flooding in the northern area, labeled “Example – not a real report”, with its public timeline",
+        width: 1440,
+        height: 900,
+      },
+      {
+        src: "/work/gallery/commonground-3.webp",
+        alt: "CommonGround AI agent page: what the AI reviewed, with referrals to any office paused in the demo",
+        width: 1440,
+        height: 900,
+      },
+      {
+        src: "/work/gallery/commonground-4.webp",
+        alt: "CommonGround report form, step 2 of 5: choosing a category, with no name, phone number, or exact address needed",
+        width: 1440,
+        height: 900,
+      },
+    ],
+    short: {
+      problem:
+        "Flooding, garbage, or a broken streetlight gets noticed by many neighbors but reported in scattered ways, if at all. Nobody can see whether someone already raised it, or what happened next.",
+      does: [
+        "Report a problem in five steps, with no name, phone number, or exact address",
+        "Every case gets a public number, a status history, and a place on a street map",
+        "An AI Guide helps draft a report, and the resident always confirms it",
+        "For moderators, three AI agents review each case and a fourth critiques them",
+      ],
+      hard: "Private moderator notes were sent to every visitor’s browser inside the page data, even though they never appeared on screen. A public data type now makes passing a private field to a public page a compile error.",
+      learned: [
+        "If a field is private, strip it at the data layer and make it impossible to name.",
+        "Before calling a model’s reasoning wrong, check what was actually in its context.",
+        "The AI suggests and a person decides, in every part of the app.",
+      ],
+    },
     stack: [
       "Next.js 16",
       "TypeScript",
       "Tailwind CSS v4",
       "Zod",
+      "Postgres (Neon)",
       "Groq agents",
       "MapLibre + OpenStreetMap",
       "Vitest",
@@ -368,7 +572,7 @@ export const PROJECTS: Project[] = [
         "A street map where cases sit inside approximate area zones, never at a point on a street",
         "Explore: server-side search and filters that ignore accents",
         "Verified contacts and sources, each showing when it was last checked",
-        "Moderation: status, verification, duplicates, removal with a public reason",
+        "Moderation: status, verification, duplicates, removal with a public reason, with moderators signing in through Google",
         "Seven interface languages, with a test that fails if any string is missing",
         'Adding a place opens its community, or starts a starter community marked "not reviewed yet" until a moderator reviews it',
       ],
@@ -441,4 +645,27 @@ export const SITE = {
   tagline:
     "Student developer building human-centered tools for learning, opportunity, and community.",
   identity: "12th-grade student developer at The Oxford School, Panama.",
+  /** The one human line about me, used on the home page and About. */
+  about:
+    "Born in Panama, grew up partly in India, and I code to fix problems I see, like the potholes outside my house.",
 };
+
+/** Every technology the four projects actually use, for the home page marquee. */
+export const TECH = [
+  "Python",
+  "Flask",
+  "Next.js",
+  "React",
+  "TypeScript",
+  "FastAPI",
+  "Supabase",
+  "Postgres",
+  "SQLite",
+  "Tailwind CSS",
+  "Zod",
+  "Groq",
+  "MapLibre",
+  "Vitest",
+  "pytest",
+  "GitHub Actions",
+];

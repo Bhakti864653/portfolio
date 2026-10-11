@@ -25,7 +25,7 @@ export const STAGES: Stage[] = [
       "Real accounts",
       "A production-only bug",
     ],
-    system: ["Flask app", "SQLite / Turso", "Email API"],
+    system: ["Flask app", "SQLite / Turso", "pytest"],
     lesson:
       "Scope every query to its owner, so one account can never see another’s data.",
   },
@@ -80,27 +80,27 @@ export type Thread = { title: string; note: string; stages: Stage["id"][] };
 export const THREADS: Thread[] = [
   {
     title: "Keep each person's data theirs",
-    note: "`WHERE user_id = ?` on every query, database-level security policies, and a type that makes private fields impossible to send.",
+    note: "Every query scoped to its owner, security policies in the database, and private fields that can't reach a public page.",
     stages: ["portico", "synaptiq", "concord", "commonground"],
   },
   {
     title: "Check on the server, not the browser",
-    note: "Deadlines parsed before they reach a calendar file, upload types enforced by storage, photo metadata re-validated inside the server action.",
+    note: "The server re-checks every file type, date, and upload, whatever the browser says.",
     stages: ["portico", "synaptiq", "commonground"],
   },
   {
     title: "Limit what one visitor can do",
-    note: "Login rate limiting, limits on the demo so it can’t drain the AI quota, and the same limiter on every endpoint.",
+    note: "Rate limits on logins, demos, and every endpoint, so nobody can drain shared resources.",
     stages: ["portico", "synaptiq", "concord"],
   },
   {
     title: "Explainable before clever",
-    note: "Rule-based suggestions instead of a paid model, a match score you can read, and a reasoning trace for every agent.",
+    note: "Rules, readable scores, and reasoning traces before any black box.",
     stages: ["portico", "concord", "commonground"],
   },
   {
     title: "A person makes the final call",
-    note: "A tutor limited to your material, and a Guide that drafts but never submits or changes a case without a click.",
+    note: "The AI tutors and drafts; it never decides or submits without a person.",
     stages: ["synaptiq", "commonground"],
   },
 ];

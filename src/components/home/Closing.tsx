@@ -1,41 +1,46 @@
 import Link from "next/link";
+import { SITE } from "@/lib/projects";
+import { CopyEmail } from "../CopyEmail";
 
 const secondary =
   "press inline-flex h-12 items-center rounded-full border border-line-strong px-5 text-sm font-semibold text-ink hover:bg-soft";
 
-/** Act III. One sentence, three ways onward. */
-export function Closing() {
+/** The last screen: who I am, in one line, and the ways onward. */
+export function Closing({ hasResume }: { hasResume: boolean }) {
   return (
     <section
       aria-labelledby="closing-title"
-      className="tone-ivory bg-paper py-20 sm:py-28"
+      className="tone-ivory below-fold bg-paper py-24 sm:py-36"
     >
       <div className="shell grid-12 gap-y-10">
-        <p className="annot text-ink lg:col-span-2">The principle</p>
-        <div className="lg:col-span-9">
+        <p className="annot text-ink lg:col-span-2">About me</p>
+        <div className="lg:col-span-10">
           <h2
             id="closing-title"
-            className="font-display text-[clamp(2.2rem,5vw,4.2rem)] leading-[1.04]"
+            className="font-display text-[clamp(2.4rem,5.6vw,5rem)] leading-[1.02]"
           >
-            Four systems. One principle:{" "}
-            <span className="text-muted">
-              technology should increase a person’s ability to choose and
-              act—not replace it.
-            </span>
+            {SITE.about}
           </h2>
           <div className="mt-12 flex flex-wrap gap-3">
             <Link
               href="/work"
+              data-magnetic
               className="press inline-flex h-12 items-center rounded-full bg-ink px-6 text-sm font-semibold text-paper hover:opacity-90"
             >
               Explore all work →
             </Link>
-            <Link href="/journey" className={secondary}>
+            <Link href="/journey" data-magnetic className={secondary}>
               Read my journey
             </Link>
-            <Link href="/contact" className={secondary}>
-              Contact me
+            <Link href="/about" data-magnetic className={secondary}>
+              More about me
             </Link>
+            <CopyEmail email={SITE.email} className={secondary} />
+            {hasResume && (
+              <a href="/resume.pdf" data-magnetic className={secondary}>
+                Résumé ↓
+              </a>
+            )}
           </div>
         </div>
       </div>

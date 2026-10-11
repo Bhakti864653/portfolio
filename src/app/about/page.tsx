@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
+import { Certifications } from "@/components/Certifications";
 import { NextPage } from "@/components/NextPage";
 import { PageMasthead } from "@/components/PageMasthead";
 import { Reveal } from "@/components/Reveal";
 import { STAGES } from "@/lib/journey";
-import { projectBySlug } from "@/lib/projects";
+import { projectBySlug, SITE } from "@/lib/projects";
 
 export const metadata: Metadata = {
   title: "About",
@@ -65,6 +66,9 @@ export default function AboutPage() {
       <PageMasthead number="03" label="About" title="Bhakti Ahir">
         <p className="annot normal-case tracking-normal text-ink">
           12th grade · The Oxford School, Panama · Computer Science
+        </p>
+        <p className="mt-4 font-display text-xl italic leading-snug text-ink">
+          {SITE.about}
         </p>
       </PageMasthead>
 
@@ -181,6 +185,8 @@ export default function AboutPage() {
           </p>
         </div>
       </section>
+
+      <Certifications />
 
       <Reveal className="shell pb-20 sm:pb-28">
         <div className="grid-12 gap-y-4 border-t border-line pt-8">

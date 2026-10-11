@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 
+/** Copies my email address, then confirms with a small pop ("Copied!") or explains the failure. */
 export function CopyEmail({
   email,
   className,
@@ -27,10 +28,16 @@ export function CopyEmail({
   }
 
   return (
-    <button type="button" onClick={copy} className={className}>
-      <span aria-live="polite">
+    <button
+      type="button"
+      onClick={copy}
+      data-magnetic
+      data-copied={status === "copied" || undefined}
+      className={`copy-email ${className ?? ""}`}
+    >
+      <span aria-live="polite" key={status} className="copy-label">
         {status === "copied"
-          ? "Copied ✓"
+          ? "Copied!"
           : status === "failed"
             ? "Couldn’t copy. Select it above."
             : "Copy email"}

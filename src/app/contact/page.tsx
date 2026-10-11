@@ -1,9 +1,8 @@
-import { existsSync } from "node:fs";
-import path from "node:path";
 import type { Metadata } from "next";
 import { CopyEmail } from "@/components/CopyEmail";
 import { PageMasthead } from "@/components/PageMasthead";
 import { SITE } from "@/lib/projects";
+import { HAS_RESUME } from "@/lib/resume";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -11,9 +10,6 @@ export const metadata: Metadata = {
     "Email, LinkedIn, and GitHub for Bhakti Ahir, a 12th-grade student developer in Panama.",
   alternates: { canonical: "/contact" },
 };
-
-// The résumé row only appears once a real file is dropped at public/resume.pdf.
-const hasResume = existsSync(path.join(process.cwd(), "public", "resume.pdf"));
 
 const pill =
   "press inline-flex h-12 items-center rounded-full border border-line-strong px-6 text-sm font-semibold text-ink hover:bg-soft";
@@ -41,7 +37,7 @@ export default function ContactPage() {
       term: "Status",
       value: "Student developer, 12th grade, The Oxford School",
     },
-    ...(hasResume
+    ...(HAS_RESUME
       ? [
           {
             term: "Résumé",
@@ -86,11 +82,17 @@ export default function ContactPage() {
           <div className="mt-7 flex flex-wrap gap-3">
             <a
               href={`mailto:${SITE.email}`}
+              data-magnetic
               className="press inline-flex h-12 items-center rounded-full bg-ink px-7 text-sm font-semibold text-paper hover:opacity-90"
             >
               Email Bhakti
             </a>
             <CopyEmail email={SITE.email} className={pill} />
+            {HAS_RESUME && (
+              <a href="/resume.pdf" data-magnetic className={pill}>
+                Résumé ↓
+              </a>
+            )}
           </div>
         </div>
         <dl className="border-t border-line lg:col-span-5 lg:col-start-8">

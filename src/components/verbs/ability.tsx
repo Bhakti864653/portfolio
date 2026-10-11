@@ -1,31 +1,60 @@
 "use client";
 
-import { createContext, useContext, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import type { Verb } from "@/lib/projects";
 
 type AbilityState = {
   active: Verb | null;
   setActive: (verb: Verb | null) => void;
+  /**
+   * Clears the choice after a short grace period, so the pointer can travel from a path to its
+   * preview card without the card disappearing on the way. Choosing again cancels it.
+   */
+  release: () => void;
 };
 
 const AbilityContext = createContext<AbilityState | null>(null);
+const GRACE = 450;
+
+function useAbilityState(): AbilityState {
+  const [active, set] = useState<Verb | null>(null);
+  const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const setActive = useCallback((verb: Verb | null) => {
+    clearTimeout(timer.current);
+    set(verb);
+  }, []);
+  const release = useCallback(() => {
+    clearTimeout(timer.current);
+    timer.current = setTimeout(() => set(null), GRACE);
+  }, []);
+  return useMemo(
+    () => ({ active, setActive, release }),
+    [active, setActive, release],
+  );
+}
 
 /**
- * Shares the chosen ability between the idea screen's words and its figure, so pointing at
- * "Learn" in the text brings Learn's path forward in the figure, and the other way round.
+ * Shares the chosen ability between the figure's paths and the project preview card, so
+ * pointing at "Learn" brings Learn's path forward and shows Synaptiq's preview.
  */
 export function AbilityProvider({ children }: { children: ReactNode }) {
-  const [active, setActive] = useState<Verb | null>(null);
+  const value = useAbilityState();
   return (
-    <AbilityContext.Provider value={{ active, setActive }}>
-      {children}
-    </AbilityContext.Provider>
+    <AbilityContext.Provider value={value}>{children}</AbilityContext.Provider>
   );
 }
 
 /** The shared ability when inside a provider; otherwise a private one (used on its own). */
 export function useAbility(): AbilityState {
   const shared = useContext(AbilityContext);
-  const [active, setActive] = useState<Verb | null>(null);
-  return shared ?? { active, setActive };
+  const own = useAbilityState();
+  return shared ?? own;
 }
