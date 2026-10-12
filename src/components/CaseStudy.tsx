@@ -272,7 +272,7 @@ export function CaseStudy({ project: p }: { project: Project }) {
                 >
                   <span className="annot text-a1">
                     {String(i + 1).padStart(2, "0")}
-                  </span>
+                  </span>{" "}
                   {e.label}
                 </h2>
                 <div className="lg:col-span-8">

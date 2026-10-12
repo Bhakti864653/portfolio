@@ -698,7 +698,7 @@ export function Entrance() {
                     ref={desc}
                     className="mt-[clamp(1rem,2.6svh,1.6rem)] max-w-[29em] text-balance text-[clamp(1rem,1.3vw,1.2rem)] leading-[1.45] text-ink"
                   >
-                    Four live apps for real problems: college applications,
+                    Four working apps for real problems: college applications,
                     studying, mentorship, and neighborhoods. Every one leaves
                     the final call to you.
                   </p>

@@ -91,7 +91,7 @@ describe("project data", () => {
       "7 languages",
     ]);
     for (const p of PROJECTS) {
-      expect(p.oneLine.length, p.slug).toBeLessThan(110);
+      expect(p.oneLine.length, p.slug).toBeLessThan(120);
       expect(p.tags.length).toBeGreaterThanOrEqual(2);
       expect(p.tags.length).toBeLessThanOrEqual(3);
     }

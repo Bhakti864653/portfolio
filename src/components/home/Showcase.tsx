@@ -34,7 +34,7 @@ export function Showcase() {
             </h2>
           </div>
           <p className="max-w-[22rem] text-lg leading-snug text-muted">
-            Four live apps, each built for one thing people do.
+            Four working apps, each built for one thing people do.
           </p>
         </div>
 

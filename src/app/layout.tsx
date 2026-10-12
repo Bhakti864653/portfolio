@@ -37,7 +37,7 @@ const mono = JetBrains_Mono({
 });
 
 const description =
-  "Bhakti Ahir: a student developer in Panama building human-centered tools for learning, opportunity, and community. Four live projects: Portico, Synaptiq, Concord, and CommonGround (a student demo).";
+  "Bhakti Ahir: a student developer in Panama building human-centered tools for learning, opportunity, and community. Four working apps: Portico, Synaptiq, Concord, and CommonGround (a student demo).";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),

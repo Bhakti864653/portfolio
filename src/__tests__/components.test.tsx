@@ -248,8 +248,10 @@ describe("CaseStudy", () => {
       const { container } = render(<CaseStudy project={p} />);
       const headings = screen
         .getAllByRole("heading", { level: 2 })
-        .map((h) => h.textContent?.replace(/^\d+/, ""));
-      expect(headings).toEqual(
+        .map((h) => h.textContent ?? "");
+      // The step number and the title are separate words, even when copied or read aloud.
+      expect(headings).toContain("01 The problem");
+      expect(headings.map((h) => h.replace(/^\d+ /, ""))).toEqual(
         expect.arrayContaining([
           "The problem",
           "What it does",

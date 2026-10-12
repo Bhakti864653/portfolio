@@ -130,7 +130,7 @@ export const PROJECTS: Project[] = [
       hard: "The live app crashed with “Resource deadlock avoided” while everything worked on my laptop. The database library started threads before the server split into worker processes. Waiting for the first real request fixed it.",
       learned: [
         "“It works when I test it” isn’t the same as “it survives a deploy.”",
-        "Spotting that several features share one shape turned about four times the work into about 1.3 times.",
+        "Spotting that several features share one shape meant I built one thing instead of four, so it took a little more work than one feature, not four times as much.",
         "Scope every query to its owner, so one account can never see another’s data.",
       ],
     },
@@ -203,7 +203,7 @@ export const PROJECTS: Project[] = [
       learned: [
         "“It works when I test it” isn't the same as “it survives a deploy.”",
         "A clean timeout with no detail is usually an infrastructure block, not a bug in my code.",
-        "Spotting that several features share one shape turned about four times the work into about 1.3 times the work.",
+        "Spotting that several features share one shape meant I built one thing instead of four, so it took a little more work than one feature, not four times as much.",
       ],
     },
   },
@@ -370,7 +370,7 @@ export const PROJECTS: Project[] = [
       alt: "Concord landing page: the headline “Find the mentor who already walked your path”, a sample match between a mentee and a mentor with the reason they were paired, and the five steps of how it works",
     },
     oneLine:
-      "Mentorship matching where no mentee and mentor would both rather be with each other.",
+      "Mentorship matching where no mentee and mentor would both rather be with each other than with the partners they got.",
     badge: "Stable matching",
     tags: ["Next.js", "FastAPI", "Postgres"],
     gallery: [
@@ -590,7 +590,7 @@ export const PROJECTS: Project[] = [
         "A 3D “Community Pulse” view was built, then removed in a redesign because it didn't help anyone act.",
       ],
       safety: [
-        "No accounts at all. Deleting your own case works through a one-time management link.",
+        "Residents don’t need an account to report (only moderators sign in, with Google). Deleting your own case works through a one-time management link.",
         "Photos are validated on the server, and only their metadata is kept, never the image.",
         "The Guide's safety is tested with a live adversarial eval suite, not only unit tests.",
         "Chat history sent to the Guide is sanitized, so a user can't inject a fake “system” turn.",
