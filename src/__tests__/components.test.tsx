@@ -483,3 +483,18 @@ describe("Work page", () => {
     expect(screen.queryByText(/Next\.js 16/)).toBeNull();
   });
 });
+
+describe("About photo", () => {
+  it("shows the photo with its alt text, lazy-loaded, from a small optimized file", async () => {
+    const { statSync } = await import("node:fs");
+    const { join } = await import("node:path");
+    const { default: About } = await import("@/app/about/page");
+    render(<About />);
+    const img = screen.getByRole("img", { name: "Bhakti Ahir" });
+    expect(img).toHaveAttribute("loading", "lazy");
+    expect(img.getAttribute("src")).toContain("bhakti.webp");
+    expect(
+      statSync(join(process.cwd(), "public/about/bhakti.webp")).size,
+    ).toBeLessThan(60_000);
+  });
+});

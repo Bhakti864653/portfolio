@@ -1,3 +1,4 @@
+import Image from "next/image";
 import type { Metadata } from "next";
 import { Certifications } from "@/components/Certifications";
 import { NextPage } from "@/components/NextPage";
@@ -63,7 +64,22 @@ const BEYOND = [
 export default function AboutPage() {
   return (
     <div className="tone-ivory grain relative bg-paper text-ink">
-      <PageMasthead number="03" label="About" title="Bhakti Ahir">
+      <PageMasthead
+        number="03"
+        label="About"
+        title="Bhakti Ahir"
+        media={
+          <Image
+            src="/about/bhakti.webp"
+            alt="Bhakti Ahir"
+            width={560}
+            height={700}
+            loading="lazy"
+            sizes="(min-width: 1024px) 280px, 68vw"
+            className="portrait h-auto w-full"
+          />
+        }
+      >
         <p className="annot normal-case tracking-normal text-ink">
           12th grade · The Oxford School, Panama · Computer Science
         </p>

@@ -1480,3 +1480,11 @@ html.lenis body {
 :root[data-motion="reduce"] .currently-dot {
   animation: none;
 }
+
+/* About photo: rounded, with a hairline edge that reads on cream and on the dark theme. */
+.portrait {
+  border-radius: 20px;
+  border: 1px solid var(--line-strong);
+  box-shadow: 0 18px 40px -24px rgb(17 21 21 / 0.45);
+  background: var(--soft);
+}
