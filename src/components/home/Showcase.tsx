@@ -33,9 +33,18 @@ export function Showcase() {
               Four ways in.
             </h2>
           </div>
-          <p className="max-w-[22rem] text-lg leading-snug text-muted">
-            Four working apps, each built for one thing people do.
-          </p>
+          <div className="max-w-[22rem]">
+            <p className="text-lg leading-snug text-muted">
+              Four working apps, each built for one thing people do.
+            </p>
+            <p className="currently mt-4 flex items-start gap-2 text-[0.95rem] leading-snug text-ink">
+              <span aria-hidden="true" className="currently-dot mt-[0.45em]" />
+              <span>
+                <span className="font-semibold">Currently:</span> preparing
+                CommonGround to work with my city’s mayor’s office.
+              </span>
+            </p>
+          </div>
         </div>
 
         {/* The four lines back to one center (desktop only) */}

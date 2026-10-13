@@ -70,12 +70,8 @@ export function CaseStudy({ project: p }: { project: Project }) {
   const index = PROJECTS.indexOf(p);
   const next = PROJECTS[(index + 1) % PROJECTS.length];
   const previous = PROJECTS[(index + PROJECTS.length - 1) % PROJECTS.length];
-  // The main screenshot is already shown above, so the gallery only repeats it when it would
-  // otherwise have fewer than three shots.
-  const shots: Shot[] =
-    p.gallery.length >= 3
-      ? p.gallery
-      : [{ ...p.screenshot, width: 1440, height: 900 }, ...p.gallery];
+  // The main screenshot is already shown above, so the gallery never repeats it.
+  const shots: Shot[] = p.gallery.filter((s) => s.src !== p.screenshot.src);
 
   const entries: Entry[] = [
     {
@@ -146,11 +142,12 @@ export function CaseStudy({ project: p }: { project: Project }) {
       id: "learned",
       label: "What I learned",
       body: <Bullets items={p.short.learned} />,
-      more: (
-        <More title="In the project’s own words">
+      // Only lessons not already listed above; no "Read more" when there are none.
+      more: cs.learned.length ? (
+        <More title="More lessons">
           <Bullets items={cs.learned} />
         </More>
-      ),
+      ) : undefined,
     },
     {
       id: "tech",

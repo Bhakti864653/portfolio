@@ -9,7 +9,7 @@
   --soft: #fdfbf6;
   --ink: #111515;
   --muted: #4c524e;
-  --faint: #8a8f89;
+  --faint: #686d67; /* 4.7:1 on paper (WCAG AA) */
   --line: rgb(17 21 21 / 0.14);
   --line-strong: rgb(17 21 21 / 0.32);
   --grid: rgb(17 21 21 / 0.045);
@@ -38,7 +38,7 @@
   --soft: #1a1f1d;
   --ink: #ede7db;
   --muted: #b8bbb2;
-  --faint: #80857e;
+  --faint: #8f948d; /* 5.4:1 on the dark soft surface (WCAG AA) */
   --line: rgb(237 231 219 / 0.13);
   --line-strong: rgb(237 231 219 / 0.3);
   --grid: rgb(237 231 219 / 0.04);
@@ -1455,4 +1455,28 @@ html.lenis body {
 }
 .cert-chip:hover {
   background: var(--soft);
+}
+
+/* "Currently" on the home page: a small live dot (still when motion is reduced). */
+.currently-dot {
+  flex: none;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 999px;
+  background: var(--commonground-1);
+  box-shadow: 0 0 0 0 rgb(10 117 102 / 0.45);
+  animation: currently-pulse 2.4s ease-out infinite;
+}
+@keyframes currently-pulse {
+  70% {
+    box-shadow: 0 0 0 0.5rem rgb(10 117 102 / 0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .currently-dot {
+    animation: none;
+  }
+}
+:root[data-motion="reduce"] .currently-dot {
+  animation: none;
 }

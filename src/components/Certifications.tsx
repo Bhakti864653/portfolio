@@ -39,7 +39,10 @@ export function Certifications({ compact = false }: { compact?: boolean }) {
         <h2 id="certs-title" className="annot text-ink lg:col-span-3">
           Skills &amp; certifications
         </h2>
-        <ul className="grid gap-4 sm:grid-cols-2 lg:col-span-9">
+        {/* One certificate gets a full-width card; from two on, a two-column grid. */}
+        <ul
+          className={`grid gap-4 lg:col-span-9 ${CERTIFICATIONS.length > 1 ? "sm:grid-cols-2" : "max-w-2xl"}`}
+        >
           {CERTIFICATIONS.map((c) => (
             <li
               key={c.url}

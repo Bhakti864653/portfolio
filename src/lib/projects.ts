@@ -94,12 +94,6 @@ export const PROJECTS: Project[] = [
     tags: ["Python", "Flask", "SQLite"],
     gallery: [
       {
-        src: "/work/gallery/portico-1.webp",
-        alt: "Portico overview in the demo sandbox: “Your route to decision day”, a countdown to the next deadline, and university cards with completion rings",
-        width: 1440,
-        height: 900,
-      },
-      {
         src: "/work/gallery/portico-2.webp",
         alt: "Portico applications board: universities in Researching, Building, Ready, and Submitted columns, each with its readiness percentage",
         width: 1440,
@@ -120,14 +114,14 @@ export const PROJECTS: Project[] = [
     ],
     short: {
       problem:
-        "Every university has its own deadlines, essays, recommenders, and documents. Spread across notes, it’s hard to see what’s ready and what to do first.",
+        "Each application has its own pile of deadlines and documents, and scattered notes hide what to do next.",
       does: [
         "Tracks deadlines, essays, recommendations, and documents for each school",
         "Gives each school a 0–100% readiness score and a ranked “what to do next” list",
         "Counts down to every deadline and exports them to your calendar",
         "Lets anyone try a private demo, no account needed",
       ],
-      hard: "The live app crashed with “Resource deadlock avoided” while everything worked on my laptop. The database library started threads before the server split into worker processes. Waiting for the first real request fixed it.",
+      hard: "The live app kept crashing while my laptop copy worked perfectly. The cause was the order in which the production server started up.",
       learned: [
         "“It works when I test it” isn’t the same as “it survives a deploy.”",
         "Spotting that several features share one shape meant I built one thing instead of four, so it took a little more work than one feature, not four times as much.",
@@ -181,7 +175,7 @@ export const PROJECTS: Project[] = [
         "The exports were a real attack surface. A school name starting with “=” would run as a formula in Excel (CSV injection), and a name containing line breaks could inject fake events into the calendar file. Both are neutralized now, and both have regression tests.",
       ],
       challenge: {
-        heading: "A deadlock that only happened in production",
+        heading: "The live app crashed, but never on my laptop",
         body: [
           "After deploying, the live app returned errors and its worker processes were being killed with “Resource deadlock avoided.” Locally, everything worked.",
           "The database library starts background threads. My setup code ran before the production server split into worker processes, and each worker inherited a half-started runtime it could never finish. Running `python app.py` locally never splits into processes, so I couldn't reproduce it there.",
@@ -201,9 +195,7 @@ export const PROJECTS: Project[] = [
         "Suggestions are rules, not advice. They rank tasks by deadline and don't judge essay quality or which schools to choose.",
       ],
       learned: [
-        "“It works when I test it” isn't the same as “it survives a deploy.”",
         "A clean timeout with no detail is usually an infrastructure block, not a bug in my code.",
-        "Spotting that several features share one shape meant I built one thing instead of four, so it took a little more work than one feature, not four times as much.",
       ],
     },
   },
@@ -231,7 +223,7 @@ export const PROJECTS: Project[] = [
     oneLine:
       "Turns your own notes into a quiz, then practice aimed at what you don’t know yet.",
     badge: "Adaptive AI tutor",
-    tags: ["Next.js", "FastAPI", "Supabase"],
+    tags: ["Next.js", "Groq + Whisper", "Supabase"],
     gallery: [
       {
         src: "/work/gallery/synaptiq-dashboard-v2.png",
@@ -266,14 +258,14 @@ export const PROJECTS: Project[] = [
     ],
     short: {
       problem:
-        "Rereading notes feels like studying but doesn’t show what you don’t know. A generic AI chat isn’t tied to your material and happily uses facts your course never taught.",
+        "Rereading doesn’t reveal what you don’t know, and a general AI chat isn’t tied to your course.",
       does: [
         "Builds a diagnostic quiz from your PDFs, slides, or documents",
         "Scores mastery per concept and aims new practice at your weakest ones",
         "Answers questions with a tutor limited to your own material",
         "Schedules flashcards with SM-2, the algorithm behind Anki",
       ],
-      hard: "Regenerating a quiz deleted the old one before saving the new one, so a single malformed AI response could leave a student with nothing. Now every item is checked first, and a bad response changes nothing.",
+      hard: "One malformed AI response could wipe out a student’s existing quiz. Now a bad response changes nothing.",
       learned: [
         "How to ask an LLM for structured JSON, and how to handle every way that fails.",
         "Verify security claims against the real system, not a dashboard’s picture of it.",
@@ -349,11 +341,7 @@ export const PROJECTS: Project[] = [
         "Some endpoints still return raw error text to the signed-in user who caused it.",
         "Uploaded documents are parsed without a sandbox, which a larger production system would need.",
       ],
-      learned: [
-        "How to ask an LLM for structured JSON, and how to handle every way that fails.",
-        "Verify security claims against the real system of record, not a dashboard's rendering of it.",
-        "A file input's `accept` attribute is a convenience, not a control.",
-      ],
+      learned: [],
     },
   },
   {
@@ -378,9 +366,9 @@ export const PROJECTS: Project[] = [
       alt: "Concord landing page: the headline “Find the mentor who already walked your path”, a sample match between a mentee and a mentor with the reason they were paired, and the five steps of how it works",
     },
     oneLine:
-      "Mentorship matching where no mentee and mentor would both rather be with each other than with the partners they got.",
+      "Fair mentorship matching: nobody can find a better match who would also choose them.",
     badge: "Stable matching",
-    tags: ["Next.js", "FastAPI", "Postgres"],
+    tags: ["FastAPI", "Postgres RLS", "Realtime"],
     gallery: [
       {
         src: "/work/gallery/concord-1.webp",
@@ -397,14 +385,14 @@ export const PROJECTS: Project[] = [
     ],
     short: {
       problem:
-        "Mentorship programs often match people by hand or by one similarity score. Both are hard to explain, and both can leave two people who would each rather be with someone else.",
+        "Matches made by hand or by one score are hard to explain, and they can pair people who’d both prefer someone else.",
       does: [
         "Mentees and mentors build profiles and rank each other",
         "Every suggestion explains its score in shared words and tags",
-        "Gale-Shapley pairs people in rounds, so every match is stable",
+        "A proven matching method (Gale-Shapley) pairs people in rounds, so no two people would both rather be together",
         "Matched pairs get live chat, shared goals, and a session log",
       ],
-      hard: "Mentors can take several mentees, and each round only matches people still waiting. That created a mentor with no spots left, which crashed the algorithm until it learned to reject those proposals outright.",
+      hard: "Matching in rounds created a situation the original code never expected: a mentor with no spots left. A request for that mentor crashed the matching.",
       learned: [
         "Implement an algorithm from its formal description, and test the property that defines it.",
         "A successful build log doesn’t mean a working deployment. Check the real setting.",
@@ -443,9 +431,10 @@ export const PROJECTS: Project[] = [
         "Rematch requests, blocking, reporting, and community guidelines",
       ],
       system: {
-        heading: "Gale-Shapley with capacity, run in rounds",
+        heading:
+          "Fair matching in rounds, where a mentor can take several mentees",
         body: [
-          "The matcher is a pure function with no database or network access. It takes ranked ID lists and each mentor's capacity, and runs mentee-proposing deferred acceptance, the “hospitals and residents” version that lets one mentor accept several mentees.",
+          "The matcher is a pure function with no database or network access. It takes ranked ID lists and each mentor's capacity, and runs the classic proposal method: mentees ask their favorite mentors first, and each mentor holds on to the best offers so far, only deciding at the end (called “deferred acceptance”). It uses the version built for matching new doctors to hospitals, where one mentor, like one hospital, can accept several people.",
           "Around it is a round state machine: preferences open → locked → matching → results → a new round. Each run only considers people who are still unmatched, and reduces each mentor's capacity by their current matches, so existing pairs are never touched.",
         ],
       },
@@ -460,7 +449,7 @@ export const PROJECTS: Project[] = [
         "A security pass found that none of the authenticated endpoints were rate-limited, so I added per-user limits.",
       ],
       challenge: {
-        heading: "When capacity can reach zero",
+        heading: "A mentor with no spots left crashed the matching",
         body: [
           "Moving from “wipe and recompute everyone” to incremental rounds created a state the original code had never seen: a mentor whose remaining capacity is already zero.",
           "When a proposal arrived for such a mentor, the algorithm tried to bump a tentative match to make room, found none, and crashed on an empty `max()`. The fix rejects the proposal outright in that case. It has a dedicated test, and the same fix went into the browser sandbox on the “How it works” page.",
@@ -478,11 +467,7 @@ export const PROJECTS: Project[] = [
         "The rate limiter lives in memory, so it resets when the free-tier server restarts.",
         "Rounds are advanced manually by one admin account.",
       ],
-      learned: [
-        "Implementing an algorithm from its formal description, and testing the property that defines it (stability), not just its output.",
-        "A successful build log doesn't mean a working deployment. When signals disagree, check the real setting.",
-        "Changing a design from “recompute everything” to incremental introduces new states, even when the core algorithm doesn't change.",
-      ],
+      learned: [],
     },
   },
   {
@@ -504,20 +489,14 @@ export const PROJECTS: Project[] = [
     liveNote:
       "Residents need no account. It starts in your browser's language if supported (seven languages), otherwise Spanish.",
     screenshot: {
-      src: "/work/commonground.png",
-      alt: "CommonGround community page for Santiago de Veraguas in Spanish: a map of five approximate areas holding numbered case markers, and an introduction to the Guide",
+      src: "/work/gallery/commonground-1.webp",
+      alt: "CommonGround home for Santiago de Veraguas: a street map with numbered cases inside approximate area zones, under the student-demo banner",
     },
     oneLine:
       "A student demo where neighbors report local problems and AI agents route and follow up, in 7 languages.",
     badge: "4-step AI pipeline",
-    tags: ["Next.js", "TypeScript", "Groq agents"],
+    tags: ["Groq agents", "Postgres (Neon)", "MapLibre"],
     gallery: [
-      {
-        src: "/work/gallery/commonground-1.webp",
-        alt: "CommonGround home for Santiago de Veraguas: a street map with numbered cases inside approximate area zones, under the student-demo banner",
-        width: 1440,
-        height: 900,
-      },
       {
         src: "/work/gallery/commonground-2.webp",
         alt: "A CommonGround example case: flooding in the northern area, labeled “Example – not a real report”, with its public timeline",
@@ -539,7 +518,7 @@ export const PROJECTS: Project[] = [
     ],
     short: {
       problem:
-        "Flooding, garbage, or a broken streetlight gets noticed by many neighbors but reported in scattered ways, if at all. Nobody can see whether someone already raised it, or what happened next.",
+        "Neighbors notice the same local problems, but reports are scattered and nobody can follow what happens next.",
       does: [
         "Report a problem anonymously; phone numbers, emails, and names are removed automatically",
         "Every case gets a public number and history; residents’ cases show only status changes",
@@ -608,7 +587,7 @@ export const PROJECTS: Project[] = [
         "Photos are validated on the server, and only their metadata is kept, never the image.",
       ],
       challenge: {
-        heading: "“Not rendered” is not “not sent”",
+        heading: "Private notes, hidden on screen, still reached the browser",
         body: [
           "The case page passed the full case object to a client component. The component never displayed the moderator's private notes, but Next.js serializes every prop sent to the browser, so the notes were readable in the page's own data.",
           "I found it in a deliberate review pass against my own evaluation doc. The fix is a `PublicCase` type that structurally omits every private field, plus a function that actually strips them. Referencing a private field on a public page is now a compile error, not a silent leak.",
@@ -629,10 +608,7 @@ export const PROJECTS: Project[] = [
         "Areas are broad zones (center, north, south, east, west), not neighborhood names.",
       ],
       learned: [
-        "Let agents propose, not act: approval should run the same code a person’s button runs.",
-        "If a field is private, strip it at the data layer and make it impossible to name, not just unlikely.",
         "Before calling a model's reasoning wrong, check what was actually in its context window.",
-        "Prove safety with tests: one blocks the network to show nothing is ever sent.",
       ],
     },
   },

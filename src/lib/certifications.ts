@@ -22,7 +22,14 @@ export type Certification = {
   badge?: string;
 };
 
-export const CERTIFICATIONS: Certification[] = [];
+export const CERTIFICATIONS: Certification[] = [
+  {
+    name: "AI Fluency: Framework & Foundations",
+    issuer: "Anthropic",
+    date: "2026-10",
+    url: "https://verify.skilljar.com/c/kpxr3omhmyq4",
+  },
+];
 
 /** "2026-10" → "October 2026". */
 export function formatMonth(date: string): string {

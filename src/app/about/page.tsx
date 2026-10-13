@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 /** Wraps a lesson in quotation marks unless it already opens with one. */
 const quote = (t: string) => (t.startsWith("“") ? t : `“${t}”`);
 
-/** A margin note: a lesson in my own words, quoted from a project's case study. */
+/** A margin note: a lesson in my own words, quoted from a project's “What I learned”. */
 function Note({ slug, index }: { slug: string; index: number }) {
   const p = projectBySlug(slug)!;
   return (
@@ -25,7 +25,7 @@ function Note({ slug, index }: { slug: string; index: number }) {
     >
       <p className="annot text-a1">Note · from {p.name}</p>
       <p className="mt-2 font-display text-[1.2rem] italic leading-snug">
-        {quote(p.caseStudy.learned[index])}
+        {quote(p.short.learned[index])}
       </p>
     </aside>
   );

@@ -75,31 +75,45 @@ export const STAGES: Stage[] = [
  * Lessons that show up across the projects. Each project listed is one where the DEVLOG or
  * README shows the idea actually applied.
  */
-export type Thread = { title: string; note: string; stages: Stage["id"][] };
+/** `plain`: one sentence anyone can follow; `note`: how the projects actually do it. */
+export type Thread = {
+  title: string;
+  plain: string;
+  note: string;
+  stages: Stage["id"][];
+};
 
 export const THREADS: Thread[] = [
   {
     title: "Keep each person's data theirs",
+    plain:
+      "Nobody using these apps can ever see someone else's private information.",
     note: "Every query scoped to its owner, security policies in the database, and private fields that can't reach a public page.",
     stages: ["portico", "synaptiq", "concord", "commonground"],
   },
   {
     title: "Check on the server, not the browser",
+    plain:
+      "The apps never take a web page's word for it; they double-check everything themselves.",
     note: "The server re-checks every file type, date, and upload, whatever the browser says.",
     stages: ["portico", "synaptiq", "commonground"],
   },
   {
     title: "Limit what one visitor can do",
+    plain:
+      "No single person can overload an app or use up what everyone shares.",
     note: "Rate limits on logins, demos, and every endpoint, so nobody can drain shared resources.",
     stages: ["portico", "synaptiq", "concord"],
   },
   {
     title: "Explainable before clever",
+    plain: "When an app makes a decision, a person can read why.",
     note: "Rules, readable scores, and reasoning traces before any black box.",
     stages: ["portico", "concord", "commonground"],
   },
   {
     title: "A person makes the final call",
+    plain: "The AI can suggest, but a human always decides.",
     note: "The AI tutors and drafts; it never decides or submits without a person.",
     stages: ["synaptiq", "commonground"],
   },

@@ -280,7 +280,10 @@ describe("CaseStudy", () => {
         .forEach((el) => el.remove());
       const words = article.textContent!.split(/\s+/).filter(Boolean);
       expect(words.length).toBeLessThan(350);
-      expect(container.querySelectorAll("details.read-more")).toHaveLength(4);
+      // "What I learned" has a Read more only when it has lessons beyond the ones shown.
+      expect(container.querySelectorAll("details.read-more")).toHaveLength(
+        p.caseStudy.learned.length ? 4 : 3,
+      );
     },
   );
 
@@ -297,26 +300,38 @@ describe("Gallery", () => {
     const shots = projectBySlug("portico")!.gallery;
     render(<Gallery shots={shots} name="Portico" />);
     await userEvent.click(
-      screen.getByRole("button", { name: /Open screenshot 1 of 4/ }),
+      screen.getByRole("button", { name: /Open screenshot 1 of 3/ }),
     );
-    expect(screen.getByText("1 / 4")).toBeInTheDocument();
+    expect(screen.getByText("1 / 3")).toBeInTheDocument();
     await userEvent.click(screen.getByRole("button", { name: "Next →" }));
-    expect(screen.getByText("2 / 4")).toBeInTheDocument();
+    expect(screen.getByText("2 / 3")).toBeInTheDocument();
     await userEvent.click(screen.getByRole("button", { name: "← Previous" }));
     await userEvent.click(screen.getByRole("button", { name: "← Previous" }));
-    expect(screen.getByText("4 / 4")).toBeInTheDocument();
+    expect(screen.getByText("3 / 3")).toBeInTheDocument();
   });
 });
 
 describe("Certifications", () => {
-  it("renders nothing at all until there is a certificate", () => {
-    const { container } = render(
+  it("shows the first certificate on About and in the home strip, with a working link", () => {
+    render(
       <>
         <Certifications />
         <Certifications compact />
       </>,
     );
-    expect(container).toBeEmptyDOMElement();
+    expect(
+      screen.getByRole("heading", { name: "Skills & certifications" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Certifications" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getAllByText(/AI Fluency: Framework & Foundations/).length,
+    ).toBeGreaterThanOrEqual(2);
+    expect(screen.getByText(/Anthropic · October 2026/)).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: /View certificate/ }),
+    ).toHaveAttribute("href", "https://verify.skilljar.com/c/kpxr3omhmyq4");
   });
 });
 
@@ -456,5 +471,15 @@ describe("SiteHeader", () => {
     await userEvent.keyboard("{Escape}");
     expect(screen.queryByRole("dialog")).toBeNull();
     expect(toggle).toHaveFocus();
+  });
+});
+
+describe("Work page", () => {
+  it("shows only each project's three tags as its core tech, never a version number", async () => {
+    const { default: WorkIndex } = await import("@/app/work/page");
+    render(<WorkIndex />);
+    for (const p of PROJECTS)
+      expect(screen.getByText(p.tags.join(" · "))).toBeInTheDocument();
+    expect(screen.queryByText(/Next\.js 16/)).toBeNull();
   });
 });

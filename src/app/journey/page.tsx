@@ -69,13 +69,30 @@ export default function JourneyPage() {
                     <p className="text-lg font-semibold leading-snug">
                       {thread.title}
                     </p>
-                    <p className="annot mt-1 normal-case tracking-normal">
-                      {thread.stages.map(label).join(" · ")}
+                    <ul
+                      aria-label="Projects"
+                      className="mt-2 flex flex-wrap gap-1.5"
+                    >
+                      {thread.stages.map((id) => (
+                        <li key={id} title={label(id)}>
+                          <span
+                            aria-hidden="true"
+                            className="block h-3 w-3 rounded-full"
+                            style={{ background: `var(--${id}-1)` }}
+                          />
+                          <span className="sr-only">{label(id)}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <p className="text-[1.02rem] leading-relaxed text-ink">
+                      {thread.plain}
+                    </p>
+                    <p className="mt-1.5 text-[0.95rem] leading-relaxed text-muted">
+                      {inline(thread.note)}
                     </p>
                   </div>
-                  <p className="text-[0.98rem] leading-relaxed text-muted">
-                    {inline(thread.note)}
-                  </p>
                 </li>
               ))}
             </ul>

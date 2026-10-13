@@ -77,7 +77,8 @@ export default function WorkIndex() {
                   </div>
                   <div className="flex gap-4 border-b border-line py-2.5">
                     <dt className="annot w-24 shrink-0">Core tech</dt>
-                    <dd>{p.stack.slice(0, 5).join(" · ")}</dd>
+                    {/* The three tags that set this project apart; the full stack is in its case study. */}
+                    <dd>{p.tags.join(" · ")}</dd>
                   </div>
                 </dl>
 
