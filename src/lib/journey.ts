@@ -58,16 +58,16 @@ export const STAGES: Stage[] = [
     label: "CommonGround",
     started:
       "Neighbors notice the same local problems but report them in scattered ways, if at all.",
-    introduced: ["Multi-agent AI", "Seven languages", "A real place"],
+    introduced: ["An AI agent pipeline", "Seven languages", "A real place"],
     system: [
       "Next.js",
       "Zod schemas",
-      "Multi-agent Guide",
-      "Map tiles",
+      "Agent pipeline",
+      "Daily cron",
       "7 languages",
     ],
     lesson:
-      "A person makes the final call: the Guide drafts, but never submits anything without a click.",
+      "A person makes the final call: agents propose, and a moderator approves every step.",
   },
 ];
 

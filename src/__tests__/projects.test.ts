@@ -88,7 +88,7 @@ describe("project data", () => {
       "61 tests",
       "Adaptive AI tutor",
       "Stable matching",
-      "7 languages",
+      "4-step AI pipeline",
     ]);
     for (const p of PROJECTS) {
       expect(p.oneLine.length, p.slug).toBeLessThan(120);

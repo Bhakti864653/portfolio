@@ -1208,7 +1208,8 @@ html.lenis body {
 .case-title {
   margin-top: 0.08em;
   font-family: var(--font-display);
-  font-size: clamp(4rem, 15vw, 13rem);
+  /* Scales with the screen on phones, so a long one-word name (CommonGround) never overflows. */
+  font-size: clamp(3.1rem, 15vw, 13rem);
   line-height: 0.86;
   letter-spacing: -0.03em;
 }

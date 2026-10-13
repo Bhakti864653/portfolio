@@ -29,7 +29,7 @@ describe("IdeaFigure", () => {
       "decide: Portico. 61 tests.",
       "learn: Synaptiq. Adaptive AI tutor.",
       "connect: Concord. Stable matching.",
-      "act: CommonGround. 7 languages.",
+      "act: CommonGround. 4-step AI pipeline.",
     ]);
 
     await userEvent.tab();
