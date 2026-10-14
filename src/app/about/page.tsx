@@ -2,7 +2,6 @@ import Image from "next/image";
 import type { Metadata } from "next";
 import { Certifications } from "@/components/Certifications";
 import { NextPage } from "@/components/NextPage";
-import { PageMasthead } from "@/components/PageMasthead";
 import { Reveal } from "@/components/Reveal";
 import { STAGES } from "@/lib/journey";
 import { projectBySlug, SITE } from "@/lib/projects";
@@ -32,19 +31,11 @@ function Note({ slug, index }: { slug: string; index: number }) {
   );
 }
 
-const PRINCIPLES = [
-  {
-    title: "Technology should support human judgment.",
-    body: "Every project here leaves the final call with a person: the student choosing what to study, the resident confirming a report, the moderator approving a change.",
-  },
-  {
-    title: "Explainable before clever.",
-    body: "A rule-based suggestion list instead of a paid model, a match score you can read line by line, a reasoning trace for every AI agent. If I can’t explain a decision, the person using it can’t trust it.",
-  },
-  {
-    title: "Computer Science turns ideas into things people can use.",
-    body: "It’s the difference between having a good idea about a problem and handing someone a working tool for it.",
-  },
+/** The quick facts beside my name at the top. */
+const FACTS = [
+  "Santiago, Panama",
+  "Planning to study Computer Science",
+  "5 projects built",
 ];
 
 /** Outside the code, in my own words. A line's lead (before the colon) is set bold to scan. */
@@ -86,29 +77,41 @@ function BeyondItem({ text }: { text: string }) {
 export default function AboutPage() {
   return (
     <div className="tone-ivory grain relative bg-paper text-ink">
-      <PageMasthead
-        number="03"
-        label="About"
-        title="Bhakti Ahir"
-        media={
+      <header className="shell pb-12 pt-10 sm:pb-16 sm:pt-16">
+        <p className="annot flex gap-4 border-t border-ink pt-4">
+          <span className="text-ink">03</span>
+          <span>About</span>
+        </p>
+        {/* Photo and words as one block, centered together; stacked and centered on phones. */}
+        <div className="mx-auto mt-10 flex max-w-4xl flex-col items-center gap-8 sm:mt-14 md:flex-row md:gap-12">
           <Image
             src="/about/bhakti.webp"
             alt="Bhakti Ahir"
             width={280}
             height={350}
             preload
-            className="portrait h-auto w-full"
+            className="portrait h-auto w-[min(15rem,68vw)] shrink-0 md:w-[17.5rem]"
           />
-        }
-      >
-        <p className="annot normal-case tracking-normal text-ink">
-          12th-grade student at The Oxford School, planning to study Computer
-          Science
-        </p>
-        <p className="mt-4 font-display text-xl italic leading-snug text-ink">
-          {SITE.about}
-        </p>
-      </PageMasthead>
+          <div className="text-center md:text-left">
+            <h1 className="font-display text-[clamp(2.6rem,6.4vw,5.4rem)] leading-[0.98]">
+              Bhakti Ahir
+            </h1>
+            <p className="mt-5 max-w-[30rem] font-display text-xl italic leading-snug text-ink">
+              {SITE.about}
+            </p>
+            <ul className="mt-6 flex flex-wrap justify-center gap-2 md:justify-start">
+              {FACTS.map((fact) => (
+                <li
+                  key={fact}
+                  className="rounded-full border border-line-strong px-3.5 py-1.5 text-sm"
+                >
+                  {fact}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </header>
 
       {/* Why: the quietest part of the site, one column and a lot of room */}
       <section aria-labelledby="why-title" className="shell py-14 sm:py-20">
@@ -121,12 +124,10 @@ export default function AboutPage() {
               I learn by building real systems for real problems.
             </p>
             <p className="body-copy max-w-[40rem] text-muted">
-              I’m a 12th-grade student at The Oxford School in Panama, planning
-              to study Computer Science. Each of my projects began with a
-              problem people really have: applying to university, studying,
-              finding a mentor, and the problems a neighborhood shares. Long
-              term, I want to build a company that creates technology around
-              real human needs.
+              I’m in 12th grade at The Oxford School. Each project started with
+              a real problem: applying to university, studying, finding a
+              mentor, and what a neighborhood shares. Long term, I want to build
+              a company around real human needs.
             </p>
           </div>
           <Note slug="portico" index={0} />
@@ -140,8 +141,8 @@ export default function AboutPage() {
           </h2>
           <div className="lg:col-span-7">
             <p className="body-copy max-w-[40rem] text-muted">
-              Every project made me learn something I had never done before,
-              because the problem needed it, not because a course came next.
+              Each project taught me something new, because the problem needed
+              it.
             </p>
             <ul className="mt-6">
               {STAGES.map((s) => (
@@ -162,49 +163,6 @@ export default function AboutPage() {
           <Note slug="synaptiq" index={1} />
         </div>
       </section>
-
-      <section
-        aria-labelledby="ai-title"
-        className="border-y border-line py-16 sm:py-24"
-      >
-        <div className="shell grid-12 gap-y-6">
-          <h2 id="ai-title" className="annot text-ink lg:col-span-3">
-            On AI and judgment
-          </h2>
-          <div className="lg:col-span-8">
-            <p className="font-display text-[clamp(2rem,4.2vw,3.4rem)] italic leading-[1.08]">
-              “AI should extend what people can do, not make them passive.”
-            </p>
-            <p className="body-copy mt-6 max-w-[40rem] text-muted">
-              The Synaptiq tutor answers only from your own notes. The
-              CommonGround Guide drafts a report but never submits it. Both are
-              built to keep you thinking and to leave the decision with you.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <Reveal className="shell py-16 sm:py-24">
-        <h2 className="annot text-ink">Principles</h2>
-        <ol className="mt-8">
-          {PRINCIPLES.map((b, i) => (
-            <li
-              key={b.title}
-              className="grid-12 gap-y-4 border-t border-line py-10 sm:py-12"
-            >
-              <p className="font-display text-5xl leading-none text-faint lg:col-span-2">
-                0{i + 1}
-              </p>
-              <p className="font-display text-[clamp(1.9rem,3.6vw,3rem)] leading-[1.06] lg:col-span-6">
-                {b.title}
-              </p>
-              <p className="body-copy max-w-[30rem] text-muted lg:col-span-4 lg:pt-2">
-                {b.body}
-              </p>
-            </li>
-          ))}
-        </ol>
-      </Reveal>
 
       <section
         aria-labelledby="how-title"

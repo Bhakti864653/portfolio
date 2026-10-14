@@ -531,3 +531,28 @@ describe("About activities", () => {
     expect(container.textContent).not.toContain("Debate Club");
   });
 });
+
+describe("About page, trimmed", () => {
+  it("shows the name with quick facts, and drops Principles and On AI and judgment", async () => {
+    const { default: About } = await import("@/app/about/page");
+    render(<About />);
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Bhakti Ahir" }),
+    ).toBeInTheDocument();
+    for (const fact of [
+      "Santiago, Panama",
+      "Planning to study Computer Science",
+      "5 projects built",
+    ])
+      expect(screen.getByText(fact)).toBeInTheDocument();
+    expect(screen.queryByText("Principles")).toBeNull();
+    expect(screen.queryByText("On AI and judgment")).toBeNull();
+    for (const kept of [
+      "How these were built",
+      "Skills & certifications",
+      "Honors & awards",
+      "Activities",
+    ])
+      expect(screen.getByRole("heading", { name: kept })).toBeInTheDocument();
+  });
+});
