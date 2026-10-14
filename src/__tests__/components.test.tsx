@@ -501,3 +501,25 @@ describe("About photo", () => {
     ).toBeLessThan(60_000);
   });
 });
+
+describe("About honors and activities", () => {
+  it("shows both groups with every line in Bhakti's exact wording", async () => {
+    const { default: About } = await import("@/app/about/page");
+    const { container } = render(<About />);
+    expect(
+      screen.getByRole("heading", { name: "Honors & awards" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Activities" }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("Beyond the screen")).toBeNull();
+    const text = container.textContent ?? "";
+    for (const line of [
+      "2nd place, STEM Olympics: Oxford School network competition among 7 campuses",
+      "School Spelling Bee champion multiple times",
+      "Science Club: ran hands-on experiments with classmates",
+      "Community service: 80+ hours",
+    ])
+      expect(text).toContain(line);
+  });
+});

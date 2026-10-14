@@ -47,19 +47,42 @@ const PRINCIPLES = [
   },
 ];
 
+/** Outside the code, in my own words. A line's lead (before the colon) is set bold to scan. */
 const BEYOND = [
-  { label: "Science Club", detail: "Member" },
-  { label: "Debate Club", detail: "Member" },
   {
-    label: "Fundación Operación Sonrisa Panamá",
-    detail: "School initiative supporting the foundation",
+    id: "honors",
+    title: "Honors & awards",
+    items: [
+      "2nd place, STEM Olympics: Oxford School network competition among 7 campuses",
+      "Best Community Impact award (school-wide), won with my team at a school assembly competition",
+      "Best STEM Report award and multiple STEM Week competition wins",
+      "Cuadro de Honor (honor roll) every year for academic excellence",
+      "School Spelling Bee champion multiple times",
+      "Selected twice to represent my school at Panama’s National Mathematics Olympiad",
+    ],
   },
   {
-    label: "National Mathematics Olympiad",
-    detail: "Represented my school twice",
+    id: "activities",
+    title: "Activities",
+    items: [
+      "Fundación Operación Sonrisa Panamá: helped organize school fundraising sales and collected donations to fund surgeries for children with cleft lip and palate",
+      "Science Club: ran hands-on experiments with classmates",
+      "Debate Club: argued in internal school debates",
+      "Community service: 80+ hours",
+    ],
   },
-  { label: "Community service", detail: "More than 80 hours" },
 ];
+
+function BeyondItem({ text }: { text: string }) {
+  const at = text.indexOf(": ");
+  if (at === -1) return <li className="border-b border-line py-3">{text}</li>;
+  return (
+    <li className="border-b border-line py-3">
+      <span className="font-semibold">{text.slice(0, at)}:</span>{" "}
+      <span className="text-muted">{text.slice(at + 2)}</span>
+    </li>
+  );
+}
 
 export default function AboutPage() {
   return (
@@ -204,20 +227,26 @@ export default function AboutPage() {
 
       <Certifications />
 
-      <Reveal className="shell pb-20 sm:pb-28">
-        <div className="grid-12 gap-y-4 border-t border-line pt-8">
-          <h2 className="annot text-ink lg:col-span-3">Beyond the screen</h2>
-          <dl className="grid gap-x-10 sm:grid-cols-2 lg:col-span-8">
-            {BEYOND.map((item) => (
-              <div key={item.label} className="border-b border-line py-3">
-                <dt className="font-semibold">{item.label}</dt>
-                <dd className="mt-0.5 text-[0.95rem] text-muted">
-                  {item.detail}
-                </dd>
-              </div>
-            ))}
-          </dl>
-        </div>
+      <Reveal className="shell space-y-12 pb-20 sm:pb-28">
+        {BEYOND.map((group) => (
+          <section
+            key={group.id}
+            aria-labelledby={`${group.id}-title`}
+            className="grid-12 gap-y-4 border-t border-line pt-8"
+          >
+            <h2
+              id={`${group.id}-title`}
+              className="annot text-ink lg:col-span-3"
+            >
+              {group.title}
+            </h2>
+            <ul className="grid gap-x-10 text-[0.98rem] leading-snug sm:grid-cols-2 lg:col-span-8">
+              {group.items.map((item) => (
+                <BeyondItem key={item} text={item} />
+              ))}
+            </ul>
+          </section>
+        ))}
       </Reveal>
 
       <NextPage href="/contact" number="04" label="Contact" />
