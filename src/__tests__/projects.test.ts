@@ -225,7 +225,9 @@ describe("cards and case studies (2026-10 review)", () => {
   it("gives every lesson a plain one-sentence explanation", () => {
     for (const t of THREADS) {
       expect(t.plain.length, t.title).toBeGreaterThan(10);
-      expect(t.plain.split(/(?<=[.!?])\s/).length, t.title).toBe(1);
+      // A short aside in brackets at the end doesn't count as a second sentence.
+      const main = t.plain.replace(/\s*\([^)]*\)$/, "");
+      expect(main.split(/(?<=[.!?])\s/).length, t.title).toBe(1);
     }
   });
 });

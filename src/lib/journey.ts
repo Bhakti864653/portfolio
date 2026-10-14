@@ -101,7 +101,7 @@ export const THREADS: Thread[] = [
   {
     title: "Limit what one visitor can do",
     plain:
-      "No single person can overload an app or use up what everyone shares.",
+      "Each app limits how much one person can use, so nobody can use up what everyone shares. (CommonGround's public Guide is next.)",
     note: "Rate limits on logins, demos, and API endpoints, so nobody can drain shared resources; CommonGround's public Guide doesn't have one yet, and that's its next step.",
     stages: ["portico", "synaptiq", "concord"],
   },
