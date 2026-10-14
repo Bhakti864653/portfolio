@@ -3,6 +3,7 @@ import Link from "next/link";
 import { PageMasthead } from "@/components/PageMasthead";
 import { Plate } from "@/components/Plate";
 import { PROJECTS } from "@/lib/projects";
+import { UsedBy } from "@/components/UsedBy";
 
 export const metadata: Metadata = {
   title: "Work",
@@ -62,6 +63,12 @@ export default function WorkIndex() {
                   {p.tagline}
                 </p>
                 <p className="body-copy mt-4 text-muted">{p.summary}</p>
+                {p.story && (
+                  <blockquote className="mt-5 font-display text-[1.15rem] italic leading-snug text-ink">
+                    {p.story}
+                  </blockquote>
+                )}
+                {p.usedBy && <UsedBy text={p.usedBy} className="mt-4" />}
 
                 <div className="mt-6 border-l-2 border-a1 pl-4">
                   <p className="annot text-ink">Engineering challenge</p>

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ViewTransition, type CSSProperties } from "react";
 import { PROJECTS } from "@/lib/projects";
+import { UsedBy } from "../UsedBy";
 import { MediaSlot } from "../MediaSlot";
 
 /** Where each project's line leaves the strip (in the 1000-wide connector). */
@@ -109,6 +110,7 @@ export function Showcase() {
                   <span className="mt-4 text-lg leading-snug text-ink">
                     {p.oneLine}
                   </span>
+                  {p.usedBy && <UsedBy text={p.usedBy} className="mt-3" />}
                   <span className="mt-6 flex flex-wrap gap-2">
                     <span className="badge">{p.badge}</span>
                     {p.tags.map((t) => (

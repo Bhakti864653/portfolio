@@ -40,6 +40,10 @@ export type Project = {
     hard: string;
     learned: string[];
   };
+  /** Optional: why I built it, in my own voice, shown as a highlighted line near the top. */
+  story?: string;
+  /** Optional: who has really used it, e.g. "Used by 15 classmates before their biology exam". Hidden when empty. */
+  usedBy?: string;
   /** The human question the project answers: where someone was stuck. */
   question: string;
   /** One sentence for the homepage; the case study holds the detail. */
@@ -202,6 +206,9 @@ export const PROJECTS: Project[] = [
   {
     slug: "synaptiq",
     verb: "learn",
+    story:
+      "I built Synaptiq because biology overwhelmed me and I never knew where to start. I used it to prepare for my own biology test: it showed me which topics I was weakest in, so I knew what to study first.",
+    usedBy: "Used by me for my biology test, and tested by classmates.",
     name: "Synaptiq",
     chapter: "02",
     question: "How can a student understand what they actually know?",

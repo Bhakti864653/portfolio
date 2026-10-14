@@ -5,6 +5,7 @@ import { PROJECTS, type Project, type Shot } from "@/lib/projects";
 import { Gallery } from "./case/Gallery";
 import { MediaSlot } from "./MediaSlot";
 import { Reveal } from "./Reveal";
+import { UsedBy } from "./UsedBy";
 
 const Paragraphs = ({ items }: { items: string[] }) => (
   <div className="space-y-4">
@@ -190,9 +191,16 @@ export function CaseStudy({ project: p }: { project: Project }) {
           </ViewTransition>
 
           <div className="grid-12 mt-10 gap-y-8">
-            <p className="text-[clamp(1.3rem,2.4vw,1.9rem)] leading-snug text-ink lg:col-span-6">
-              {p.tagline}
-            </p>
+            <div className="lg:col-span-6">
+              <p className="text-[clamp(1.3rem,2.4vw,1.9rem)] leading-snug text-ink">
+                {p.tagline}
+              </p>
+              {p.story && (
+                <blockquote className="mt-8 max-w-[34rem] border-l-2 border-a1 pl-5 font-display text-[1.3rem] italic leading-snug text-ink">
+                  {p.story}
+                </blockquote>
+              )}
+            </div>
             <div className="summary-card rounded-[14px] border border-line-strong bg-soft p-6 sm:p-7 lg:col-span-6 lg:col-start-7">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <p className="max-w-[30rem] text-lg leading-snug">
@@ -200,6 +208,7 @@ export function CaseStudy({ project: p }: { project: Project }) {
                 </p>
                 <span className="badge">{p.badge}</span>
               </div>
+              {p.usedBy && <UsedBy text={p.usedBy} className="mt-3" />}
               <ul
                 className="mt-5 flex flex-wrap gap-2"
                 aria-label="Main technologies"

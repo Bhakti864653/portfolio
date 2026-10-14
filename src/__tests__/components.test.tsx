@@ -556,3 +556,22 @@ describe("About page, trimmed", () => {
       expect(screen.getByRole("heading", { name: kept })).toBeInTheDocument();
   });
 });
+
+describe("Synaptiq story and Used by", () => {
+  const story =
+    "I built Synaptiq because biology overwhelmed me and I never knew where to start. I used it to prepare for my own biology test: it showed me which topics I was weakest in, so I knew what to study first.";
+  const used = "Used by me for my biology test, and tested by classmates.";
+
+  it("shows both on the Synaptiq case study, and neither on a project without them", async () => {
+    const { CaseStudy } = await import("@/components/CaseStudy");
+    const { projectBySlug } = await import("@/lib/projects");
+    const { container, unmount } = render(
+      <CaseStudy project={projectBySlug("synaptiq")!} />,
+    );
+    expect(container.textContent).toContain(story);
+    expect(container.textContent).toContain(used);
+    unmount();
+    const other = render(<CaseStudy project={projectBySlug("concord")!} />);
+    expect(other.container.textContent).not.toContain("Used by");
+  });
+});
