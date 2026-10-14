@@ -485,14 +485,17 @@ describe("Work page", () => {
 });
 
 describe("About photo", () => {
-  it("shows the photo with its alt text, lazy-loaded, from a small optimized file", async () => {
+  it("shows the photo with its alt text, preloaded at its shown size, from a small optimized file", async () => {
     const { statSync } = await import("node:fs");
     const { join } = await import("node:path");
     const { default: About } = await import("@/app/about/page");
     render(<About />);
     const img = screen.getByRole("img", { name: "Bhakti Ahir" });
-    expect(img).toHaveAttribute("loading", "lazy");
+    expect(img).not.toHaveAttribute("loading", "lazy");
+    expect(img).toHaveAttribute("width", "280");
+    expect(img).toHaveAttribute("height", "350");
     expect(img.getAttribute("src")).toContain("bhakti.webp");
+    expect(img.getAttribute("src")).not.toContain("w=3840");
     expect(
       statSync(join(process.cwd(), "public/about/bhakti.webp")).size,
     ).toBeLessThan(60_000);

@@ -263,7 +263,7 @@ export const PROJECTS: Project[] = [
         "Builds a diagnostic quiz from your PDFs, slides, or documents",
         "Scores mastery per concept and aims new practice at your weakest ones",
         "Answers questions with a tutor limited to your own material",
-        "Schedules flashcards with SM-2, the algorithm behind Anki",
+        "Schedules flashcards with SM-2, the classic scheduling algorithm behind Anki",
       ],
       hard: "One malformed AI response could wipe out a student’s existing quiz. Now a bad response changes nothing.",
       learned: [
@@ -301,7 +301,7 @@ export const PROJECTS: Project[] = [
         "A tutor told to answer only from your material, and to say so when it can't",
         "A Study Guide that unlocks each topic after you score 80% on it",
         "A 3D map of every concept, colored by mastery. Choosing one shows how well you know it and opens straight to that concept",
-        "SM-2 spaced-repetition flashcards, the same scheduling algorithm Anki uses",
+        "Spaced-repetition flashcards scheduled by SM-2, the classic scheduling algorithm behind Anki",
         "Read-aloud narration, and spoken answers transcribed with Whisper",
         "A private demo account for every visitor, deleted after 24 hours",
       ],
@@ -314,7 +314,7 @@ export const PROJECTS: Project[] = [
       },
       design: [
         "No vector search. Study documents are short enough to fit whole in the model's context, so retrieval was dropped as complexity this project didn't need. That's a documented decision and the clear place to extend it.",
-        "Every AI-dependent action has a friendly error with a retry button instead of raw exception text.",
+        "On screen, every AI-dependent action shows a friendly error with a retry button instead of raw exception text.",
         "Demo accounts are real users with a flag, not a fake code path that could drift out of sync.",
       ],
       safety: [
@@ -338,7 +338,7 @@ export const PROJECTS: Project[] = [
       ],
       limitations: [
         "A document too large to fit in the model's context would need real retrieval.",
-        "Some endpoints still return raw error text to the signed-in user who caused it.",
+        "Behind the friendly screen, some endpoints still put raw error text in their API response, visible only to the signed-in user who caused it.",
         "Uploaded documents are parsed without a sandbox, which a larger production system would need.",
       ],
       learned: [],
@@ -350,7 +350,7 @@ export const PROJECTS: Project[] = [
     name: "Concord",
     chapter: "03",
     question: "How can the right people find each other fairly?",
-    tagline: "Mentorship matching that is fair by construction.",
+    tagline: "Mentorship matching that is stable by construction.",
     summary:
       "Mentees and mentors rank each other, and the Gale-Shapley algorithm pairs them so no two people would both rather be together.",
     intro:
@@ -434,7 +434,7 @@ export const PROJECTS: Project[] = [
         heading:
           "Fair matching in rounds, where a mentor can take several mentees",
         body: [
-          "The matcher is a pure function with no database or network access. It takes ranked ID lists and each mentor's capacity, and runs the classic proposal method: mentees ask their favorite mentors first, and each mentor holds on to the best offers so far, only deciding at the end (called “deferred acceptance”). It uses the version built for matching new doctors to hospitals, where one mentor, like one hospital, can accept several people.",
+          "The matcher is a pure function with no database or network access. It takes ranked ID lists and each mentor's capacity, and runs the classic proposal method: mentees ask their favorite mentors first, and each mentor holds on to the best offers so far, only deciding at the end (called “deferred acceptance”). It uses the version built for matching new doctors to hospitals, where one mentor, like one hospital, can accept several people. In Gale-Shapley the side that proposes gets a slight advantage, so here the mentees do.",
           "Around it is a round state machine: preferences open → locked → matching → results → a new round. Each run only considers people who are still unmatched, and reduces each mentor's capacity by their current matches, so existing pairs are never touched.",
         ],
       },
@@ -584,7 +584,7 @@ export const PROJECTS: Project[] = [
         "Residents’ text reaches the agents only as marked, untrusted data. Prompt-injection tests show an agent can’t route a case to an office that doesn’t exist or send anything.",
         "An emergency phrase shows the verified emergency number (911) at once, before any AI runs.",
         "Every agent step and moderator decision is written to a private audit log.",
-        "Photos are validated on the server, and only their metadata is kept, never the image.",
+        "Photos are checked on the server and never stored. Only the file name, type, and size are kept.",
       ],
       challenge: {
         heading: "Private notes, hidden on screen, still reached the browser",
@@ -604,7 +604,7 @@ export const PROJECTS: Project[] = [
         "It runs as an independent student demo and isn’t affiliated with the Alcaldía de Santiago. Approved referrals only go to a dry-run outbox: sending is paused, and there is no delivery channel.",
         "The office portal is switched off until the mayor’s office agrees, and the offices are placeholders.",
         "The privacy filter uses rules, so it can miss an unusual name or address. Moderators read every case.",
-        "Photos are never stored, only their file name and type, so a case can't show an image.",
+        "Photos are never stored (only the file name, type, and size are kept), so a case can't show an image.",
         "Areas are broad zones (center, north, south, east, west), not neighborhood names.",
       ],
       learned: [

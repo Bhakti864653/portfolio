@@ -72,16 +72,16 @@ export default function AboutPage() {
           <Image
             src="/about/bhakti.webp"
             alt="Bhakti Ahir"
-            width={560}
-            height={700}
-            loading="lazy"
-            sizes="(min-width: 1024px) 280px, 68vw"
+            width={280}
+            height={350}
+            preload
             className="portrait h-auto w-full"
           />
         }
       >
         <p className="annot normal-case tracking-normal text-ink">
-          12th grade · The Oxford School, Panama · Computer Science
+          12th-grade student at The Oxford School, planning to study Computer
+          Science
         </p>
         <p className="mt-4 font-display text-xl italic leading-snug text-ink">
           {SITE.about}

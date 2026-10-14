@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Avatar } from "@/components/Avatar";
 import { CopyEmail } from "@/components/CopyEmail";
 import { PageMasthead } from "@/components/PageMasthead";
 import { SITE } from "@/lib/projects";
@@ -75,7 +76,10 @@ export default function ContactPage() {
         className="shell grid-12 gap-y-12 pb-24 pt-6 sm:pb-32 lg:items-start"
       >
         <div className="lg:col-span-6">
-          <p className="annot">Email is the best way to reach me</p>
+          <div className="flex items-center gap-3">
+            <Avatar />
+            <p className="annot">Email is the best way to reach me</p>
+          </div>
           <p className="mt-3 break-all font-mono text-lg sm:text-2xl">
             {SITE.email}
           </p>

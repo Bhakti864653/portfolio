@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { SITE } from "@/lib/projects";
+import { Avatar } from "../Avatar";
 import { CopyEmail } from "../CopyEmail";
 
 const secondary =
@@ -13,7 +14,10 @@ export function Closing({ hasResume }: { hasResume: boolean }) {
       className="tone-ivory below-fold bg-paper py-24 sm:py-36"
     >
       <div className="shell grid-12 gap-y-10">
-        <p className="annot text-ink lg:col-span-2">About me</p>
+        <div className="flex items-center gap-3 lg:col-span-2 lg:flex-col lg:items-start">
+          <Avatar />
+          <p className="annot text-ink">About me</p>
+        </div>
         <div className="lg:col-span-10">
           <h2
             id="closing-title"

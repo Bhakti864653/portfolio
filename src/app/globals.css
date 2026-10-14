@@ -1488,3 +1488,12 @@ html.lenis body {
   box-shadow: 0 18px 40px -24px rgb(17 21 21 / 0.45);
   background: var(--soft);
 }
+
+/* The same photo as a small circle beside "About me" (Home) and the email line (Contact). */
+.avatar {
+  border-radius: 9999px;
+  border: 1px solid var(--line-strong);
+  background: var(--soft);
+  object-fit: cover;
+  object-position: 50% 22%;
+}

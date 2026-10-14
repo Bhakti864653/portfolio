@@ -87,7 +87,7 @@ export const THREADS: Thread[] = [
   {
     title: "Keep each person's data theirs",
     plain:
-      "Nobody using these apps can ever see someone else's private information.",
+      "The apps are designed so nobody can see someone else's private information.",
     note: "Every query scoped to its owner, security policies in the database, and private fields that can't reach a public page.",
     stages: ["portico", "synaptiq", "concord", "commonground"],
   },
@@ -102,7 +102,7 @@ export const THREADS: Thread[] = [
     title: "Limit what one visitor can do",
     plain:
       "No single person can overload an app or use up what everyone shares.",
-    note: "Rate limits on logins, demos, and every endpoint, so nobody can drain shared resources.",
+    note: "Rate limits on logins, demos, and API endpoints, so nobody can drain shared resources; CommonGround's public Guide doesn't have one yet, and that's its next step.",
     stages: ["portico", "synaptiq", "concord"],
   },
   {
