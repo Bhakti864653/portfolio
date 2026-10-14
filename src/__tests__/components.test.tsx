@@ -523,3 +523,11 @@ describe("About honors and activities", () => {
       expect(text).toContain(line);
   });
 });
+
+describe("About activities", () => {
+  it("no longer lists Debate Club", async () => {
+    const { default: About } = await import("@/app/about/page");
+    const { container } = render(<About />);
+    expect(container.textContent).not.toContain("Debate Club");
+  });
+});

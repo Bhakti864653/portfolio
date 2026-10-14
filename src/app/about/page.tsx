@@ -67,7 +67,6 @@ const BEYOND = [
     items: [
       "Fundación Operación Sonrisa Panamá: helped organize school fundraising sales and collected donations to fund surgeries for children with cleft lip and palate",
       "Science Club: ran hands-on experiments with classmates",
-      "Debate Club: argued in internal school debates",
       "Community service: 80+ hours",
     ],
   },
