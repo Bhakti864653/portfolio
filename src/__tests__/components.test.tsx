@@ -391,10 +391,19 @@ describe("Certifications", () => {
     expect(
       screen.getAllByText(/AI Fluency: Framework & Foundations/).length,
     ).toBeGreaterThanOrEqual(2);
-    expect(screen.getByText(/Anthropic · October 2026/)).toBeInTheDocument();
     expect(
-      screen.getByRole("link", { name: /View certificate/ }),
-    ).toHaveAttribute("href", "https://verify.skilljar.com/c/kpxr3omhmyq4");
+      screen.getAllByText(/Claude Code in Action/).length,
+    ).toBeGreaterThanOrEqual(2);
+    expect(screen.getAllByText(/Anthropic · October 2026/)).toHaveLength(2);
+    // AI Fluency first, then Claude Code in Action, each linking to its own certificate.
+    expect(
+      screen
+        .getAllByRole("link", { name: /View certificate/ })
+        .map((l) => l.getAttribute("href")),
+    ).toEqual([
+      "https://verify.skilljar.com/c/kpxr3omhmyq4",
+      "https://verify.skilljar.com/c/scnvwnomq5d5",
+    ]);
   });
 });
 

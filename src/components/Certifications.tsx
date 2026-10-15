@@ -22,9 +22,11 @@ export function Certifications({ compact = false }: { compact?: boolean }) {
             {CERTIFICATIONS.map((c) => (
               <li key={c.url}>
                 <a href={c.url} className="cert-chip" data-magnetic="0.2">
-                  {c.name}
-                  <span className="text-muted"> · {c.issuer}</span>
-                  <span aria-hidden="true"> ↗</span>
+                  {c.name}{" "}
+                  <span className="whitespace-nowrap">
+                    <span className="text-muted">· {c.issuer}</span>
+                    <span aria-hidden="true"> ↗</span>
+                  </span>
                 </a>
               </li>
             ))}

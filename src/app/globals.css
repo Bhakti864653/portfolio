@@ -1368,15 +1368,17 @@ html.lenis body {
 }
 
 /* ---------- Certifications ---------- */
+/* Plain flowing text (not flex), so a long name wraps like a sentence on a phone and the
+   issuer stays on one line with its arrow. */
 .cert-chip {
-  display: inline-flex;
-  align-items: center;
+  display: inline-block;
   min-height: 2.75rem;
   border: 1px solid var(--line-strong);
-  border-radius: 999px;
-  padding: 0 1rem;
+  border-radius: 1.375rem;
+  padding: 0.7rem 1rem;
   font-size: 0.92rem;
   font-weight: 600;
+  line-height: 1.3;
 }
 .cert-chip:hover {
   background: var(--soft);

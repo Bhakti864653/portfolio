@@ -29,6 +29,12 @@ export const CERTIFICATIONS: Certification[] = [
     date: "2026-10",
     url: "https://verify.skilljar.com/c/kpxr3omhmyq4",
   },
+  {
+    name: "Claude Code in Action",
+    issuer: "Anthropic",
+    date: "2026-10",
+    url: "https://verify.skilljar.com/c/scnvwnomq5d5",
+  },
 ];
 
 /** "2026-10" → "October 2026". */
