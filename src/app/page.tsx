@@ -1,8 +1,8 @@
 import { Certifications } from "@/components/Certifications";
 import { Closing } from "@/components/home/Closing";
 import { Entrance } from "@/components/home/Entrance";
-import { Intro } from "@/components/home/Intro";
 import { Marquee } from "@/components/home/Marquee";
+import { MeetBhakti } from "@/components/MeetBhakti";
 import { Showcase } from "@/components/home/Showcase";
 import { StatementFill } from "@/components/home/StatementFill";
 import { HAS_RESUME } from "@/lib/resume";
@@ -13,8 +13,8 @@ export default function Home() {
   preload("/paper/sheet-light.webp", { as: "image", fetchPriority: "high" });
   return (
     <>
-      <Intro />
       <Entrance />
+      <MeetBhakti />
       <Showcase />
       <Marquee />
       <StatementFill />

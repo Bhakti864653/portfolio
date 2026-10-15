@@ -9,7 +9,7 @@ export type Motion = "full" | "reduce";
  * Runs in <head> before first paint. An explicit choice saved in localStorage wins; otherwise the
  * OS preference decides. Kept as a string so layout.tsx can inline it.
  */
-export const PREFS_BOOT_SCRIPT = `(function(){var d=document.documentElement;var t,m;try{t=localStorage.getItem('theme');m=localStorage.getItem('motion')}catch(e){}if(t!=='light'&&t!=='dark'){t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}if(m!=='full'&&m!=='reduce'){m=matchMedia('(prefers-reduced-motion: reduce)').matches?'reduce':'full'}d.dataset.theme=t;d.dataset.motion=m;if(m==='full'&&location.pathname==='/'){var s;try{s=localStorage.getItem('introSeen')}catch(e){}if(!s)d.dataset.intro='play'}})()`;
+export const PREFS_BOOT_SCRIPT = `(function(){var d=document.documentElement;var t,m;try{t=localStorage.getItem('theme');m=localStorage.getItem('motion')}catch(e){}if(t!=='light'&&t!=='dark'){t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}if(m!=='full'&&m!=='reduce'){m=matchMedia('(prefers-reduced-motion: reduce)').matches?'reduce':'full'}d.dataset.theme=t;d.dataset.motion=m})()`;
 
 function subscribeToRoot(callback: () => void) {
   const observer = new MutationObserver(callback);

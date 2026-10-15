@@ -13,27 +13,27 @@ My personal portfolio, built around four human abilities, each tied to one proje
 
 ## What's inside
 
-- **A short intro** on the first visit only: my name assembles on the paper, then gives way to the page (under two seconds, any key or tap skips it).
-- **The statement**, "Technology should expand what people can do", revealed letter by letter; on a desktop the letters lean toward the cursor.
+- **The statement**, "Technology should expand what people can do", revealed letter by letter; on a desktop the letters lean toward the cursor. Under it, one plain sentence: who I am and what I've built. The page opens straight onto it.
+- **Meet Bhakti**: my short intro video under the hero and at the top of About (hidden until there is one).
 - **The four-path figure**: paths draw outward from "Human Judgment" one by one, bend and glow near the cursor, and choosing one floats in that project's preview (screenshot, one line, a badge). Opening it morphs the preview into the case study. On phones, the first tap previews and the second opens.
-- **Stacking project cards**, a tech-stack marquee, and a statement that fills with color as you scroll past it.
-- **Case studies** at `/work/[slug]`: a huge title, a summary card, a 16:9 media slot, a gallery of real screenshots with a lightbox, and five short sections with the full detail behind "Read more".
+- **Stacking project cards** (CommonGround first, as everywhere projects are listed), a tech-stack marquee, and a statement that fills with color as you scroll past it.
+- **Case studies** at `/work/[slug]`: a huge title, "A decision I made", a summary card, a 16:9 media slot, a gallery of real screenshots with a lightbox, and five short sections with the full detail behind "Read more".
 - **A journey** whose line draws itself as each project arrives.
 - Smooth scrolling, page transitions (React's `<ViewTransition>`), a desktop-only custom cursor, magnetic buttons, film grain, and a hidden easter egg (try typing "panama" or "india").
-- Light and dark themes and full keyboard navigation. With reduced motion (your system setting, or the **Motion** button), nothing moves: no intro, animations, smooth scrolling, custom cursor, or grain. Phones get a lighter version of the effects.
+- Light and dark themes and full keyboard navigation. With reduced motion (your system setting, or the **Motion** button), nothing moves: no animations, smooth scrolling, custom cursor, or grain. Phones get a lighter version of the effects.
 
 Every claim about a project comes from that project's own README, development log, or code. The copy lives in one place: [`src/lib/projects.ts`](src/lib/projects.ts).
 
 ## Adding things later
 
-**A demo video** for a project's media slot (home cards, preview, and case study):
+**A video** (my intro, or a project's demo): every video is one line in [`src/lib/videos.ts`](src/lib/videos.ts). Paste between the quotes either a Loom share link or a file you put in `public/media/`:
 
-1. Put the video in `public/media/`, for example `public/media/portico.mp4` (MP4, ideally under 10 MB and without sound).
-2. In `src/lib/projects.ts`, add one line inside that project, next to `badge:`:
-   ```ts
-   media: { video: "/media/portico.mp4" },
-   ```
-   It plays muted and looped once it scrolls into view, with the screenshot as its poster. To use a different poster image, add `poster: "/media/portico-poster.jpg"`.
+```ts
+intro: "https://www.loom.com/share/…",   // Meet Bhakti: home (under the hero) and About
+commonground: "/media/commonground.mp4", // a project's demo: case study, home and Work cards
+```
+
+Empty (`""`), a slot stays hidden. A project's demo **file** plays muted and looped in its cards and case study once scrolled into view (MP4, ideally under 10 MB and without sound). A project's **Loom** link plays in Loom's player on the case study; its cards keep the screenshot with a small "Video" tag.
 
 **A certificate** (for example a Skilljar course): add one entry to `CERTIFICATIONS` in [`src/lib/certifications.ts`](src/lib/certifications.ts):
 

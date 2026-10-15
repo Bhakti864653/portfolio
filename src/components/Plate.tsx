@@ -1,7 +1,10 @@
-import Image from "next/image";
 import type { Project } from "@/lib/projects";
+import { MediaSlot } from "./MediaSlot";
 
-/** A screenshot mounted like a plate in an atlas: framed, offset over its accent, and captioned. */
+/**
+ * A screenshot (or the project's demo video, from lib/videos.ts) mounted like a plate in an
+ * atlas: framed, offset over its accent, and captioned.
+ */
 export function Plate({
   project,
   figure,
@@ -30,14 +33,12 @@ export function Plate({
               {project.live.replace(/^https:\/\//, "").replace(/\/$/, "")}
             </span>
           </div>
-          <Image
-            src={project.screenshot.src}
-            alt={project.screenshot.alt}
-            width={1440}
-            height={900}
+          <MediaSlot
+            project={project}
             sizes="(min-width: 1024px) 60vw, 100vw"
             priority={priority}
-            className="block h-auto w-full rounded-[2px] border border-line"
+            ratio="aspect-[16/10]"
+            className="rounded-[2px] border border-line"
           />
         </div>
       </div>

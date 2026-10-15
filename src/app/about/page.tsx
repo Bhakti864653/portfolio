@@ -1,6 +1,7 @@
 import Image from "next/image";
 import type { Metadata } from "next";
 import { Certifications } from "@/components/Certifications";
+import { MeetBhakti } from "@/components/MeetBhakti";
 import { NextPage } from "@/components/NextPage";
 import { Reveal } from "@/components/Reveal";
 import { STAGES } from "@/lib/journey";
@@ -35,7 +36,7 @@ function Note({ slug, index }: { slug: string; index: number }) {
 const FACTS = [
   "Santiago, Panama",
   "Planning to study Computer Science",
-  "5 projects built",
+  "4 deployed apps",
 ];
 
 /** Outside the code, in my own words. A line's lead (before the colon) is set bold to scan. */
@@ -112,6 +113,8 @@ export default function AboutPage() {
           </div>
         </div>
       </header>
+
+      <MeetBhakti variant="about" />
 
       {/* Why: the quietest part of the site, one column and a lot of room */}
       <section aria-labelledby="why-title" className="shell py-14 sm:py-20">

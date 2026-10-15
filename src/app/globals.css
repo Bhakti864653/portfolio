@@ -492,10 +492,14 @@
      around: without it, "people" moves up a line and sits in the line's path. */
   text-wrap: balance;
 }
+/* One plain sentence a busy reader takes in at a glance: smaller than the statement, kept to
+   a comfortable line length. */
 .entrance-tagline {
   margin-top: calc(var(--statement) * 0.34);
-  font-size: clamp(1.25rem, min(2.7vw, 4.6svh), 2.6rem);
-  line-height: 1.1;
+  max-width: 34em;
+  font-size: clamp(1.1rem, min(1.8vw, 3.4svh), 1.75rem);
+  line-height: 1.3;
+  text-wrap: balance;
 }
 .hero-name {
   font-size: clamp(1.35rem, min(2.4vw, 4svh), 2.3rem);
@@ -547,9 +551,6 @@
 .line-arrive {
   --len: 1;
   animation: draw 1800ms cubic-bezier(0.65, 0, 0.25, 1) 900ms both;
-}
-:root[data-intro="play"] .line-arrive {
-  animation-delay: 2100ms;
 }
 .draw-path {
   stroke-dasharray: 1;
@@ -671,88 +672,10 @@ html.lenis body {
   overflow: hidden;
 }
 
-/* ---------- Intro: the name assembles on the paper, then scatters away (see Intro.tsx) ---------- */
-/* It plays over the real page (no opaque curtain), so the page itself is painted at once. */
-.intro {
-  display: none;
-}
-:root[data-intro="play"] .intro,
-:root[data-intro="leaving"] .intro {
-  position: fixed;
-  inset: 0;
-  z-index: 95;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1.25rem;
-  color: var(--ink);
-  cursor: pointer;
-}
-:root[data-intro="play"] .intro {
-  animation: intro-out 520ms cubic-bezier(0.7, 0, 0.3, 1) 1180ms forwards;
-}
-:root[data-intro="leaving"] .intro {
-  animation: intro-out 320ms cubic-bezier(0.7, 0, 0.3, 1) forwards;
-}
-:root[data-motion="reduce"] .intro {
-  display: none !important;
-}
-/* Opacity and transform only, so leaving costs the phone almost nothing to draw. */
-@keyframes intro-out {
-  to {
-    opacity: 0;
-    transform: translateY(-6svh) scale(1.04);
-    visibility: hidden;
-  }
-}
-/* While the name holds the stage, the rest of the first screen waits its turn. */
-:root[data-intro="play"] .entrance .shell > a {
-  animation: fade 600ms ease-out 1700ms both;
-}
-.intro-name {
-  font-family: var(--font-name);
-  font-style: italic;
-  font-weight: 500;
-  font-size: clamp(3rem, 11vw, 9rem);
-  line-height: 1;
-  letter-spacing: -0.02em;
-}
-.intro-letter {
-  display: inline-block;
-  animation: assemble 760ms cubic-bezier(0.2, 0.9, 0.2, 1) both;
-  animation-delay: calc(var(--i) * 38ms);
-}
-@keyframes assemble {
-  from {
-    opacity: 0;
-    transform: translate(var(--fx), var(--fy)) rotate(var(--fr)) scale(0.6);
-  }
-}
-.intro-rule {
-  width: min(60vw, 32rem);
-  height: 2px;
-  background: linear-gradient(90deg, #e0582f, #8a55ea, #4b6cf3, #129184);
-  transform-origin: left;
-  animation: rule 700ms cubic-bezier(0.65, 0, 0.25, 1) 420ms both;
-}
-@keyframes rule {
-  from {
-    transform: scaleX(0);
-  }
-}
-.intro-skip {
-  color: var(--muted);
-  animation: fade 600ms ease-out 500ms both;
-}
-
 /* ---------- Hero statement: letter by letter ---------- */
 :root[data-motion="full"] .hero-letter {
   animation: letter-in 900ms cubic-bezier(0.2, 0.85, 0.2, 1) both;
   animation-delay: calc(180ms + var(--i) * 26ms);
-}
-:root[data-intro="play"] .hero-letter {
-  animation-delay: calc(1380ms + var(--i) * 26ms);
 }
 @keyframes letter-in {
   from {
@@ -771,9 +694,6 @@ html.lenis body {
     animation: letter-in-light 850ms cubic-bezier(0.2, 0.85, 0.2, 1) both;
     animation-delay: calc(180ms + var(--wi) * 90ms);
   }
-  :root[data-intro="play"] .hero-word {
-    animation-delay: calc(1380ms + var(--wi) * 90ms);
-  }
 }
 @keyframes letter-in-light {
   from {
@@ -783,11 +703,7 @@ html.lenis body {
 }
 :root[data-motion="full"] .entrance-tagline,
 :root[data-motion="full"] .hero-name {
-  animation: rise 900ms cubic-bezier(0.2, 0.7, 0.2, 1) 1000ms both;
-}
-:root[data-intro="play"] .entrance-tagline,
-:root[data-intro="play"] .hero-name {
-  animation-delay: 2150ms;
+  animation: rise 900ms cubic-bezier(0.2, 0.7, 0.2, 1) 600ms both;
 }
 
 /* ---------- The circle: paths grow outward from Human Judgment ---------- */
@@ -929,6 +845,15 @@ html.lenis body {
 }
 
 /* ---------- Badges and tags ---------- */
+/* On a card whose project has a Loom demo: the player itself is on the case study. */
+.video-tag {
+  border-radius: 999px;
+  background: rgb(20 18 16 / 0.82);
+  color: #f6f1e7;
+  padding: 0.45em 0.8em;
+  font-size: 0.68rem;
+  line-height: 1;
+}
 .badge {
   display: inline-flex;
   align-items: center;

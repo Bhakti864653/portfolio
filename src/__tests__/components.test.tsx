@@ -10,6 +10,9 @@ import { IdeaFigure } from "@/components/home/IdeaFigure";
 import { Marquee } from "@/components/home/Marquee";
 import { Showcase } from "@/components/home/Showcase";
 import { MediaSlot } from "@/components/MediaSlot";
+import { MeetBhakti } from "@/components/MeetBhakti";
+import { Plate } from "@/components/Plate";
+import { VIDEOS } from "@/lib/videos";
 import { EasterEgg } from "@/components/motion/EasterEgg";
 import { PROJECTS, TECH, projectBySlug } from "@/lib/projects";
 import { inline } from "@/lib/format";
@@ -20,23 +23,23 @@ describe("IdeaFigure", () => {
     const list = screen.getByRole("list", { name: "Paths to each project" });
     const links = within(list).getAllByRole("link");
     expect(links.map((l) => l.getAttribute("href"))).toEqual([
+      "/work/commonground",
       "/work/portico",
       "/work/synaptiq",
       "/work/concord",
-      "/work/commonground",
     ]);
     expect(links.map((l) => l.textContent)).toEqual([
+      "act: CommonGround. 4-step AI pipeline.",
       "decide: Portico. 61 tests.",
       "learn: Synaptiq. Adaptive AI tutor.",
       "connect: Concord. Stable matching.",
-      "act: CommonGround. 4-step AI pipeline.",
     ]);
 
     await userEvent.tab();
     expect(links[0]).toHaveFocus();
-    expect(screen.getByText("→ Portico")).toBeInTheDocument();
+    expect(screen.getByText("→ CommonGround")).toBeInTheDocument();
     await userEvent.tab();
-    expect(screen.getByText("→ Synaptiq")).toBeInTheDocument();
+    expect(screen.getByText("→ Portico")).toBeInTheDocument();
   });
 
   it("has a text alternative, draws as plain SVG, and keeps its labels when the paths wait", () => {
@@ -94,7 +97,9 @@ describe("Entrance", () => {
     expect(screen.getByText("Bhakti Ahir")).toBeInTheDocument();
     expect(screen.getByText("A personal portfolio")).toBeInTheDocument();
     expect(
-      screen.getByText("Building what school doesn’t teach."),
+      screen.getByText(
+        "High school senior in Santiago, Panama, building what school doesn’t teach: 4 deployed apps, including a civic platform with real residents’ reports.",
+      ),
     ).toBeInTheDocument();
     expect(
       screen.getByRole("link", { name: /Continue to the idea/ }),
@@ -203,6 +208,18 @@ describe("Showcase", () => {
   });
 });
 
+/** Fill a slot in lib/videos.ts for one test, the way pasting a link would. */
+function withVideo(slot: keyof typeof VIDEOS, value: string, run: () => void) {
+  const before = VIDEOS[slot];
+  VIDEOS[slot] = value;
+  try {
+    run();
+  } finally {
+    VIDEOS[slot] = before;
+  }
+}
+const LOOM = "https://www.loom.com/share/0123456789abcdef0123456789abcdef";
+
 describe("MediaSlot", () => {
   const portico = projectBySlug("portico")!;
 
@@ -215,29 +232,66 @@ describe("MediaSlot", () => {
     );
   });
 
-  it("plays a demo video muted and looped, loading it only once it is near the screen", () => {
-    const withVideo = { ...portico, media: { video: "/media/portico.mp4" } };
-    const { container } = render(
-      <MediaSlot project={withVideo} sizes="100vw" />,
-    );
-    const video = container.querySelector("video")!;
-    expect(video.muted).toBe(true);
-    expect(video.loop).toBe(true);
-    expect(video).toHaveAttribute("preload", "none");
-    expect(video.getAttribute("poster")).toBe(portico.screenshot.src);
-    expect(video.getAttribute("src")).toBeNull();
+  it("plays a demo video muted and looped, loading it only once it is near the screen", () =>
+    withVideo("portico", "/media/portico.mp4", () => {
+      const { container } = render(<MediaSlot project={portico} sizes="100vw" />);
+      const video = container.querySelector("video")!;
+      expect(video.muted).toBe(true);
+      expect(video.loop).toBe(true);
+      expect(video).toHaveAttribute("preload", "none");
+      expect(video.getAttribute("poster")).toBe(portico.screenshot.src);
+      expect(video.getAttribute("src")).toBeNull();
+    }));
+
+  it("never autoplays under reduced motion: it offers controls instead", () =>
+    withVideo("portico", "/media/portico.mp4", () => {
+      document.documentElement.dataset.motion = "reduce";
+      const { container } = render(<MediaSlot project={portico} sizes="100vw" />);
+      const video = container.querySelector("video")!;
+      expect(video.controls).toBe(true);
+      expect(video.autoplay).toBe(false);
+      delete document.documentElement.dataset.motion;
+    }));
+
+  it("shows a Loom demo's player on the case study, and a Video tag on cards", () =>
+    withVideo("portico", LOOM, () => {
+      const player = render(<MediaSlot project={portico} sizes="100vw" player />);
+      expect(player.container.querySelector("iframe")).toHaveAttribute(
+        "src",
+        "https://www.loom.com/embed/0123456789abcdef0123456789abcdef",
+      );
+      player.unmount();
+      const card = render(<MediaSlot project={portico} sizes="100vw" />);
+      expect(card.container.querySelector("iframe")).toBeNull();
+      expect(screen.getByRole("img")).toHaveAttribute("alt", portico.screenshot.alt);
+      expect(screen.getByText("▶ Video")).toBeInTheDocument();
+    }));
+
+  it("gives the Work page card the same slot", () =>
+    withVideo("portico", "/media/portico.mp4", () => {
+      const { container } = render(<Plate project={portico} figure="02" />);
+      expect(container.querySelector("video")).not.toBeNull();
+    }));
+});
+
+describe("MeetBhakti", () => {
+  it("renders nothing at all until there is an intro video", () => {
+    const { container } = render(<MeetBhakti />);
+    expect(container).toBeEmptyDOMElement();
   });
 
-  it("never autoplays under reduced motion: it offers controls instead", () => {
-    document.documentElement.dataset.motion = "reduce";
-    const withVideo = { ...portico, media: { video: "/media/portico.mp4" } };
-    const { container } = render(
-      <MediaSlot project={withVideo} sizes="100vw" />,
-    );
-    const video = container.querySelector("video")!;
-    expect(video.controls).toBe(true);
-    expect(video.autoplay).toBe(false);
-    delete document.documentElement.dataset.motion;
+  it("shows the intro video from a Loom link or a file, on Home and About", () => {
+    withVideo("intro", LOOM, () => {
+      const { container, unmount } = render(<MeetBhakti />);
+      expect(screen.getByRole("heading", { name: "Hi, I’m Bhakti." })).toBeInTheDocument();
+      expect(container.querySelector("iframe")).toHaveAttribute("loading", "lazy");
+      unmount();
+    });
+    withVideo("intro", "/media/intro.mp4", () => {
+      const { container } = render(<MeetBhakti variant="about" />);
+      expect(screen.getByRole("heading", { name: "Meet Bhakti" })).toBeInTheDocument();
+      expect(container.querySelector("video")).toHaveAttribute("controls");
+    });
   });
 });
 
@@ -291,8 +345,17 @@ describe("CaseStudy", () => {
     render(<CaseStudy project={PROJECTS[3]} />);
     expect(
       screen.getByRole("link", { name: /Next project · 01/ }),
-    ).toHaveAttribute("href", "/work/portico");
+    ).toHaveAttribute("href", "/work/commonground");
   });
+
+  it.each(PROJECTS.map((p) => [p.slug, p] as const))(
+    "%s: shows its decision near the top",
+    (_, p) => {
+      render(<CaseStudy project={p} />);
+      expect(screen.getByText("A decision I made")).toBeInTheDocument();
+      expect(screen.getByText(p.decision)).toBeInTheDocument();
+    },
+  );
 });
 
 describe("Gallery", () => {
@@ -542,7 +605,7 @@ describe("About page, trimmed", () => {
     for (const fact of [
       "Santiago, Panama",
       "Planning to study Computer Science",
-      "5 projects built",
+      "4 deployed apps",
     ])
       expect(screen.getByText(fact)).toBeInTheDocument();
     expect(screen.queryByText("Principles")).toBeNull();

@@ -10,13 +10,6 @@ export type Section = { heading: string; body: string[] };
 /** A real screenshot of the live app. */
 export type Shot = { src: string; alt: string; width: number; height: number };
 
-/**
- * A demo video for a project's 16:9 media slot. Drop the file in `public/media/` and add one
- * line to the project, e.g. `media: { video: "/media/portico.mp4" },`. It plays muted and
- * looped once scrolled into view; until then (and under reduced motion) the poster shows,
- * which defaults to the project's screenshot.
- */
-export type Media = { video: string; poster?: string };
 
 export type Project = {
   slug: "portico" | "concord" | "synaptiq" | "commonground";
@@ -30,7 +23,6 @@ export type Project = {
   badge: string;
   /** Two or three headline technologies for cards. */
   tags: string[];
-  media?: Media;
   /** More real screenshots for the case study gallery (the main screenshot comes first). */
   gallery: Shot[];
   /** The five short case-study sections; the full detail lives in caseStudy. */
@@ -40,6 +32,8 @@ export type Project = {
     hard: string;
     learned: string[];
   };
+  /** A real tradeoff I chose, from the project's own README/DEVLOG, shown near the top of its case study. */
+  decision: string;
   /** Optional: why I built it, in my own voice, shown as a highlighted line near the top. */
   story?: string;
   /** Optional: who has really used it, e.g. "Used by 15 classmates before their biology exam". Hidden when empty. */
@@ -72,10 +66,158 @@ export type Project = {
 
 export const PROJECTS: Project[] = [
   {
+    slug: "commonground",
+    decision:
+      "I kept a human approval step for every agent action and paused sending, because it involves real people and the government.",
+    usedBy:
+      "First real reports from residents after I handed out flyers in my neighborhood.",
+    verb: "act",
+    name: "CommonGround",
+    chapter: "01",
+    question: "How can local knowledge become collective action?",
+    tagline:
+      "Turning scattered local problems into trackable collective action.",
+    summary:
+      "Residents report local problems anonymously; AI agents route, draft, and follow up on each case, and a moderator approves every step.",
+    intro:
+      "An independent student demo of a civic platform for Santiago de Veraguas, Panama. Residents report problems anonymously, and every case gets a public number and status history. A four-step pipeline of AI agents drafts, routes, prepares a referral, and follows up, but a moderator approves every step and nothing is ever sent to any authority.",
+    hardestProblem:
+      "Letting AI agents work on real residents’ reports without letting them do harm. Agents can only propose, through typed and validated tools; a moderator approves every change; and there is no code that can send anything outside the app.",
+    repo: "https://github.com/Bhakti864653/commonground",
+    live: "https://commonground-psi.vercel.app/",
+    liveNote:
+      "Residents need no account. It starts in your browser's language if supported (seven languages), otherwise Spanish.",
+    screenshot: {
+      src: "/work/gallery/commonground-1.webp",
+      alt: "CommonGround home for Santiago de Veraguas: a street map with numbered cases inside approximate area zones, under the student-demo banner",
+    },
+    oneLine:
+      "A student demo where neighbors report local problems and AI agents route and follow up, in 7 languages.",
+    badge: "4-step AI pipeline",
+    tags: ["Groq agents", "Postgres (Neon)", "MapLibre"],
+    gallery: [
+      {
+        src: "/work/gallery/commonground-2.webp",
+        alt: "A CommonGround example case: flooding in the northern area, labeled “Example – not a real report”, with its public timeline",
+        width: 1440,
+        height: 900,
+      },
+      {
+        src: "/work/gallery/commonground-3.webp",
+        alt: "CommonGround AI agent page: what the AI reviewed, with referrals to any office paused in the demo",
+        width: 1440,
+        height: 900,
+      },
+      {
+        src: "/work/gallery/commonground-4.webp",
+        alt: "CommonGround report form, step 2 of 5: choosing a category, with no name, phone number, or exact address needed",
+        width: 1440,
+        height: 900,
+      },
+    ],
+    short: {
+      problem:
+        "Neighbors notice the same local problems, but reports are scattered and nobody can follow what happens next.",
+      does: [
+        "Report a problem anonymously; phone numbers, emails, and names are removed automatically",
+        "Every case gets a public number and history; residents’ cases show only status changes",
+        "AI agents draft, route, prepare a referral, and follow up daily; a Critic agent checks their proposals",
+        "A moderator approves every step, and the outbox never sends anything",
+      ],
+      hard: "Letting AI agents work on real residents’ reports without letting them do harm. Agents can only propose, through typed and validated tools; a moderator approves every change; and there is no code that can send anything outside the app.",
+      learned: [
+        "Let agents propose, not act: approving a suggestion should run the same code a person’s button runs.",
+        "If a field is private, strip it at the data layer and make it impossible to name.",
+        "Prove safety with tests: one blocks the network to show nothing is ever sent.",
+        "The AI suggests and a person decides, in every part of the app.",
+      ],
+    },
+    stack: [
+      "Next.js 16",
+      "TypeScript",
+      "Tailwind CSS v4",
+      "Zod",
+      "Postgres (Neon)",
+      "Groq agents (tool calling)",
+      "Vercel Cron",
+      "MapLibre + OpenStreetMap",
+      "Vitest",
+    ],
+    caseStudy: {
+      problem: [
+        "Problems like flooding, uncollected garbage, or a broken streetlight get noticed by many neighbors but reported in scattered ways, if at all. Nobody can see whether someone else already raised it or what happened next.",
+      ],
+      why: [
+        "I live in Panama, and I wanted to build something for a real place here, in Spanish first. Problems in a neighborhood are often noticed by everyone but reported by no one, and nobody can see what happens next.",
+        "I wanted to see whether technology could help a community act together, while people, not the AI, stay in charge of every decision.",
+      ],
+      users: [
+        "Residents of the pilot community, Santiago de Veraguas (Spanish first). Also volunteer moderators who review, verify, and approve every step.",
+      ],
+      features: [
+        "A 5-step report form, or a chat with the AI Guide, which asks short questions and drafts a report the resident confirms",
+        "Phone numbers, emails, ID numbers, house numbers, and names are removed automatically before anything is saved",
+        "Public case numbers (SV-2026-0001) with a status history; residents’ cases show only status changes publicly",
+        "A four-step agent pipeline: drafting, routing, a referral into a dry-run outbox, and a daily follow-up",
+        "A moderator dashboard: cases by stage, the outbox, suggestions waiting for approval, and overdue cases",
+        "An office portal for city departments, built but switched off; a moderator-only demo shows the full loop with simulated offices",
+        "A street map where cases sit inside approximate area zones, never at a point on a street",
+        "Seven interface languages, with a test that fails if any string is missing",
+      ],
+      system: {
+        heading: "A four-step agent pipeline that can only propose",
+        body: [
+          "Drafting: the Guide asks short questions and drafts a report the resident confirms. Routing: an agent calls lookup tools (similar cases, case details) and proposes an office, a priority, a confidence score, and possible duplicates. Referral: an agent writes a formal message in Spanish into a dry-run outbox. Follow-up: a daily scheduled job flags stalled cases and drafts reminders, public updates, and a weekly summary.",
+          "A Critic agent checks every proposal for mistakes, bias, missing information, and personal data before a moderator sees it. Each agent must finish with one schema-validated tool call; invalid output is retried once, then replaced by a rule-based answer. Approving a suggestion runs the same functions as the manual moderation buttons.",
+        ],
+      },
+      design: [
+        "Every data shape is a Zod schema, the single source of truth, checked at runtime.",
+        "Sending is off, and there is no delivery code at all: even with the switch on, nothing could be sent. The database only allows the outbox status “dry_run”.",
+        "The offices are placeholders with addresses that can never deliver, until a real agreement exists.",
+        "Emergency lines are listed first, under a clear notice that CommonGround is not an emergency service.",
+        "OpenStreetMap was chosen over Google Maps to avoid billing and tracking.",
+      ],
+      safety: [
+        "Residents don’t need an account to report (only moderators sign in, with Google). Deleting your own case works through a one-time management link.",
+        "Residents’ text reaches the agents only as marked, untrusted data. Prompt-injection tests show an agent can’t route a case to an office that doesn’t exist or send anything.",
+        "An emergency phrase shows the verified emergency number (911) at once, before any AI runs.",
+        "Every agent step and moderator decision is written to a private audit log.",
+        "Photos are checked on the server and never stored. Only the file name, type, and size are kept.",
+      ],
+      challenge: {
+        heading: "Private notes, hidden on screen, still reached the browser",
+        body: [
+          "The case page passed the full case object to a client component. The component never displayed the moderator's private notes, but Next.js serializes every prop sent to the browser, so the notes were readable in the page's own data.",
+          "I found it in a deliberate review pass against my own evaluation doc. The fix is a `PublicCase` type that structurally omits every private field, plus a function that actually strips them. Referencing a private field on a public page is now a compile error, not a silent leak.",
+          "The same lesson came back with the pipeline: office names were reaching real residents’ case pages inside the hidden page data. They are no longer sent at all.",
+        ],
+      },
+      changes: [
+        "A single referral step became a four-step agent pipeline, with a dry-run outbox, a daily follow-up, and an audit log of every step.",
+        "After I handed out flyers in my neighborhood, the first real residents’ reports came in. Their public pages show only status changes.",
+        "The illustrated map was replaced by a real OpenStreetMap street map for the pilot town.",
+        "The critique agent kept discarding a correct duplicate. The cause was that it never received the other agents' tool results, so it now gets them.",
+      ],
+      limitations: [
+        "It runs as an independent student demo and isn’t affiliated with the Alcaldía de Santiago. Approved referrals only go to a dry-run outbox: sending is paused, and there is no delivery channel.",
+        "The office portal is switched off until the mayor’s office agrees, and the offices are placeholders.",
+        "The privacy filter uses rules, so it can miss an unusual name or address. Moderators read every case.",
+        "Photos are never stored (only the file name, type, and size are kept), so a case can't show an image.",
+        "Areas are broad zones (center, north, south, east, west), not neighborhood names.",
+      ],
+      learned: [
+        "Before calling a model's reasoning wrong, check what was actually in its context window.",
+      ],
+    },
+  },
+  {
     slug: "portico",
+    decision:
+      "I added a real undo for deleting instead of an “are you sure?” box, because people click straight through confirm boxes.",
     verb: "decide",
     name: "Portico",
-    chapter: "01",
+    chapter: "02",
     question: "How can an overwhelming decision become clearer?",
     tagline: "A command center for college applications.",
     summary:
@@ -205,12 +347,14 @@ export const PROJECTS: Project[] = [
   },
   {
     slug: "synaptiq",
+    decision:
+      "I gave the Tutor my whole document instead of building search over small pieces of it: study notes are short enough to fit, so the extra machinery wasn’t worth it.",
     verb: "learn",
     story:
       "I built Synaptiq because biology overwhelmed me and I never knew where to start. I used it to prepare for my own biology test: it showed me which topics I was weakest in, so I knew what to study first.",
     usedBy: "Used by me for my biology test, and tested by classmates.",
     name: "Synaptiq",
-    chapter: "02",
+    chapter: "03",
     question: "How can a student understand what they actually know?",
     tagline: "A study partner built from your own notes.",
     summary:
@@ -353,9 +497,11 @@ export const PROJECTS: Project[] = [
   },
   {
     slug: "concord",
+    decision:
+      "I chose a simple, explainable match score instead of AI, so people can always see why they were paired.",
     verb: "connect",
     name: "Concord",
-    chapter: "03",
+    chapter: "04",
     question: "How can the right people find each other fairly?",
     tagline: "Mentorship matching that is stable by construction.",
     summary:
@@ -477,151 +623,10 @@ export const PROJECTS: Project[] = [
       learned: [],
     },
   },
-  {
-    slug: "commonground",
-    verb: "act",
-    name: "CommonGround",
-    chapter: "04",
-    question: "How can local knowledge become collective action?",
-    tagline:
-      "Turning scattered local problems into trackable collective action.",
-    summary:
-      "Residents report local problems anonymously; AI agents route, draft, and follow up on each case, and a moderator approves every step.",
-    intro:
-      "An independent student demo of a civic platform for Santiago de Veraguas, Panama. Residents report problems anonymously, and every case gets a public number and status history. A four-step pipeline of AI agents drafts, routes, prepares a referral, and follows up, but a moderator approves every step and nothing is ever sent to any authority.",
-    hardestProblem:
-      "Letting AI agents work on real residents’ reports without letting them do harm. Agents can only propose, through typed and validated tools; a moderator approves every change; and there is no code that can send anything outside the app.",
-    repo: "https://github.com/Bhakti864653/commonground",
-    live: "https://commonground-psi.vercel.app/",
-    liveNote:
-      "Residents need no account. It starts in your browser's language if supported (seven languages), otherwise Spanish.",
-    screenshot: {
-      src: "/work/gallery/commonground-1.webp",
-      alt: "CommonGround home for Santiago de Veraguas: a street map with numbered cases inside approximate area zones, under the student-demo banner",
-    },
-    oneLine:
-      "A student demo where neighbors report local problems and AI agents route and follow up, in 7 languages.",
-    badge: "4-step AI pipeline",
-    tags: ["Groq agents", "Postgres (Neon)", "MapLibre"],
-    gallery: [
-      {
-        src: "/work/gallery/commonground-2.webp",
-        alt: "A CommonGround example case: flooding in the northern area, labeled “Example – not a real report”, with its public timeline",
-        width: 1440,
-        height: 900,
-      },
-      {
-        src: "/work/gallery/commonground-3.webp",
-        alt: "CommonGround AI agent page: what the AI reviewed, with referrals to any office paused in the demo",
-        width: 1440,
-        height: 900,
-      },
-      {
-        src: "/work/gallery/commonground-4.webp",
-        alt: "CommonGround report form, step 2 of 5: choosing a category, with no name, phone number, or exact address needed",
-        width: 1440,
-        height: 900,
-      },
-    ],
-    short: {
-      problem:
-        "Neighbors notice the same local problems, but reports are scattered and nobody can follow what happens next.",
-      does: [
-        "Report a problem anonymously; phone numbers, emails, and names are removed automatically",
-        "Every case gets a public number and history; residents’ cases show only status changes",
-        "AI agents draft, route, prepare a referral, and follow up daily; a Critic agent checks their proposals",
-        "A moderator approves every step, and the outbox never sends anything",
-      ],
-      hard: "Letting AI agents work on real residents’ reports without letting them do harm. Agents can only propose, through typed and validated tools; a moderator approves every change; and there is no code that can send anything outside the app.",
-      learned: [
-        "Let agents propose, not act: approving a suggestion should run the same code a person’s button runs.",
-        "If a field is private, strip it at the data layer and make it impossible to name.",
-        "Prove safety with tests: one blocks the network to show nothing is ever sent.",
-        "The AI suggests and a person decides, in every part of the app.",
-      ],
-    },
-    stack: [
-      "Next.js 16",
-      "TypeScript",
-      "Tailwind CSS v4",
-      "Zod",
-      "Postgres (Neon)",
-      "Groq agents (tool calling)",
-      "Vercel Cron",
-      "MapLibre + OpenStreetMap",
-      "Vitest",
-    ],
-    caseStudy: {
-      problem: [
-        "Problems like flooding, uncollected garbage, or a broken streetlight get noticed by many neighbors but reported in scattered ways, if at all. Nobody can see whether someone else already raised it or what happened next.",
-      ],
-      why: [
-        "I live in Panama, and I wanted to build something for a real place here, in Spanish first. Problems in a neighborhood are often noticed by everyone but reported by no one, and nobody can see what happens next.",
-        "I wanted to see whether technology could help a community act together, while people, not the AI, stay in charge of every decision.",
-      ],
-      users: [
-        "Residents of the pilot community, Santiago de Veraguas (Spanish first). Also volunteer moderators who review, verify, and approve every step.",
-      ],
-      features: [
-        "A 5-step report form, or a chat with the AI Guide, which asks short questions and drafts a report the resident confirms",
-        "Phone numbers, emails, ID numbers, house numbers, and names are removed automatically before anything is saved",
-        "Public case numbers (SV-2026-0001) with a status history; residents’ cases show only status changes publicly",
-        "A four-step agent pipeline: drafting, routing, a referral into a dry-run outbox, and a daily follow-up",
-        "A moderator dashboard: cases by stage, the outbox, suggestions waiting for approval, and overdue cases",
-        "An office portal for city departments, built but switched off; a moderator-only demo shows the full loop with simulated offices",
-        "A street map where cases sit inside approximate area zones, never at a point on a street",
-        "Seven interface languages, with a test that fails if any string is missing",
-      ],
-      system: {
-        heading: "A four-step agent pipeline that can only propose",
-        body: [
-          "Drafting: the Guide asks short questions and drafts a report the resident confirms. Routing: an agent calls lookup tools (similar cases, case details) and proposes an office, a priority, a confidence score, and possible duplicates. Referral: an agent writes a formal message in Spanish into a dry-run outbox. Follow-up: a daily scheduled job flags stalled cases and drafts reminders, public updates, and a weekly summary.",
-          "A Critic agent checks every proposal for mistakes, bias, missing information, and personal data before a moderator sees it. Each agent must finish with one schema-validated tool call; invalid output is retried once, then replaced by a rule-based answer. Approving a suggestion runs the same functions as the manual moderation buttons.",
-        ],
-      },
-      design: [
-        "Every data shape is a Zod schema, the single source of truth, checked at runtime.",
-        "Sending is off, and there is no delivery code at all: even with the switch on, nothing could be sent. The database only allows the outbox status “dry_run”.",
-        "The offices are placeholders with addresses that can never deliver, until a real agreement exists.",
-        "Emergency lines are listed first, under a clear notice that CommonGround is not an emergency service.",
-        "OpenStreetMap was chosen over Google Maps to avoid billing and tracking.",
-      ],
-      safety: [
-        "Residents don’t need an account to report (only moderators sign in, with Google). Deleting your own case works through a one-time management link.",
-        "Residents’ text reaches the agents only as marked, untrusted data. Prompt-injection tests show an agent can’t route a case to an office that doesn’t exist or send anything.",
-        "An emergency phrase shows the verified emergency number (911) at once, before any AI runs.",
-        "Every agent step and moderator decision is written to a private audit log.",
-        "Photos are checked on the server and never stored. Only the file name, type, and size are kept.",
-      ],
-      challenge: {
-        heading: "Private notes, hidden on screen, still reached the browser",
-        body: [
-          "The case page passed the full case object to a client component. The component never displayed the moderator's private notes, but Next.js serializes every prop sent to the browser, so the notes were readable in the page's own data.",
-          "I found it in a deliberate review pass against my own evaluation doc. The fix is a `PublicCase` type that structurally omits every private field, plus a function that actually strips them. Referencing a private field on a public page is now a compile error, not a silent leak.",
-          "The same lesson came back with the pipeline: office names were reaching real residents’ case pages inside the hidden page data. They are no longer sent at all.",
-        ],
-      },
-      changes: [
-        "A single referral step became a four-step agent pipeline, with a dry-run outbox, a daily follow-up, and an audit log of every step.",
-        "After I handed out flyers in my neighborhood, the first real residents’ reports came in. Their public pages show only status changes.",
-        "The illustrated map was replaced by a real OpenStreetMap street map for the pilot town.",
-        "The critique agent kept discarding a correct duplicate. The cause was that it never received the other agents' tool results, so it now gets them.",
-      ],
-      limitations: [
-        "It runs as an independent student demo and isn’t affiliated with the Alcaldía de Santiago. Approved referrals only go to a dry-run outbox: sending is paused, and there is no delivery channel.",
-        "The office portal is switched off until the mayor’s office agrees, and the offices are placeholders.",
-        "The privacy filter uses rules, so it can miss an unusual name or address. Moderators read every case.",
-        "Photos are never stored (only the file name, type, and size are kept), so a case can't show an image.",
-        "Areas are broad zones (center, north, south, east, west), not neighborhood names.",
-      ],
-      learned: [
-        "Before calling a model's reasoning wrong, check what was actually in its context window.",
-      ],
-    },
-  },
 ];
 
-export const VERB_ORDER: Verb[] = ["decide", "learn", "connect", "act"];
+/** CommonGround first, as everywhere projects are listed (PROJECTS has the same order). */
+export const VERB_ORDER: Verb[] = ["act", "decide", "learn", "connect"];
 
 export function projectByVerb(verb: Verb): Project {
   return PROJECTS.find((p) => p.verb === verb)!;

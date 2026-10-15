@@ -54,15 +54,38 @@ describe("project data", () => {
     }
   });
 
-  it("keeps the project order Portico → Synaptiq → Concord → CommonGround", () => {
+  it("lists CommonGround first everywhere, numbered in that order", () => {
     expect(PROJECTS.map((p) => p.slug)).toEqual([
+      "commonground",
+      "portico",
+      "synaptiq",
+      "concord",
+    ]);
+    expect(PROJECTS.map((p) => p.chapter)).toEqual(["01", "02", "03", "04"]);
+    expect(VERB_ORDER).toEqual(PROJECTS.map((p) => p.verb));
+  });
+
+  it("keeps the Journey in the order the apps were built", () => {
+    expect(STAGES.map((s) => s.id)).toEqual([
       "portico",
       "synaptiq",
       "concord",
       "commonground",
     ]);
-    expect(PROJECTS.map((p) => p.chapter)).toEqual(["01", "02", "03", "04"]);
-    expect(STAGES.map((s) => s.id)).toEqual(PROJECTS.map((p) => p.slug));
+  });
+
+  it("gives every project one short, first-person decision", () => {
+    for (const p of PROJECTS) {
+      expect(p.decision).toMatch(/^I /);
+      expect(p.decision.split(/s+/).length).toBeLessThanOrEqual(35);
+    }
+  });
+
+  it("shows Used by only where someone really used it", () => {
+    expect(PROJECTS.filter((p) => p.usedBy).map((p) => p.slug)).toEqual([
+      "commonground",
+      "synaptiq",
+    ]);
   });
 
   it("gives every project its human question", () => {
@@ -84,10 +107,10 @@ describe("project data", () => {
 
   it("gives each project the requested badge, a one-liner, and 2-3 tags", () => {
     expect(PROJECTS.map((p) => p.badge)).toEqual([
+      "4-step AI pipeline",
       "61 tests",
       "Adaptive AI tutor",
       "Stable matching",
-      "4-step AI pipeline",
     ]);
     for (const p of PROJECTS) {
       expect(p.oneLine.length, p.slug).toBeLessThan(120);
@@ -148,12 +171,29 @@ describe("certifications and media", () => {
     }
   });
 
-  it("points any demo video at a real file", () => {
-    for (const p of PROJECTS)
-      if (p.media)
-        expect(
-          existsSync(path.join(process.cwd(), "public", p.media.video)),
-        ).toBe(true);
+  it("points every video at a Loom link or a real file, or leaves it empty", async () => {
+    const { VIDEOS, parseVideo } = await import("@/lib/videos");
+    for (const value of Object.values(VIDEOS)) {
+      if (!value) continue;
+      const video = parseVideo(value);
+      expect(video).not.toBeNull();
+      if (video?.kind === "file" && video.src.startsWith("/"))
+        expect(existsSync(path.join(process.cwd(), "public", video.src))).toBe(true);
+    }
+  });
+
+  it("reads Loom links and video files, and ignores anything else", async () => {
+    const { parseVideo } = await import("@/lib/videos");
+    const id = "0123456789abcdef0123456789abcdef";
+    expect(parseVideo(`https://www.loom.com/share/${id}?sid=x`)).toEqual({
+      kind: "loom",
+      embed: `https://www.loom.com/embed/${id}`,
+    });
+    expect(parseVideo(`https://loom.com/embed/${id}`)?.kind).toBe("loom");
+    expect(parseVideo(" /media/intro.mp4 ")).toEqual({ kind: "file", src: "/media/intro.mp4" });
+    expect(parseVideo("")).toBeNull();
+    expect(parseVideo("coming soon")).toBeNull();
+    expect(parseVideo("https://example.com/watch?v=1")).toBeNull();
   });
 });
 

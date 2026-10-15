@@ -657,7 +657,9 @@ export function Entrance() {
                   <StatementLetters lastRef={lastWord} baselineRef={baseline} />
                 </h1>
                 <p className="entrance-tagline ml-[0.04em] font-display text-ink">
-                  Building what school doesn’t teach.
+                  High school senior in Santiago, Panama, building what school
+                  doesn’t teach: 4 deployed apps, including a civic platform with
+                  real residents’ reports.
                 </p>
               </div>
               <a href="#idea" onClick={toIdea} className={`${CONTINUE} pt-8`}>

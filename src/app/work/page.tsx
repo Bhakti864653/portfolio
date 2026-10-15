@@ -8,7 +8,7 @@ import { UsedBy } from "@/components/UsedBy";
 export const metadata: Metadata = {
   title: "Work",
   description:
-    "Four systems built to create a way forward: Portico helps people decide, Synaptiq helps them learn, Concord helps them connect, and CommonGround helps them act.",
+    "Four systems built to create a way forward: CommonGround helps people act, Portico helps them decide, Synaptiq helps them learn, and Concord helps them connect.",
   alternates: { canonical: "/work" },
 };
 

@@ -195,6 +195,12 @@ export function CaseStudy({ project: p }: { project: Project }) {
               <p className="text-[clamp(1.3rem,2.4vw,1.9rem)] leading-snug text-ink">
                 {p.tagline}
               </p>
+              <div className="decision mt-8 max-w-[34rem] rounded-r-[10px] border-l-2 border-a1 bg-soft py-4 pl-5 pr-5">
+                <p className="annot text-a1">A decision I made</p>
+                <p className="mt-2 text-[1.08rem] leading-snug text-ink">
+                  {p.decision}
+                </p>
+              </div>
               {p.story && (
                 <blockquote className="mt-8 max-w-[34rem] border-l-2 border-a1 pl-5 font-display text-[1.3rem] italic leading-snug text-ink">
                   {p.story}
@@ -243,13 +249,14 @@ export function CaseStudy({ project: p }: { project: Project }) {
         </div>
       </header>
 
-      {/* The media slot: a demo video if there is one, otherwise the screenshot */}
+      {/* The media slot: the demo video from lib/videos.ts if there is one, otherwise the screenshot */}
       <div className="shell py-12 sm:py-16">
         <MediaSlot
           project={p}
           sizes="(min-width: 1320px) 1224px, 94vw"
           priority
           morph
+          player
           className="rounded-[14px] border border-line-strong"
         />
       </div>
