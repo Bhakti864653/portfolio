@@ -590,7 +590,7 @@ describe("About honors and activities", () => {
       "2nd place, STEM Olympics: Oxford School network competition among 7 campuses",
       "School Spelling Bee champion multiple times",
       "Science Club: ran hands-on experiments with classmates",
-      "Community service: 80+ hours",
+      "Community service: 90+ hours",
     ])
       expect(text).toContain(line);
   });
