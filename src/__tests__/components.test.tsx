@@ -591,6 +591,10 @@ describe("About honors and activities", () => {
       "School Spelling Bee champion multiple times",
       "Science Club: ran hands-on experiments with classmates",
       "Community service: 90+ hours",
+      "Diwali at school, lead organizer",
+      "single 5-hour door-to-door drive",
+      "raised about $300",
+      "sold 200+ tickets in one week",
     ])
       expect(text).toContain(line);
   });
@@ -615,6 +619,7 @@ describe("About page, trimmed", () => {
       "Santiago, Panama",
       "Planning to study Computer Science",
       "4 deployed apps",
+      "Fluent in English, Spanish, Hindi & Gujarati",
     ])
       expect(screen.getByText(fact)).toBeInTheDocument();
     expect(screen.queryByText("Principles")).toBeNull();

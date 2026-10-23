@@ -37,6 +37,7 @@ const FACTS = [
   "Santiago, Panama",
   "Planning to study Computer Science",
   "4 deployed apps",
+  "Fluent in English, Spanish, Hindi & Gujarati",
 ];
 
 /** Outside the code, in my own words. A line's lead (before the colon) is set bold to scan. */
@@ -57,7 +58,10 @@ const BEYOND = [
     id: "activities",
     title: "Activities",
     items: [
-      "Fundación Operación Sonrisa Panamá: helped organize school fundraising sales and collected donations to fund surgeries for children with cleft lip and palate",
+      "Diwali at school, lead organizer: brought Diwali to my mostly Panamanian school with the local Indian community, a school-wide celebration where students and teachers came dressed in Indian clothes",
+      "FANLYC fundraising volunteer: raised about $250 for children with leukemia and cancer, including $150+ on my own in a single 5-hour door-to-door drive",
+      "Fundación Operación Sonrisa Panamá: helped run a one-day school sale that raised about $300 for free cleft lip and palate surgeries for children, and collect donations for the foundation",
+      "School raffle: sold 200+ tickets in one week",
       "Science Club: ran hands-on experiments with classmates",
       "Community service: 90+ hours",
     ],
