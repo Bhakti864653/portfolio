@@ -106,6 +106,20 @@ describe("Entrance", () => {
     ).toHaveAttribute("href", "#idea");
   });
 
+  it("links to the intro video only when there is one", () => {
+    withVideo("intro", "/media/intro.mp4", () => {
+      const { unmount } = render(<Entrance />);
+      expect(
+        screen.getByRole("link", { name: /Watch my 2-min intro/ }),
+      ).toHaveAttribute("href", "#meet");
+      unmount();
+    });
+    withVideo("intro", "", () => {
+      render(<Entrance />);
+      expect(screen.queryByRole("link", { name: /Watch my 2-min intro/ })).toBeNull();
+    });
+  });
+
   it("states the idea once, then leads on to the work", () => {
     render(<Entrance />);
     expect(

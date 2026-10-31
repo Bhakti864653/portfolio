@@ -12,6 +12,7 @@ import {
   type RefObject,
 } from "react";
 import { useMediaQuery, useMotion } from "@/lib/prefs";
+import { introVideo } from "@/lib/videos";
 import { triggerEgg } from "../motion/EasterEgg";
 import { AbilityArea, AbilityProvider } from "../verbs/ability";
 import { IdeaFigure, LEAD, VIEW } from "./IdeaFigure";
@@ -409,6 +410,7 @@ export function Entrance() {
   const finePointer = useMediaQuery("(hover: hover) and (pointer: fine)");
   const mode: "pan" | "stack" = motion === "full" && wide ? "pan" : "stack";
   const animate = motion === "full";
+  const hasIntro = introVideo() !== null;
 
   const stage = useRef<HTMLDivElement>(null);
   const track = useRef<HTMLDivElement>(null);
@@ -580,9 +582,16 @@ export function Entrance() {
   }
 
   function toWork(e: MouseEvent<HTMLAnchorElement>) {
-    const target = document.getElementById("directions");
+    toSection(e, "directions");
+  }
+
+  /** Glides past the entrance to a section further down the page, then focuses it. */
+  function toSection(e: MouseEvent<HTMLAnchorElement>, id: string) {
+    const target = document.getElementById(id);
     if (!target) return;
     e.preventDefault();
+    // Smooth scrolling's own anchor handler (on window) would take over and skip the focus.
+    e.stopPropagation();
     glide(target.getBoundingClientRect().top + window.scrollY - 64, () => {
       if (!target.hasAttribute("tabindex"))
         target.setAttribute("tabindex", "-1");
@@ -662,10 +671,23 @@ export function Entrance() {
                   real residents’ reports.
                 </p>
               </div>
-              <a href="#idea" onClick={toIdea} className={`${CONTINUE} pt-8`}>
-                Continue to the idea
-                <LineArrow />
-              </a>
+              <div className="flex flex-wrap items-center gap-x-10 pt-8">
+                <a href="#idea" onClick={toIdea} className={CONTINUE}>
+                  Continue to the idea
+                  <LineArrow />
+                </a>
+                {hasIntro && (
+                  <a
+                    href="#meet"
+                    onClick={(e) => toSection(e, "meet")}
+                    className={CONTINUE}
+                  >
+                    {/* U+FE0E keeps the triangle a plain glyph, not a color emoji, on phones */}
+                    <span aria-hidden="true">{"\u25B6\uFE0E"}</span>
+                    <span className="-ml-3">Watch my 2-min intro</span>
+                  </a>
+                )}
+              </div>
             </div>
           </section>
 
