@@ -32,7 +32,7 @@ export function MeetBhakti({ variant = "home" }: { variant?: "home" | "about" })
     >
       <div className="shell grid-12 items-center gap-y-8">
         <div className="lg:col-span-4">
-          <p className="annot text-ink">Meet Bhakti</p>
+          <p className="annot text-ink">Meet Bhakti (2 min)</p>
           <h2
             id="meet-title"
             className="mt-3 font-display text-[clamp(2.4rem,5vw,4rem)] leading-[0.95]"

@@ -7,7 +7,7 @@
  */
 export const VIDEOS = {
   /** "Meet Bhakti": under the hero on the home page, and at the top of About. */
-  intro: "",
+  intro: "https://www.loom.com/share/7183ff2c8996430ca226470aca694dd8",
   /** Each project's demo: its case study, and its cards on the home and Work pages. */
   commonground: "",
   portico: "",

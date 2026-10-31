@@ -275,10 +275,11 @@ describe("MediaSlot", () => {
 });
 
 describe("MeetBhakti", () => {
-  it("renders nothing at all until there is an intro video", () => {
-    const { container } = render(<MeetBhakti />);
-    expect(container).toBeEmptyDOMElement();
-  });
+  it("renders nothing at all until there is an intro video", () =>
+    withVideo("intro", "", () => {
+      const { container } = render(<MeetBhakti />);
+      expect(container).toBeEmptyDOMElement();
+    }));
 
   it("shows the intro video from a Loom link or a file, on Home and About", () => {
     withVideo("intro", LOOM, () => {
