@@ -161,13 +161,11 @@ describe("project data", () => {
 });
 
 describe("certifications and media", () => {
-  it("formats certificate dates", async () => {
-    const { formatMonth, CERTIFICATIONS } =
-      await import("@/lib/certifications");
-    expect(formatMonth("2026-10")).toBe("October 2026");
+  it("gives every certificate a real link and no date", async () => {
+    const { CERTIFICATIONS } = await import("@/lib/certifications");
     for (const c of CERTIFICATIONS) {
       expect(c.url).toMatch(/^https:\/\//);
-      expect(c.date).toMatch(/^\d{4}-\d{2}$/);
+      expect(c).not.toHaveProperty("date");
     }
   });
 

@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { CERTIFICATIONS, formatMonth } from "@/lib/certifications";
+import { CERTIFICATIONS } from "@/lib/certifications";
 
 /**
  * Skills and certifications from lib/certifications.ts. Renders nothing at all until there is at
@@ -62,7 +62,7 @@ export function Certifications({ compact = false }: { compact?: boolean }) {
               <div>
                 <p className="font-semibold leading-snug">{c.name}</p>
                 <p className="mt-1 text-[0.95rem] text-muted">
-                  {c.issuer} · {formatMonth(c.date)}
+                  {c.issuer}
                 </p>
                 <a
                   href={c.url}

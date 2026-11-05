@@ -412,8 +412,10 @@ describe("Certifications", () => {
     expect(
       screen.getAllByText(/Introduction to Model Context Protocol/).length,
     ).toBeGreaterThanOrEqual(2);
-    expect(screen.getAllByText(/Anthropic · October 2026/)).toHaveLength(2);
-    expect(screen.getAllByText(/Anthropic · November 2026/)).toHaveLength(1);
+    // No dates on certificates, by choice.
+    expect(
+      screen.queryByText(/(January|February|March|April|May|June|July|August|September|October|November|December) \d{4}/),
+    ).not.toBeInTheDocument();
     // In the order earned, each linking to its own certificate.
     expect(
       screen
