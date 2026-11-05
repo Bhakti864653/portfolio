@@ -409,8 +409,12 @@ describe("Certifications", () => {
     expect(
       screen.getAllByText(/Claude Code in Action/).length,
     ).toBeGreaterThanOrEqual(2);
+    expect(
+      screen.getAllByText(/Introduction to Model Context Protocol/).length,
+    ).toBeGreaterThanOrEqual(2);
     expect(screen.getAllByText(/Anthropic · October 2026/)).toHaveLength(2);
-    // AI Fluency first, then Claude Code in Action, each linking to its own certificate.
+    expect(screen.getAllByText(/Anthropic · November 2026/)).toHaveLength(1);
+    // In the order earned, each linking to its own certificate.
     expect(
       screen
         .getAllByRole("link", { name: /View certificate/ })
@@ -418,6 +422,7 @@ describe("Certifications", () => {
     ).toEqual([
       "https://verify.skilljar.com/c/kpxr3omhmyq4",
       "https://verify.skilljar.com/c/scnvwnomq5d5",
+      "https://verify.skilljar.com/c/9km8jmtmpv42",
     ]);
   });
 });

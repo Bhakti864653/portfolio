@@ -35,6 +35,12 @@ export const CERTIFICATIONS: Certification[] = [
     date: "2026-10",
     url: "https://verify.skilljar.com/c/scnvwnomq5d5",
   },
+  {
+    name: "Introduction to Model Context Protocol",
+    issuer: "Anthropic",
+    date: "2026-11",
+    url: "https://verify.skilljar.com/c/9km8jmtmpv42",
+  },
 ];
 
 /** "2026-10" → "October 2026". */
